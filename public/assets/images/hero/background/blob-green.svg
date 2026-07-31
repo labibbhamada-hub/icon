@@ -1,0 +1,12 @@
+<svg width="650" height="650" viewBox="0 0 650 650" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <radialGradient id="blobGreenGradient" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#7AC142" stop-opacity="0.28"/>
+            <stop offset="65%" stop-color="#A7D87D" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+        </radialGradient>
+    </defs>
+    <path
+        d="M497.8,174.7C551.5,236.4,575.7,326.9,550.4,408.7C525.1,490.5,450.2,563.7,365.6,579.9C281,596.1,186.7,555.3,129.8,489.5C72.9,423.7,53.3,333,73.8,250.7C94.2,168.4,154.6,94.6,233.8,71.8C313,49,411.1,77.3,472.5,130.8C482.4,139.4,490.9,149.2,497.8,174.7Z"
+        fill="url(#blobGreenGradient)"/>
+</svg>
