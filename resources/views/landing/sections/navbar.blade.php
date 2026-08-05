@@ -54,7 +54,7 @@
                 </ul>
                 <!-- Action Button -->
                 <div class="d-flex align-items-center gap-2">
-                    <a href="#" class="btn btn-login">
+                    <a href="{{ url('login') }}" class="btn btn-login">
                         Login
                     </a>
                     <a href="#" class="btn btn-register">

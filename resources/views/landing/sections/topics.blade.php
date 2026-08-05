@@ -2,7 +2,7 @@
     <div class="section-decoration decoration-left"></div>
     <div class="section-decoration decoration-right"></div>
     <div class="container">
-        <x-section-header badge="Conference Topics" title="Research Themes of <span>ICON 2027</span>"
+        <x-section-header badge="Conference Topics" title="Research Themes of <span>ICON 2026</span>"
             description="Explore multidisciplinary topics covering health sciences, pharmacy, nursing, technology, public health, and interdisciplinary innovations." />
         <div class="row g-4">
             <div class="col-lg-3 col-md-6">

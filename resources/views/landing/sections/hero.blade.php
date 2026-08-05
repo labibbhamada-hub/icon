@@ -9,7 +9,7 @@
             <!-- Hero Content -->
             <div class="col-lg-6">
                 <span class="hero-badge">
-                    International Conference 2027
+                    International Conference 2026
                 </span>
                 <h1 class="hero-title mt-4">
                     Future Innovation in
@@ -80,7 +80,7 @@
                 <div class="hero-meta">
                     <div class="meta-item">
                         <i class="bi bi-calendar-event"></i>
-                        <span>15–16 July 2027</span>
+                        <span>15–16 July 2026</span>
                     </div>
                     <div class="meta-item">
                         <i class="bi bi-geo-alt"></i>
