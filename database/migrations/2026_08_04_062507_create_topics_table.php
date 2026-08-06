@@ -10,11 +10,12 @@ return new class extends Migration
     {
         Schema::create('topics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conference_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->string('description');
-            $table->string('icon');
-            $table->string('sort_order');
+            $table->foreignId('conference_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('icon')->nullable();
+            $table->string('color', 20)->default('primary');
+            $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

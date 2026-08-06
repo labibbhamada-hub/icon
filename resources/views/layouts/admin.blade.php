@@ -28,7 +28,14 @@
         @include('admin.partials.sidebar')
 
         <main class="app-main">
+            <div class="app-content">
+                <div class="container-fluid pt-3">
+                    @include('admin.partials.flash-message')
+                </div>
+            </div>
+
             @yield('content')
+
         </main>
 
         @include('admin.partials.footer')

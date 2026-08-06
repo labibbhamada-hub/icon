@@ -3,21 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        @yield('title', 'Authentication') |
-        ICON 2026
-    </title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>@yield('title') | ICON 2026</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ asset('adminlte/dist/css/adminlte.css') }}">
+    <link rel="stylesheet"
+          href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}">
 </head>
 
-<body class="auth-page">
-    <main class="auth-wrapper">
-        @yield('content')
-    </main>
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+<body class="login-page bg-body-secondary">
+
+    @yield('content')
+    
+    <script src="{{ asset('adminlte/dist/js/adminlte.js') }}"></script>
 </body>
+
 </html>

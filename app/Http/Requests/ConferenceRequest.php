@@ -116,4 +116,17 @@ class ConferenceRequest extends FormRequest
             'status' => 'status',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Conference name is required.',
+            'short_name.required' => 'Short name is required.',
+            'year.required' => 'Conference year is required.',
+            'start_date.required' => 'Start date is required.',
+            'end_date.after_or_equal' => 'End date must be after or equal to start date.',
+            'logo.image' => 'Logo must be an image.',
+            'banner.image' => 'Banner must be an image.',
+        ];
+    }
 }

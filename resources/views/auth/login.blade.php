@@ -3,63 +3,113 @@
 @section('title', 'Login')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7">
-                <div class="auth-card">
-                    <div class="text-center mb-4">
-                        <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON 2026" class="auth-logo">
-                        <h2 class="auth-title mt-4">
-                            ICON 2026
-                        </h2>
-                        <p class="auth-subtitle">
-                            Conference Management System
-                        </p>
-                        <p class="auth-description">
-                            Welcome back! Please sign in to continue.
-                        </p>
+    <div class="login-box">
+        <div class="text-center mb-4">
+            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON 2026" width="80">
+            <h3 class="mt-3 fw-bold mb-1">
+                ICON 2026
+            </h3>
+            <p class="text-muted mb-0">
+                Conference Management System
+            </p>
+        </div>
+
+        <div class="card card-outline card-success shadow">
+
+            <div class="card-header text-center">
+                <h5 class="mb-0">
+                    Sign In
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <p class="login-box-msg">
+                    Sign in to start your session
+                </p>
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        {{ $errors->first() }}
                     </div>
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            {{ $errors->first() }}
+                @endif
+
+                <form action="{{ route('login.store') }}" method="POST">
+
+                    @csrf
+
+                    <div class="input-group mb-3">
+
+                        <input type="email" name="email" class="form-control" placeholder="Email Address"
+                            value="{{ old('email') }}" required autofocus>
+
+                        <div class="input-group-text">
+                            <span class="bi bi-envelope"></span>
                         </div>
-                    @endif
-                    <form method="POST" action="{{ route('login.store') }}">
-                        @csrf
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Email Address
-                            </label>
-                            <input type="email" name="email" class="form-control" value="{{ old('email') }}" required
-                                autofocus>
+
+                    </div>
+
+                    <div class="input-group mb-3">
+
+                        <input type="password" name="password" class="form-control" placeholder="Password" required>
+
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Password
-                            </label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-6">
+
                             <div class="form-check">
+
                                 <input class="form-check-input" type="checkbox" name="remember" id="remember">
+
                                 <label class="form-check-label" for="remember">
+
                                     Remember Me
+
                                 </label>
+
                             </div>
-                            <a href="#" class="forgot-link">
+
+                        </div>
+
+                        <div class="col-6 text-end">
+
+                            <a href="#">
                                 Forgot Password?
                             </a>
+
                         </div>
-                        <button type="submit" class="btn btn-login-auth w-100">
+
+                    </div>
+
+                    <div class="d-grid mt-4">
+
+                        <button class="btn btn-success">
+
                             <i class="bi bi-box-arrow-in-right me-2"></i>
-                            Login
+
+                            Sign In
+
                         </button>
-                    </form>
-                </div>
-                <div class="text-center mt-4 auth-footer">
-                    © {{ date('Y') }} Universitas Bhamada
-                </div>
+
+                    </div>
+
+                </form>
+
             </div>
+
         </div>
+
+        <div class="text-center mt-3 text-muted">
+
+            © {{ date('Y') }} Universitas Bhamada
+
+        </div>
+
     </div>
 @endsection

@@ -22,8 +22,8 @@
                 <li class="nav-header">
                     CONFERENCE MANAGEMENT
                 </li>
-                <li class="nav-item {{ request()->routeIs('admin.conference.*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->routeIs('admin.conference.*') ? 'active' : '' }}">
+                <li class="nav-item {{ request()->routeIs('admin.conferences.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('admin.conferences.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-calendar-event"></i>
                         <p>
                             Conference
@@ -32,15 +32,15 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('admin.conference.index') }}"
-                                class="nav-link {{ request()->routeIs('admin.conference.index') ? 'active' : '' }}">
+                            <a href="{{ route('admin.conferences.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.conferences.index') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-circle"></i>
                                 <p>Conference List</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.conference.create') }}"
-                                class="nav-link {{ request()->routeIs('admin.conference.create') ? 'active' : '' }}">
+                            <a href="{{ route('admin.conferences.create') }}"
+                                class="nav-link {{ request()->routeIs('admin.conferences.create') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-plus-circle"></i>
                                 <p>Create Conference</p>
                             </a>
@@ -58,9 +58,12 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-grid"></i>
-                                <p>Topics</p>
+                            <a href="{{ route('admin.topics.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-diagram-3"></i>
+                                <p>
+                                    Topics
+                                </p>
                             </a>
                         </li>
                         <li class="nav-item">
