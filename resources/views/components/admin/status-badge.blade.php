@@ -10,6 +10,6 @@
     ];
 @endphp
 
-<span class="badge text-bg-{{ $colors[$status] ?? 'secondary' }}">
+<span class="badge text-bg-{{ $colors[$status] ?? 'secondary' }} rounded-0">
     {{ ucwords(str_replace('_', ' ', $status)) }}
 </span>

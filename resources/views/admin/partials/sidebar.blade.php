@@ -1,19 +1,17 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
     <div class="sidebar-brand">
         <a href="{{ route('admin.dashboard') }}" class="brand-link">
-            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="brand-image img-circle elevation-3">
-            <span class="brand-text fw-light">
-                ICON 2026 CMS
-            </span>
+            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="brand-image opacity-75 shadow">
+            <span class="brand-text fw-bold">BHAMADA ICON</span>
         </a>
     </div>
     <div class="sidebar-wrapper">
-        <nav class="mt-3">
+        <nav class="mt-2">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 {{-- Dashboard --}}
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}"
-                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-speedometer2"></i>
                         <p>Dashboard</p>
                     </a>
@@ -23,7 +21,7 @@
                     CONFERENCE MANAGEMENT
                 </li>
                 <li class="nav-item {{ request()->routeIs('admin.conferences.*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->routeIs('admin.conferences.*') ? 'active' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('admin.conferences.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-calendar-event"></i>
                         <p>
                             Conference
@@ -33,14 +31,14 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('admin.conferences.index') }}"
-                                class="nav-link {{ request()->routeIs('admin.conferences.index') ? 'active' : '' }}">
+                                class="nav-link {{ request()->routeIs('admin.conferences.index') ? 'active' : '' }} rounded-0">
                                 <i class="nav-icon bi bi-circle"></i>
                                 <p>Conference List</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.conferences.create') }}"
-                                class="nav-link {{ request()->routeIs('admin.conferences.create') ? 'active' : '' }}">
+                                class="nav-link {{ request()->routeIs('admin.conferences.create') ? 'active' : '' }} rounded-0">
                                 <i class="nav-icon bi bi-plus-circle"></i>
                                 <p>Create Conference</p>
                             </a>
@@ -59,7 +57,7 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('admin.topics.index') }}"
-                                class="nav-link {{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                                class="nav-link {{ request()->routeIs('admin.topics.*') ? 'active' : '' }} rounded-0">
                                 <i class="nav-icon bi bi-diagram-3"></i>
                                 <p>
                                     Topics
