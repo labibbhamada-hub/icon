@@ -21,7 +21,8 @@
                     CONFERENCE MANAGEMENT
                 </li>
                 <li class="nav-item {{ request()->routeIs('admin.conferences.*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->routeIs('admin.conferences.*') ? 'active' : '' }} rounded-0">
+                    <a href="#"
+                        class="nav-link {{ request()->routeIs('admin.conferences.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-calendar-event"></i>
                         <p>
                             Conference
@@ -46,8 +47,10 @@
                     </ul>
                 </li>
                 {{-- Master Data --}}
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                <li
+                    class="nav-item {{ request()->routeIs('admin.topics.*') || request()->routeIs('admin.speakers.*') ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ request()->routeIs('admin.topics.*') || request()->routeIs('admin.speakers.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-database"></i>
                         <p>
                             Master Data
@@ -65,9 +68,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{ route('admin.speakers.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }} rounded-0">
                                 <i class="nav-icon bi bi-mic"></i>
-                                <p>Speakers</p>
+                                <p>
+                                    Speakers
+                                </p>
                             </a>
                         </li>
                         <li class="nav-item">

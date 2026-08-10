@@ -14,12 +14,27 @@ class DashboardController extends Controller
 
         $topicCount = Topic::count();
 
-        $activeConference = Conference::latest()->first();
+        $activeConference = Conference::with('setting')
+            ->whereHas('setting', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->latest('year')
+            ->first();
 
-        $latestTopics = Topic::latest()
+        if (!$activeConference) {
+            $activeConference = Conference::latest('year')->first();
+        }
+
+        $latestTopics = Topic::with('conference')
+            ->latest()
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('conferenceCount', 'topicCount', 'activeConference', 'latestTopics'));
+        return view('admin.dashboard', compact(
+            'conferenceCount',
+            'topicCount',
+            'activeConference',
+            'latestTopics'
+        ));
     }
 }

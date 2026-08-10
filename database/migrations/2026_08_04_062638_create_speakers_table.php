@@ -10,15 +10,18 @@ return new class extends Migration
     {
         Schema::create('speakers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conference_id')->constrained()->onDelete('cascade');
+            $table->foreignId('conference_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('institution');
-            $table->string('country');
-            $table->string('photo');
-            $table->string('bio');
-            $table->string('position');
-            $table->string('is_featured');
-            $table->string('sort_order');
+            $table->string('title')->nullable();
+            $table->string('institution')->nullable();
+            $table->string('position')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('photo')->nullable();
+            $table->string('email')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('website')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

@@ -26,7 +26,7 @@
             <h3 class="card-title">
                 Conference List
             </h3>
-            <div class="card-tools">
+            <div class="float-end">
                 <a href="{{ route('admin.conferences.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus"></i>
                     Add Conference
@@ -42,7 +42,7 @@
                             <th>Conference</th>
                             <th>Year</th>
                             <th>Status</th>
-                            <th width="180">Action</th>
+                            <th width="160">Action</th>
                         </tr>
                     </thead>
                     <tbody>

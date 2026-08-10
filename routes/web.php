@@ -27,6 +27,7 @@ Route::middleware(['auth', 'admin'])
         )->name('dashboard');
         Route::resource('conferences', App\Http\Controllers\Admin\ConferenceController::class);
         Route::resource('topics', App\Http\Controllers\Admin\TopicController::class);
+        Route::resource('speakers', App\Http\Controllers\Admin\SpeakerController::class);
     });
 
 // Route::middleware(['auth'])

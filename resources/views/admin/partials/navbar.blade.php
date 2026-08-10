@@ -15,7 +15,7 @@
                     <i class="bi bi-moon-fill d-none" data-lte-theme-icon="dark"></i>
                     <i class="bi bi-circle-half d-none" data-lte-theme-icon="auto"></i>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme"
+                <ul class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="bd-theme"
                     style="--bs-dropdown-min-width: 8rem">
                     <li>
                         <button type="button" class="dropdown-item d-flex align-items-center"

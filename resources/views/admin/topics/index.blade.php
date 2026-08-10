@@ -21,25 +21,25 @@
 @endsection
 
 @section('content')
-    <div class="card">
+    <div class="card rounded-0">
         <div class="card-header">
             <h3 class="card-title">
                 Topics List
             </h3>
-            <div class="card-tools">
-                <a href="{{ route('admin.topics.create') }}" class="btn btn-success btn-sm">
+            <div class="float-end">
+                <a href="{{ route('admin.topics.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle"></i>
                     Add Topic
                 </a>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
+                <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th width="60">
-                                #
+                                No
                             </th>
                             <th>
                                 Topic
@@ -53,7 +53,7 @@
                             <th width="100">
                                 Status
                             </th>
-                            <th width="170" class="text-center">
+                            <th width="170">
                                 Action
                             </th>
                         </tr>
@@ -88,33 +88,35 @@
                                     </small>
                                 </td>
                                 <td>
-                                    <span class="badge text-bg-{{ $topic->color }}">
+                                    <span class="badge text-bg-{{ $topic->color }} rounded-0">
                                         {{ ucfirst($topic->color) }}
                                     </span>
                                 </td>
                                 <td>
                                     @if ($topic->is_active)
-                                        <span class="badge text-bg-success">
+                                        <span class="badge text-bg-success rounded-0">
                                             Active
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Inactive
                                         </span>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    <a href="{{ route('admin.topics.show', $topic) }}" class="btn btn-info btn-sm">
+                                <td>
+                                    <a href="{{ route('admin.topics.show', $topic) }}"
+                                        class="btn btn-info btn-sm rounded-0">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.topics.edit', $topic) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('admin.topics.edit', $topic) }}"
+                                        class="btn btn-warning btn-sm rounded-0">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form action="{{ route('admin.topics.destroy', $topic) }}" method="POST"
                                         class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
+                                        <button class="btn btn-danger btn-sm rounded-0">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
