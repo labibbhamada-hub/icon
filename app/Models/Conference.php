@@ -46,4 +46,9 @@ class Conference extends Model
     {
         return $this->hasMany(Speaker::class);
     }
+
+    public function partners()
+    {
+        return $this->hasMany(Partner::class);
+    }
 }

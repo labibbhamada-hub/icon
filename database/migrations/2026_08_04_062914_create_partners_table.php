@@ -10,12 +10,14 @@ return new class extends Migration
     {
         Schema::create('partners', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conference_id')->constrained()->onDelete('cascade');
+            $table->foreignId('conference_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->enum('category', ['academic', 'publisher', 'sponsor']);
-            $table->string('logo');
-            $table->string('website');
-            $table->string('sort_order');
+            $table->string('type')->default('partner');
+            $table->text('description')->nullable();
+            $table->string('logo')->nullable();
+            $table->string('website')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

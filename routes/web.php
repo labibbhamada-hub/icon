@@ -28,6 +28,7 @@ Route::middleware(['auth', 'admin'])
         Route::resource('conferences', App\Http\Controllers\Admin\ConferenceController::class);
         Route::resource('topics', App\Http\Controllers\Admin\TopicController::class);
         Route::resource('speakers', App\Http\Controllers\Admin\SpeakerController::class);
+        Route::resource('partners', App\Http\Controllers\Admin\PartnerController::class);
     });
 
 // Route::middleware(['auth'])

@@ -77,9 +77,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{ route('admin.partners.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.partners.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-buildings"></i>
-                                <p>Partners</p>
+                                <p>
+                                    Partners
+                                </p>
                             </a>
                         </li>
                         <li class="nav-item">
