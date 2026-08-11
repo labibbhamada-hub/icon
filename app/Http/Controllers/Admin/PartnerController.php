@@ -25,10 +25,7 @@ class PartnerController extends Controller
         $conferences = Conference::orderByDesc('year')
             ->get();
 
-        return view(
-            'admin.partners.create',
-            compact('conferences')
-        );
+        return view('admin.partners.create', compact('conferences'));
     }
 
     public function store(PartnerRequest $request)

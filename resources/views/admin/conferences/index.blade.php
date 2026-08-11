@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', 'Conference Management')
+@section('title', 'Conferences Management')
 
 @section('header')
     <div class="row">
         <div class="col-sm-6">
-            <h1 class="mb-0 fs-3">Conference Management</h1>
+            <h1 class="mb-0 fs-3">Conferences Management</h1>
         </div>
         <div class="col-sm-6">
             <nav aria-label="breadcrumb">
@@ -13,7 +13,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Conference</li>
+                    <li class="breadcrumb-item active" aria-current="page">Conferences</li>
                 </ol>
             </nav>
         </div>
@@ -24,12 +24,12 @@
     <div class="card rounded-0">
         <div class="card-header">
             <h3 class="card-title">
-                Conference List
+                Conferences List
             </h3>
             <div class="float-end">
                 <a href="{{ route('admin.conferences.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle"></i>
-                    Add Conference
+                    Add Conferences
                 </a>
             </div>
         </div>
@@ -39,7 +39,7 @@
                     <thead>
                         <tr>
                             <th width="60">No</th>
-                            <th>Conference</th>
+                            <th>Conferences</th>
                             <th>Year</th>
                             <th>Status</th>
                             <th width="160">Action</th>
@@ -94,14 +94,14 @@
                                     <div class="text-center py-5">
                                         <i class="bi bi-calendar-event display-4 text-secondary"></i>
                                         <h5 class="mt-3">
-                                            No Conference Found
+                                            No Conferences Found
                                         </h5>
                                         <p class="text-muted mb-3">
-                                            There is no conference data yet.
+                                            There is no conferences data yet.
                                         </p>
                                         <a href="{{ route('admin.conferences.create') }}" class="btn btn-success rounded-0">
                                             <i class="bi bi-plus-circle me-2"></i>
-                                            Create First Conference
+                                            Create First Conferences
                                         </a>
                                     </div>
                                 </td>

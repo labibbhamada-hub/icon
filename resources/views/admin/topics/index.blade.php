@@ -126,9 +126,16 @@
                             <tr>
                                 <td colspan="6" class="text-center py-5">
                                     <i class="bi bi-diagram-3 display-5 text-secondary"></i>
-                                    <p class="mt-3 mb-0">
-                                        No topics available.
+                                    <h5 class="mt-3">
+                                        No Topics Found
+                                    </h5>
+                                    <p class="text-muted mb-3">
+                                        There is no topics data yet.
                                     </p>
+                                    <a href="{{ route('admin.topics.create') }}" class="btn btn-success rounded-0">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        Create First Topics
+                                    </a>
                                 </td>
                             </tr>
                         @endforelse

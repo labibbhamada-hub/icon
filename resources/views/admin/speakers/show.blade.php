@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Topic Detail')
+@section('title', 'Speaker Detail')
 
 @section('header')
     <div class="row">
@@ -37,13 +37,13 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3 text-center">
+                <div class="col-md-3 mb-2">
                     @if ($speaker->photo)
                         <img src="{{ asset('storage/' . $speaker->photo) }}" alt="{{ $speaker->name }}"
-                            class="img-thumbnail" style="width: 220px; height: 220px; object-fit: cover;">
+                            class="img-thumbnail w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
                     @else
-                        <div class="border rounded d-flex align-items-center justify-content-center bg-light mx-auto"
-                            style="width: 220px; height: 220px;">
+                        <div class="border rounded-0 d-flex align-items-center justify-content-center bg-light w-100"
+                            style="aspect-ratio: 1 / 1;">
                             <div class="text-center text-muted">
                                 <i class="bi bi-person display-1"></i>
                                 <div>
@@ -53,7 +53,7 @@
                         </div>
                     @endif
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-9 mb-2">
                     <h2 class="fw-bold mb-2">
                         {{ $speaker->name }}
                     </h2>
@@ -175,11 +175,11 @@
                         Biography
                     </h5>
                     @if ($speaker->bio)
-                        <div class="mt-3">
+                        <div>
                             {!! nl2br(e($speaker->bio)) !!}
                         </div>
                     @else
-                        <p class="text-muted mt-3 mb-0">
+                        <p class="text-muted">
                             No biography available.
                         </p>
                     @endif

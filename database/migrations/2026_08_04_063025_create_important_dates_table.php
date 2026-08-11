@@ -10,10 +10,14 @@ return new class extends Migration
     {
         Schema::create('important_dates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conference_id')->constrained()->onDelete('cascade');
+            $table->foreignId('conference_id')->constrained()->cascadeOnDelete();
             $table->string('title');
-            $table->string('event_date');
-            $table->string('sort_order');
+            $table->string('type')->default('other');
+            $table->text('description')->nullable();
+            $table->date('date');
+            $table->date('end_date')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

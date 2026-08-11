@@ -48,9 +48,9 @@
                 </li>
                 {{-- Master Data --}}
                 <li
-                    class="nav-item {{ request()->routeIs('admin.topics.*') || request()->routeIs('admin.speakers.*') ? 'menu-open' : '' }}">
+                    class="nav-item {{ request()->routeIs('admin.topics.*') || request()->routeIs('admin.speakers.*') || request()->routeIs('admin.partners.*') || request()->routeIs('admin.important-dates.*') ? 'menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link {{ request()->routeIs('admin.topics.*') || request()->routeIs('admin.speakers.*') ? 'active' : '' }} rounded-0">
+                        class="nav-link {{ request()->routeIs('admin.topics.*') || request()->routeIs('admin.speakers.*') || request()->routeIs('admin.partners.*') || request()->routeIs('admin.important-dates.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-database"></i>
                         <p>
                             Master Data
@@ -78,7 +78,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.partners.index') }}"
-                                class="nav-link {{ request()->routeIs('admin.partners.*') ? 'active' : '' }}">
+                                class="nav-link {{ request()->routeIs('admin.partners.*') ? 'active' : '' }} rounded-0">
                                 <i class="nav-icon bi bi-buildings"></i>
                                 <p>
                                     Partners
@@ -86,9 +86,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{ route('admin.important-dates.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.important-dates.*') ? 'active' : '' }} rounded-0">
                                 <i class="nav-icon bi bi-calendar-week"></i>
-                                <p>Important Dates</p>
+                                <p>
+                                    Important Dates
+                                </p>
                             </a>
                         </li>
                     </ul>
@@ -98,9 +101,12 @@
                     SUBMISSION MANAGEMENT
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('admin.participants.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.participants.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-people"></i>
-                        <p>Participants</p>
+                        <p>
+                            Participants
+                        </p>
                     </a>
                 </li>
                 <li class="nav-item">

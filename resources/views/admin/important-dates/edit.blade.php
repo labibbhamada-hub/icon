@@ -1,15 +1,15 @@
 @extends('layouts.admin')
 
-@section('title', 'Create Partner')
+@section('title', 'Edit Important Date')
 
 @section('header')
     <div class="row">
         <div class="col-sm-6 d-flex align-items-center gap-2">
-            <a href="{{ route('admin.partners.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h1 class="mb-0 fs-3">
-                Create Partner
+                Edit Important Date
             </h1>
         </div>
         <div class="col-sm-6">
@@ -19,9 +19,9 @@
                         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ route('admin.partners.index') }}">Partner</a>
+                        <a href="{{ route('admin.important-dates.index') }}">Important Date</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Create</li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
                 </ol>
             </nav>
         </div>
@@ -29,21 +29,22 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('admin.partners.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.important-dates.update', $importantDate) }}" method="POST">
         @csrf
+        @method('PUT')
         <div class="card rounded-0">
             <div class="card-header">
                 <h3 class="card-title">
-                    Form Partner
+                    Form Important Date
                 </h3>
             </div>
 
-            @include('admin.partners._form')
+            @include('admin.important-dates._form')
 
             <div class="card-footer text-end">
                 <button class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-check-circle"></i>
-                    Save Partner
+                    Save Important Date
                 </button>
             </div>
         </div>

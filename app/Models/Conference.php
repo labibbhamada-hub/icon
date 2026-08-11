@@ -6,23 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Conference extends Model
 {
-    protected $fillable = [
-        'name',
-        'short_name',
-        'year',
-        'theme',
-        'venue',
-        'city',
-        'country',
-        'start_date',
-        'end_date',
-        'abstract_deadline',
-        'fullpaper_deadline',
-        'registration_deadline',
-        'logo',
-        'banner',
-        'status',
-    ];
+    protected $fillable = ['name', 'short_name', 'year', 'theme', 'venue', 'city', 'country', 'start_date', 'end_date', 'abstract_deadline', 'fullpaper_deadline', 'registration_deadline', 'logo', 'banner', 'status'];
 
     protected $casts = [
         'start_date' => 'date',
@@ -50,5 +34,15 @@ class Conference extends Model
     public function partners()
     {
         return $this->hasMany(Partner::class);
+    }
+
+    public function importantDates()
+    {
+        return $this->hasMany(ImportantDate::class);
+    }
+
+    public function participants()
+    {
+        return $this->hasMany(Participant::class);
     }
 }

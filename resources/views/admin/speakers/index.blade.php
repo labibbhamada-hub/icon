@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Topics')
+@section('title', 'Speakers')
 
 @section('header')
     <div class="row">
@@ -38,27 +38,13 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="60">
-                                No
-                            </th>
-                            <th width="100">
-                                Photo
-                            </th>
-                            <th>
-                                Speaker
-                            </th>
-                            <th>
-                                Institution
-                            </th>
-                            <th>
-                                Conference
-                            </th>
-                            <th width="100">
-                                Status
-                            </th>
-                            <th width="160">
-                                Action
-                            </th>
+                            <th width="60">No</th>
+                            <th width="100">Photo</th>
+                            <th>Speaker</th>
+                            <th>Institution</th>
+                            <th>Conference</th>
+                            <th width="100">Status</th>
+                            <th width="160">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -154,12 +140,12 @@
                                         No Speakers Available
                                     </h5>
                                     <p class="text-muted mb-3">
-                                        There are no speakers available yet.
+                                        There are no speakers data yet.
                                     </p>
                                     <a href="{{ route('admin.speakers.create') }}"
-                                        class="btn btn-success btn-sm rounded-0">
+                                        class="btn btn-success rounded-0">
                                         <i class="bi bi-plus-circle me-1"></i>
-                                        Add Speaker
+                                        Create First Speakers
                                     </a>
                                 </td>
                             </tr>
