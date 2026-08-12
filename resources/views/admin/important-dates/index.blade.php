@@ -38,22 +38,22 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="60">No</th>
+                            <th width="40">No</th>
                             <th>Date</th>
                             <th>Event</th>
                             <th>Type</th>
                             <th>Conference</th>
-                            <th width="100">Status</th>
-                            <th width="160">Action</th>
+                            <th>Status</th>
+                            <th width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($importantDates as $importantDate)
                             <tr>
-                                <td>
+                                <td class="align-top">
                                     {{ $importantDates->firstItem() + $loop->index }}
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <div class="fw-semibold">
                                         {{ $importantDate->date->format('d M Y') }}
                                     </div>
@@ -64,7 +64,7 @@
                                         </small>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <div class="fw-semibold">
                                         {{ $importantDate->title }}
                                     </div>
@@ -74,7 +74,7 @@
                                         </small>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @php
                                         $typeLabels = [
                                             'abstract_submission' => 'Abstract Submission',
@@ -89,7 +89,7 @@
                                         {{ $typeLabels[$importantDate->type] ?? 'Other' }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($importantDate->conference)
                                         <strong>
                                             {{ $importantDate->conference->short_name }}
@@ -103,7 +103,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($importantDate->is_active)
                                         <span class="badge text-bg-success rounded-0">
                                             Active
@@ -114,8 +114,8 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
-                                    <div class="btn-group gap-2">
+                                <td class="align-top">
+                                    <div class="btn-group gap-1">
                                         <a href="{{ route('admin.important-dates.show', $importantDate) }}"
                                             class="btn btn-info btn-sm rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
@@ -138,14 +138,13 @@
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center py-5">
-                                    <i class="bi bi-calendar-event display-5 text-muted">
-                                    </i>
-                                    <h5 class="mt-3">
-                                        No Important Dates Found
-                                    </h5>
-                                    <p class="text-muted mb-3">
-                                        There are no important dates data yet.
-                                    </p>
+                                    <div class="mb-2">
+                                        <i class="bi bi-calendar-event display-5 text-muted"></i>
+                                    </div>
+                                    <div class="mb-2">
+                                        <h5>No Important Dates Found</h5>
+                                        <p class="text-muted">There are no important dates data yet.</p>
+                                    </div>
                                     <a href="{{ route('admin.important-dates.create') }}" class="btn btn-success btn-sm">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Create First Important Dates

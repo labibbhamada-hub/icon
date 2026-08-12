@@ -38,33 +38,21 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="60">
-                                No
-                            </th>
-                            <th>
-                                Topic
-                            </th>
-                            <th width="220">
-                                Conference
-                            </th>
-                            <th width="120">
-                                Color
-                            </th>
-                            <th width="100">
-                                Status
-                            </th>
-                            <th width="170">
-                                Action
-                            </th>
+                            <th width="60">No</th>
+                            <th>Topic</th>
+                            <th>Conference</th>
+                            <th>Color</th>
+                            <th>Status</th>
+                            <th width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($topics as $topic)
                             <tr>
-                                <td>
+                                <td class="align-top">
                                     {{ $loop->iteration + ($topics->firstItem() ?? 0) - 1 }}
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <strong>
                                         @if ($topic->icon)
                                             <i class="bi {{ $topic->icon }} me-2"></i>
@@ -78,7 +66,7 @@
                                         </small>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <strong>
                                         {{ $topic->conference->short_name }}
                                     </strong>
@@ -87,12 +75,12 @@
                                         {{ $topic->conference->year }}
                                     </small>
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <span class="badge text-bg-{{ $topic->color }} rounded-0">
                                         {{ ucfirst($topic->color) }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($topic->is_active)
                                         <span class="badge text-bg-success rounded-0">
                                             Active
@@ -103,37 +91,39 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
-                                    <a href="{{ route('admin.topics.show', $topic) }}"
-                                        class="btn btn-info btn-sm rounded-0">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.topics.edit', $topic) }}"
-                                        class="btn btn-warning btn-sm rounded-0">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <form action="{{ route('admin.topics.destroy', $topic) }}" method="POST"
-                                        class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm rounded-0">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                <td class="align-top">
+                                    <div class="btn-group gap-1">
+                                        <a href="{{ route('admin.topics.show', $topic) }}"
+                                            class="btn btn-info btn-sm rounded-0">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('admin.topics.edit', $topic) }}"
+                                            class="btn btn-warning btn-sm rounded-0">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{{ route('admin.topics.destroy', $topic) }}" method="POST"
+                                            class="d-inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger btn-sm rounded-0">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-5">
-                                    <i class="bi bi-diagram-3 display-5 text-secondary"></i>
-                                    <h5 class="mt-3">
-                                        No Topics Found
-                                    </h5>
-                                    <p class="text-muted mb-3">
-                                        There is no topics data yet.
-                                    </p>
+                                    <div class="mb-2">
+                                        <i class="bi bi-diagram-3 display-5 text-secondary"></i>
+                                    </div>
+                                    <div class="mb-2">
+                                        <h5>No Topics Found</h5>
+                                        <p class="text-muted">There is no topics data yet.</p>
+                                    </div>
                                     <a href="{{ route('admin.topics.create') }}" class="btn btn-success rounded-0">
-                                        <i class="bi bi-plus-circle me-2"></i>
+                                        <i class="bi bi-plus-circle me-1"></i>
                                         Create First Topics
                                     </a>
                                 </td>

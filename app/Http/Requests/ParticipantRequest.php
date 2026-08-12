@@ -14,7 +14,11 @@ class ParticipantRequest extends FormRequest
 
     public function rules(): array
     {
-        $participantId = $this->route('participant')?->id;
+        $participant = $this->route('participant');
+
+        $participantId = $participant instanceof \App\Models\Participant
+            ? $participant->id
+            : null;
 
         return [
             'conference_id' => [

@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Topic extends Model
+class Reviewer extends Model
 {
     protected $fillable = [
         'conference_id',
-        'name',
-        'description',
-        'icon',
-        'color',
-        'sort_order',
+        'user_id',
+        'expertise',
+        'institution',
+        'bio',
         'is_active',
     ];
 
@@ -25,8 +24,13 @@ class Topic extends Model
         return $this->belongsTo(Conference::class);
     }
 
-    public function submissions()
+    public function user()
     {
-        return $this->hasMany(Submission::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

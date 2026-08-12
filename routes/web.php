@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index']);
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'admin'])
         Route::resource('partners', App\Http\Controllers\Admin\PartnerController::class);
         Route::resource('important-dates', App\Http\Controllers\Admin\ImportantDateController::class);
         Route::resource('participants', App\Http\Controllers\Admin\ParticipantController::class);
+        Route::resource('submissions', App\Http\Controllers\Admin\SubmissionController::class);
+        Route::resource('reviewers', App\Http\Controllers\Admin\ReviewerController::class);
+        Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class);
     });
 
 // Route::middleware(['auth'])

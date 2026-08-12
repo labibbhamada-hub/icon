@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', 'Speakers')
+@section('title', 'Reviewers Management')
 
 @section('header')
     <div class="row">
         <div class="col-sm-6">
-            <h1 class="mb-0 fs-3">Speakers Management</h1>
+            <h1 class="mb-0 fs-3">Reviewers Management</h1>
         </div>
         <div class="col-sm-6">
             <nav aria-label="breadcrumb">
@@ -13,7 +13,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Speakers</li>
+                    <li class="breadcrumb-item active" aria-current="page">Reviewers</li>
                 </ol>
             </nav>
         </div>
@@ -24,12 +24,12 @@
     <div class="card rounded-0">
         <div class="card-header">
             <h3 class="card-title">
-                Speakers List
+                Reviewers List
             </h3>
             <div class="float-end">
-                <a href="{{ route('admin.speakers.create') }}" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-plus-circle me-1"></i>
-                    Add Speaker
+                <a href="{{ route('admin.submissions.create') }}" class="btn btn-success btn-sm rounded-0">
+                    <i class="bi bi-person-plus"></i>
+                    Add Reviewer
                 </a>
             </div>
         </div>
@@ -38,50 +38,49 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="60">No</th>
-                            <th width="100">Photo</th>
-                            <th>Speaker</th>
-                            <th>Institution</th>
+                            <th width="40">No</th>
+                            <th>Reviewer</th>
                             <th>Conference</th>
+                            <th>Institution</th>
+                            <th>Expertise</th>
                             <th>Status</th>
                             <th width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($speakers as $speaker)
+                        @forelse ($reviewers as $reviewer)
                             <tr>
                                 <td class="align-top">
-                                    {{ $speakers->firstItem() + $loop->index }}
-                                </td>
-                                <td class="align-top">
-                                    @if ($speaker->photo)
-                                        <img src="{{ asset('storage/' . $speaker->photo) }}" alt="{{ $speaker->name }}"
-                                            class="rounded-circle object-fit-cover" width="50" height="50">
-                                    @else
-                                        <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center"
-                                            style="width: 50px; height: 50px;">
-                                            <i class="bi bi-person fs-4 text-secondary"></i>
-                                        </div>
-                                    @endif
+                                    {{ $reviewers->firstItem() + $loop->index }}
                                 </td>
                                 <td class="align-top">
                                     <div class="fw-semibold">
-                                        {{ $speaker->name }}
+                                        {{ $reviewer->user->name }}
                                     </div>
-                                    @if ($speaker->title)
-                                        <small class="text-muted">
-                                            {{ $speaker->title }}
-                                        </small>
-                                    @endif
-                                    @if ($speaker->position)
+                                    <small class="text-muted">
+                                        {{ $reviewer->user->email }}
+                                    </small>
+                                </td>
+                                <td class="align-top">
+                                    @if ($reviewer->conference)
+                                        <strong>
+                                            {{ $reviewer->conference->short_name }}
+                                        </strong>
                                         <small class="text-muted d-block">
-                                            {{ $speaker->position }}
+                                            {{ $reviewer->conference->year }}
                                         </small>
+                                    @else
+                                        —
                                     @endif
                                 </td>
                                 <td class="align-top">
-                                    @if ($speaker->institution)
-                                        {{ $speaker->institution }}
+                                    {{ $reviewer->institution ?: '—' }}
+                                </td>
+                                <td class="align-top">
+                                    @if ($reviewer->expertise)
+                                        <small>
+                                            {{ \Illuminate\Support\Str::limit($reviewer->expertise, 80) }}
+                                        </small>
                                     @else
                                         <span class="text-muted">
                                             —
@@ -89,21 +88,7 @@
                                     @endif
                                 </td>
                                 <td class="align-top">
-                                    @if ($speaker->conference)
-                                        <span class="fw-semibold">
-                                            {{ $speaker->conference->short_name }}
-                                        </span>
-                                        <small class="text-muted d-block">
-                                            {{ $speaker->conference->year }}
-                                        </small>
-                                    @else
-                                        <span class="text-muted">
-                                            —
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="align-top">
-                                    @if ($speaker->is_active)
+                                    @if ($reviewer->is_active)
                                         <span class="badge text-bg-success rounded-0">
                                             Active
                                         </span>
@@ -113,21 +98,21 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="align-top">
+                                <td class="text-center">
                                     <div class="btn-group gap-1">
-                                        <a href="{{ route('admin.speakers.show', $speaker) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View">
+                                        <a href="{{ route('admin.reviewers.show', $reviewer) }}"
+                                            class="btn btn-info rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.speakers.edit', $speaker) }}"
-                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
+                                        <a href="{{ route('admin.reviewers.edit', $reviewer) }}"
+                                            class="btn btn-warning rounded-0" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('admin.speakers.destroy', $speaker) }}" method="POST"
+                                        <form action="{{ route('admin.reviewers.destroy', $reviewer) }}" method="POST"
                                             class="d-inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
+                                            <button type="submit" class="btn btn-danger rounded-0" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -138,15 +123,16 @@
                             <tr>
                                 <td colspan="7" class="text-center py-5">
                                     <div class="mb-2">
-                                        <i class="bi bi-mic display-5 text-muted"></i>
+                                        <i class="bi bi-person-check display-5 text-muted"></i>
                                     </div>
                                     <div class="mb-2">
-                                        <h5>No Speakers Available</h5>
-                                        <p class="text-muted">There are no speakers data yet.</p>
+                                        <h5>No Reviewers Found</h5>
+                                        <p class="text-muted">There are no reviewers registered yet.</p>
                                     </div>
-                                    <a href="{{ route('admin.speakers.create') }}" class="btn btn-success rounded-0">
-                                        <i class="bi bi-plus-circle me-1"></i>
-                                        Add Speakers
+                                    <a href="{{ route('admin.reviewers.create') }}"
+                                        class="btn btn-success rounded-0">
+                                        <i class="bi bi-person-plus me-1"></i>
+                                        Add Reviewer
                                     </a>
                                 </td>
                             </tr>
@@ -155,9 +141,9 @@
                 </table>
             </div>
         </div>
-        @if ($speakers->hasPages())
+        @if ($reviewers->hasPages())
             <div class="card-footer">
-                {{ $speakers->links() }}
+                {{ $reviewers->links() }}
             </div>
         @endif
     </div>
@@ -169,8 +155,8 @@
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 Swal.fire({
-                    title: 'Delete Speaker?',
-                    text: 'This action cannot be undone.',
+                    title: 'Delete Reviewer?',
+                    text: 'This action will remove the reviewer from this conference.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete it',

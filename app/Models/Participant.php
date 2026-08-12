@@ -31,4 +31,9 @@ class Participant extends Model
     {
         return $this->belongsTo(Conference::class);
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
 }

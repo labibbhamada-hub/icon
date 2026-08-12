@@ -45,4 +45,14 @@ class Conference extends Model
     {
         return $this->hasMany(Participant::class);
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
+
+    public function reviewers()
+    {
+        return $this->hasMany(Reviewer::class);
+    }
 }

@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('submission_authors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('submission_id')->constrained()->onDelete('cascade');
+            $table->foreignId('submission_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('email');
-            $table->string('institution');
-            $table->string('country');
-            $table->boolean('is_corresponding');
-            $table->string('author_order');
+            $table->string('email')->nullable();
+            $table->string('institution')->nullable();
+            $table->string('department')->nullable();
+            $table->boolean('is_corresponding')->default(false);
+            $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });
     }

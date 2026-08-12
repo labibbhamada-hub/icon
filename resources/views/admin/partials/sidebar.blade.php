@@ -110,15 +110,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('admin.submissions.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.submissions.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-file-earmark-text"></i>
-                        <p>Submissions</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-clipboard-check"></i>
-                        <p>Reviews</p>
+                        <p>
+                            Submissions
+                        </p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -126,6 +123,37 @@
                         <i class="nav-icon bi bi-credit-card"></i>
                         <p>Payments</p>
                     </a>
+                </li>
+                <li
+                    class="nav-item {{ request()->routeIs('admin.reviewers.*') || request()->routeIs('admin.reviews.*') ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ request()->routeIs('admin.reviewers.*') || request()->routeIs('admin.reviews.*') ? 'active' : '' }} rounded-0">
+                        <i class="nav-icon bi bi-clipboard-check"></i>
+                        <p>
+                            Review Management
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.reviewers.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.reviewers.*') ? 'active' : '' }} rounded-0">
+                                <i class="nav-icon bi bi-person-check"></i>
+                                <p>
+                                    Reviewers
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.reviews.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }} rounded-0">
+                                <i class="nav-icon bi bi-file-earmark-check"></i>
+                                <p>
+                                    Reviews
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 {{-- System --}}
                 <li class="nav-header">

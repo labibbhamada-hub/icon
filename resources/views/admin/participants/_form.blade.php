@@ -10,7 +10,7 @@
                     Select Conference
                 </option>
                 @foreach ($conferences as $conference)
-                    <option value="{{ $conference->id }}" @selected(old('conference_id', $importantDate->conference_id ?? '') == $conference->id)>
+                    <option value="{{ $conference->id }}" @selected(old('conference_id', $participant->conference_id ?? '') == $conference->id)>
                         {{ $conference->short_name }}
                         ({{ $conference->year }})
                     </option>
@@ -22,83 +22,127 @@
                 </div>
             @enderror
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-2">
             <label class="form-label">
-                Event / Date Title
+                Registration Number
                 <span class="text-danger">*</span>
             </label>
-            <input type="text" name="title" value="{{ old('title', $importantDate->title ?? '') }}"
-                class="form-control @error('title') is-invalid @enderror rounded-0"
-                placeholder="e.g. Abstract Submission Deadline">
-            @error('title')
+            <input type="text" name="registration_number"
+                value="{{ old('registration_number', $participant->registration_number ?? '') }}"
+                class="form-control @error('registration_number') is-invalid @enderror rounded-0"
+                placeholder="e.g. ICON2026-0001">
+            @error('registration_number')
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>
             @enderror
         </div>
-        <div class="col-md-6 mb-2">
+        <div class="col-md-4 mb-2">
             <label class="form-label">
-                Type
+                Participant Type
                 <span class="text-danger">*</span>
             </label>
             @php
-                $types = [
-                    'abstract_submission' => 'Abstract Submission',
-                    'full_paper_submission' => 'Full Paper Submission',
-                    'registration' => 'Registration',
-                    'conference' => 'Conference',
-                    'camera_ready' => 'Camera Ready',
-                    'other' => 'Other',
+                $participantTypes = [
+                    'regular' => 'Regular',
+                    'student' => 'Student',
+                    'speaker' => 'Speaker',
+                    'committee' => 'Committee',
                 ];
             @endphp
-            <select name="type" class="form-select @error('type') is-invalid @enderror rounded-0">
-                @foreach ($types as $value => $label)
-                    <option value="{{ $value }}" @selected(old('type', $importantDate->type ?? 'other') === $value)>
+            <select name="participant_type"
+                class="form-select @error('participant_type') is-invalid @enderror rounded-0">
+                @foreach ($participantTypes as $value => $label)
+                    <option value="{{ $value }}" @selected(old('participant_type', $participant->participant_type ?? 'regular') === $value)>
                         {{ $label }}
                     </option>
                 @endforeach
             </select>
-            @error('type')
+            @error('participant_type')
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>
             @enderror
         </div>
-        <div class="col-md-3 mb-2">
+        <div class="col-md-4 mb-2">
             <label class="form-label">
-                Sort Order
-            </label>
-            <input type="number" name="sort_order" min="0"
-                value="{{ old('sort_order', $importantDate->sort_order ?? 0) }}"
-                class="form-control @error('sort_order') is-invalid @enderror rounded-0">
-            @error('sort_order')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
-        </div>
-        <div class="col-md-3 mb-2">
-            <label class="form-label d-block">
-                Status
-            </label>
-            <div class="form-check form-switch mt-2">
-                <input type="hidden" name="is_active" value="0">
-                <input class="form-check-input" type="checkbox" name="is_active" value="1"
-                    @checked(old('is_active', $importantDate->is_active ?? true))>
-                <label class="form-check-label">
-                    Active
-                </label>
-            </div>
-        </div>
-        <div class="col-md-6 mb-2">
-            <label class="form-label">
-                Start Date
+                Attendance Type
                 <span class="text-danger">*</span>
             </label>
-            <input type="date" name="date"
-                value="{{ old('date', isset($importantDate->date) ? $importantDate->date->format('Y-m-d') : '') }}"
-                class="form-control @error('date') is-invalid @enderror rounded-0">
-            @error('date')
+            @php
+                $attendanceTypes = [
+                    'offline' => 'Offline',
+                    'online' => 'Online',
+                    'hybrid' => 'Hybrid',
+                ];
+            @endphp
+            <select name="attendance_type" class="form-select @error('attendance_type') is-invalid @enderror rounded-0">
+                @foreach ($attendanceTypes as $value => $label)
+                    <option value="{{ $value }}" @selected(old('attendance_type', $participant->attendance_type ?? 'offline') === $value)>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+            @error('attendance_type')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="col-md-4 mb-2">
+            <label class="form-label">
+                Registration Status
+                <span class="text-danger">*</span>
+            </label>
+            @php
+                $registrationStatuses = [
+                    'pending' => 'Pending',
+                    'confirmed' => 'Confirmed',
+                    'cancelled' => 'Cancelled',
+                ];
+            @endphp
+            <select name="registration_status"
+                class="form-select @error('registration_status') is-invalid @enderror rounded-0">
+                @foreach ($registrationStatuses as $value => $label)
+                    <option value="{{ $value }}" @selected(old('registration_status', $participant->registration_status ?? 'pending') === $value)>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+            @error('registration_status')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="col-md-4 mb-2">
+            <label class="form-label">
+                Registered At
+            </label>
+            <input type="datetime-local" name="registered_at"
+                value="{{ old(
+                    'registered_at',
+                    isset($participant->registered_at) ? $participant->registered_at->format('Y-m-d\TH:i') : '',
+                ) }}"
+                class="form-control @error('registered_at') is-invalid @enderror rounded-0">
+            @error('registered_at')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+    </div>
+</div>
+<div class="card-body border-top">
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">
+                Full Name
+                <span class="text-danger">*</span>
+            </label>
+            <input type="text" name="full_name" value="{{ old('full_name', $participant->full_name ?? '') }}"
+                class="form-control @error('full_name') is-invalid @enderror rounded-0" placeholder="Full name">
+            @error('full_name')
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>
@@ -106,30 +150,95 @@
         </div>
         <div class="col-md-6 mb-2">
             <label class="form-label">
-                End Date
-                <small class="text-muted">
-                    (Optional)
-                </small>
+                Email Address
+                <span class="text-danger">*</span>
             </label>
-            <input type="date" name="end_date"
-                value="{{ old('end_date', isset($importantDate->end_date) ? $importantDate->end_date->format('Y-m-d') : '') }}"
-                class="form-control @error('end_date') is-invalid @enderror rounded-0">
-            @error('end_date')
+            <input type="email" name="email" value="{{ old('email', $participant->email ?? '') }}"
+                class="form-control @error('email') is-invalid @enderror rounded-0" placeholder="name@example.com">
+            @error('email')
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>
             @enderror
-            <div class="form-text">
-                Leave empty if this event only has one date.
-            </div>
         </div>
+        <div class="col-md-6 mb-2">
+            <label class="form-label">
+                Phone Number
+            </label>
+            <input type="text" name="phone" value="{{ old('phone', $participant->phone ?? '') }}"
+                class="form-control @error('phone') is-invalid @enderror rounded-0" placeholder="+62 812 3456 7890">
+            @error('phone')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="col-md-3 mb-2">
+            <label class="form-label">
+                Country
+                <span class="text-danger">*</span>
+            </label>
+            <input type="text" name="country" value="{{ old('country', $participant->country ?? 'Indonesia') }}"
+                class="form-control @error('country') is-invalid @enderror rounded-0">
+            @error('country')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="col-md-3 mb-2">
+            <label class="form-label">
+                City
+            </label>
+            <input type="text" name="city" value="{{ old('city', $participant->city ?? '') }}"
+                class="form-control @error('city') is-invalid @enderror rounded-0">
+            @error('city')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+    </div>
+</div>
+<div class="card-body border-top">
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">
+                Institution
+            </label>
+            <input type="text" name="institution" value="{{ old('institution', $participant->institution ?? '') }}"
+                class="form-control @error('institution') is-invalid @enderror rounded-0"
+                placeholder="University / Institution">
+            @error('institution')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="col-md-6 mb-2">
+            <label class="form-label">
+                Department
+            </label>
+            <input type="text" name="department" value="{{ old('department', $participant->department ?? '') }}"
+                class="form-control @error('department') is-invalid @enderror rounded-0"
+                placeholder="Department / Faculty">
+            @error('department')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+    </div>
+</div>
+<div class="card-body border-top">
+    <div class="row">
         <div class="col-12 mb-2">
             <label class="form-label">
-                Description
+                Notes
             </label>
-            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-0"
-                placeholder="Write additional information about this date...">{{ old('description', $importantDate->description ?? '') }}</textarea>
-            @error('description')
+            <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror rounded-0"
+                placeholder="Additional notes about this participant...">{{ old('notes', $participant->notes ?? '') }}</textarea>
+            @error('notes')
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>

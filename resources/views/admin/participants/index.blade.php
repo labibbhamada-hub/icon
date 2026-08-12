@@ -28,8 +28,8 @@
             </h3>
             <div class="float-end">
                 <a href="{{ route('admin.participants.create') }}" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-plus-circle"></i>
-                    Add Important Date
+                    <i class="bi bi-person-plus"></i>
+                    Add Participant
                 </a>
             </div>
         </div>
@@ -38,23 +38,23 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="60">No</th>
+                            <th width="40">No</th>
                             <th>Registration</th>
                             <th>Participant</th>
                             <th>Institution</th>
                             <th>Type</th>
                             <th>Attendance</th>
                             <th>Status</th>
-                            <th width="160">Action</th>
+                            <th width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($participants as $participant)
                             <tr>
-                                <td>
+                                <td class="align-top">
                                     {{ $participants->firstItem() + $loop->index }}
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <span class="fw-semibold">
                                         {{ $participant->registration_number }}
                                     </span>
@@ -64,7 +64,7 @@
                                         </small>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <div class="fw-semibold">
                                         {{ $participant->full_name }}
                                     </div>
@@ -72,7 +72,7 @@
                                         {{ $participant->email }}
                                     </small>
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($participant->institution)
                                         {{ $participant->institution }}
                                         @if ($participant->department)
@@ -86,7 +86,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @php
                                         $participantTypes = [
                                             'regular' => 'Regular',
@@ -95,11 +95,11 @@
                                             'committee' => 'Committee',
                                         ];
                                     @endphp
-                                    <span class="badge text-bg-secondary">
+                                    <span class="badge text-bg-secondary rounded-0">
                                         {{ $participantTypes[$participant->participant_type] ?? 'Other' }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @php
                                         $attendanceTypes = [
                                             'offline' => 'Offline',
@@ -107,45 +107,40 @@
                                             'hybrid' => 'Hybrid',
                                         ];
                                     @endphp
-                                    <span class="badge text-bg-info">
+                                    <span class="badge text-bg-info rounded-0">
                                         {{ $attendanceTypes[$participant->attendance_type] ?? 'Other' }}
                                     </span>
                                 </td>
-                                <td>
-                                    @switch($participant->registration_status)
-                                        @case('confirmed')
-                                            <span class="badge text-bg-success">
-                                                Confirmed
-                                            </span>
-                                        @break
-
-                                        @case('cancelled')
-                                            <span class="badge text-bg-danger">
-                                                Cancelled
-                                            </span>
-                                        @break
-
-                                        @default
-                                            <span class="badge text-bg-warning">
-                                                Pending
-                                            </span>
-                                    @endswitch
+                                <td class="align-top">
+                                    @if ($participant->registration_status === 'confirmed')
+                                        <span class="badge text-bg-success rounded-0">
+                                            Confirmed
+                                        </span>
+                                    @elseif ($participant->registration_status === 'cancelled')
+                                        <span class="badge text-bg-danger rounded-0">
+                                            Cancelled
+                                        </span>
+                                    @else
+                                        <span class="badge text-bg-warning rounded-0">
+                                            Pending
+                                        </span>
+                                    @endif
                                 </td>
-                                <td class="text-center">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.participants.show', $participant) }}" class="btn btn-info"
-                                            title="View">
+                                <td class="align-top">
+                                    <div class="btn-group gap-1">
+                                        <a href="{{ route('admin.participants.show', $participant) }}"
+                                            class="btn btn-info btn-sm rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a href="{{ route('admin.participants.edit', $participant) }}"
-                                            class="btn btn-warning" title="Edit">
+                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <form action="{{ route('admin.participants.destroy', $participant) }}"
                                             method="POST" class="d-inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" title="Delete">
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -163,7 +158,7 @@
                                     <p class="text-muted mb-3">
                                         There are no participants registered yet.
                                     </p>
-                                    <a href="{{ route('admin.participants.create') }}" class="btn btn-success btn-sm">
+                                    <a href="{{ route('admin.participants.create') }}" class="btn btn-success rounded-0">
                                         <i class="bi bi-person-plus me-2"></i>
                                         Add Participant
                                     </a>
@@ -172,12 +167,36 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if ($participants->hasPages())
-                    <div class="card-footer">
-                        {{ $participants->links() }}
-                    </div>
-                @endif
             </div>
         </div>
+        @if ($participants->hasPages())
+            <div class="card-footer">
+                {{ $participants->links() }}
+            </div>
+        @endif
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.delete-form').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Delete Participant?',
+                    text: 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d'
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

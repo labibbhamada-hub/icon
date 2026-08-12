@@ -42,17 +42,17 @@
                             <th>Conferences</th>
                             <th>Year</th>
                             <th>Status</th>
-                            <th width="160">Action</th>
+                            <th width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if ($conferences->count())
                             @foreach ($conferences as $conference)
                                 <tr>
-                                    <td>
+                                    <td class="align-top">
                                         {{ $loop->iteration }}
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         <div class="fw-semibold">
                                             {{ $conference->name }}
                                         </div>
@@ -60,14 +60,14 @@
                                             {{ $conference->short_name }}
                                         </small>
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         {{ $conference->year }}
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         <x-admin.status-badge :status="$conference->status" />
                                     </td>
-                                    <td>
-                                        <div class="btn-group gap-2">
+                                    <td class="align-top">
+                                        <div class="btn-group gap-1">
                                             <a href="{{ route('admin.conferences.show', $conference) }}"
                                                 class="btn btn-info btn-sm rounded-0">
                                                 <i class="bi bi-eye"></i>
@@ -92,15 +92,15 @@
                             <tr>
                                 <td colspan="5">
                                     <div class="text-center py-5">
-                                        <i class="bi bi-calendar-event display-4 text-secondary"></i>
-                                        <h5 class="mt-3">
-                                            No Conferences Found
-                                        </h5>
-                                        <p class="text-muted mb-3">
-                                            There is no conferences data yet.
-                                        </p>
+                                        <div class="mb-2">
+                                            <i class="bi bi-calendar-event display-4 text-secondary"></i>
+                                        </div>
+                                        <div class="mb-2">
+                                            <h5>No Conferences Found</h5>
+                                            <p class="text-muted">There is no conferences data yet.</p>
+                                        </div>
                                         <a href="{{ route('admin.conferences.create') }}" class="btn btn-success rounded-0">
-                                            <i class="bi bi-plus-circle me-2"></i>
+                                            <i class="bi bi-plus-circle me-1"></i>
                                             Create First Conferences
                                         </a>
                                     </div>
@@ -109,13 +109,13 @@
                         @endif
                     </tbody>
                 </table>
-                @if ($conferences->hasPages())
-                    <div class="card-footer clearfix">
-                        {{ $conferences->links() }}
-                    </div>
-                @endif
             </div>
         </div>
+        @if ($conferences->hasPages())
+            <div class="card-footer clearfix">
+                {{ $conferences->links() }}
+            </div>
+        @endif
     </div>
 @endsection
 

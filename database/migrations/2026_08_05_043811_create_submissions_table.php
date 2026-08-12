@@ -10,18 +10,27 @@ return new class extends Migration
     {
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conference_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('topic_id')->constrained()->onDelete('cascade');
-            $table->string('submission_code');
+            $table->foreignId('conference_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('participant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('topic_id')->constrained()->cascadeOnDelete();
+            $table->string('submission_code')->unique();
             $table->string('title');
-            $table->string('abstract');
-            $table->string('keywords');
+            $table->text('abstract');
+            $table->text('keywords');
             $table->string('paper_file');
-            $table->string('revised_file');
-            $table->string('camera_ready_file');
-            $table->enum('status', ['draft', 'submitted', 'under_review', 'revision', 'accepted', 'rejected', 'camera_ready', 'published'])->default('draft');
-            $table->string('submitted_at');
+            $table->string('revised_file')->nullable();
+            $table->string('camera_ready_file')->nullable();
+            $table->enum('status', [
+                'draft',
+                'submitted',
+                'under_review',
+                'revision',
+                'accepted',
+                'rejected',
+                'camera_ready',
+                'published',
+            ])->default('draft');
+            $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
         });
     }

@@ -38,23 +38,23 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="60">No</th>
+                            <th width="40">No</th>
                             <th>Logo</th>
                             <th>Partner</th>
                             <th>Type</th>
                             <th>Partners</th>
                             <th>Status</th>
-                            <th width="160">Action</th>
+                            <th width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if ($partners->count())
                             @foreach ($partners as $partner)
                                 <tr>
-                                    <td>
+                                    <td class="align-top">
                                         {{ $partners->firstItem() + $loop->index }}
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         @if ($partner->logo)
                                             <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name }}"
                                                 class="img-thumbnail rounded-0"
@@ -66,7 +66,7 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         <div class="fw-semibold">
                                             {{ $partner->name }}
                                         </div>
@@ -76,12 +76,12 @@
                                             </small>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         <span class="badge text-bg-secondary rounded-0">
                                             {{ ucwords(str_replace('_', ' ', $partner->type)) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         @if ($partner->conference)
                                             <strong>
                                                 {{ $partner->conference->short_name }}
@@ -95,7 +95,7 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="align-top">
                                         @if ($partner->is_active)
                                             <span class="badge text-bg-success rounded-0">
                                                 Active
@@ -106,17 +106,15 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div class="btn-group gap-2">
+                                    <td class="align-top">
+                                        <div class="btn-group gap-1">
                                             <a href="{{ route('admin.partners.show', $partner) }}"
                                                 class="btn btn-info btn-sm rounded-0" title="View">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <a href="{{ route('admin.partners.edit', $partner) }}"
                                                 class="btn btn-warning btn-sm rounded-0" title="Edit">
-
                                                 <i class="bi bi-pencil"></i>
-
                                             </a>
                                             <form action="{{ route('admin.partners.destroy', $partner) }}" method="POST"
                                                 class="d-inline delete-form">
@@ -135,15 +133,15 @@
                             <tr>
                                 <td colspan="7">
                                     <div class="text-center py-5">
-                                        <i class="bi bi-calendar-event display-4 text-secondary"></i>
-                                        <h5 class="mt-3">
-                                            No Partners Found
-                                        </h5>
-                                        <p class="text-muted mb-3">
-                                            There is no partners data yet.
-                                        </p>
+                                        <div class="mb-2">
+                                            <i class="bi bi-calendar-event display-4 text-secondary"></i>
+                                        </div>
+                                        <div class="mb-2">
+                                            <h5>No Partners Found</h5>
+                                            <p class="text-muted">There is no partners data yet.</p>
+                                        </div>
                                         <a href="{{ route('admin.partners.create') }}" class="btn btn-success rounded-0">
-                                            <i class="bi bi-plus-circle me-2"></i>
+                                            <i class="bi bi-plus-circle me-1"></i>
                                             Create First Partners
                                         </a>
                                     </div>
