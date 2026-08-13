@@ -98,21 +98,21 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                <td class="align-top">
                                     <div class="btn-group gap-1">
                                         <a href="{{ route('admin.reviewers.show', $reviewer) }}"
-                                            class="btn btn-info rounded-0" title="View">
+                                            class="btn btn-info btn-sm rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a href="{{ route('admin.reviewers.edit', $reviewer) }}"
-                                            class="btn btn-warning rounded-0" title="Edit">
+                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <form action="{{ route('admin.reviewers.destroy', $reviewer) }}" method="POST"
                                             class="d-inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger rounded-0" title="Delete">
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>

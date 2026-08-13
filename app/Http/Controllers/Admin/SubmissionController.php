@@ -111,6 +111,7 @@ class SubmissionController extends Controller
             'participant',
             'topic',
             'authors',
+            'reviews.reviewer.user',
         ]);
 
         return view('admin.submissions.show', compact('submission'));

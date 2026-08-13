@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('reviewer_id')->constrained()->cascadeOnDelete();
             $table->decimal('score', 5, 2)->nullable();
             $table->text('comment')->nullable();
-            $table->enum('recommendation', ['accept', 'minor_revision', 'major_revision', 'reject']);
+            $table->enum('recommendation', ['accept', 'minor_revision', 'major_revision', 'reject'])->nullable();
             $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
             $table->unique(['submission_id', 'reviewer_id',]);

@@ -24,7 +24,7 @@
                     Sign in to start your session
                 </p>
                 @if ($errors->any())
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger rounded-0">
                         {{ $errors->first() }}
                     </div>
                 @endif

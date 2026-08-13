@@ -1,15 +1,15 @@
 @extends('layouts.admin')
 
-@section('title', 'Submission Detail')
+@section('title', 'Reviewer Detail')
 
 @section('header')
     <div class="row">
         <div class="col-sm-6 d-flex align-items-center gap-2">
-            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h1 class="mb-0 fs-3">
-                Submission Detail
+                Reviewer Detail
             </h1>
         </div>
         <div class="col-sm-6">
@@ -19,7 +19,7 @@
                         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ route('admin.submissions.index') }}">Submission</a>
+                        <a href="{{ route('admin.reviewers.index') }}">Reviewer</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Detail</li>
                 </ol>
@@ -32,50 +32,35 @@
     <div class="card rounded-0">
         <div class="card-header">
             <h3 class="card-title">
-                Submission Information
+                Reviewer Information
             </h3>
         </div>
         <div class="card-body">
-            <div class="mb-2">
-                @if ($submission->status === 'draft')
-                    <span class="badge text-bg-secondary rounded-0">
-                        Draft
-                    </span>
-                @elseif ($submission->status === 'submitted')
-                    <span class="badge text-bg-primary rounded-0">
-                        Submitted
-                    </span>
-                @elseif ($submission->status === 'under_review')
-                    <span class="badge text-bg-warning rounded-0">
-                        Under Review
-                    </span>
-                @elseif ($submission->status === 'revision')
-                    <span class="badge text-bg-warning rounded-0">
-                        Revision
-                    </span>
-                @elseif ($submission->status === 'accepted')
-                    <span class="badge text-bg-success rounded-0">
-                        Accepted
-                    </span>
-                @elseif ($submission->status === 'rejected')
-                    <span class="badge text-bg-danger rounded-0">
-                        Rejected
-                    </span>
-                @elseif ($submission->status === 'camera_ready')
-                    <span class="badge text-bg-info rounded-0">
-                        Camera Ready
-                    </span>
-                @else
-                    <span class="badge text-bg-dark rounded-0">
-                        Published
-                    </span>
-                @endif
-            </div>
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="mb-4">
-                        <h4 class="fw-bold">{{ $submission->title }}</h4>
+                <div class="col-md-4 mb-2">
+                    <div class="border rounded-0 bg-light p-4 text-center h-100">
+                        <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-2"
+                            style="width:100px; height:100px;">
+                            <i class="bi bi-person-check display-4 text-primary"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">
+                            {{ $reviewer->user->name }}
+                        </h4>
+                        <p class="text-muted mb-2">
+                            {{ $reviewer->user->email }}
+                        </p>
+                        @if ($reviewer->is_active)
+                            <span class="badge text-bg-success rounded-0">
+                                Active
+                            </span>
+                        @else
+                            <span class="badge text-bg-secondary rounded-0">
+                                Inactive
+                            </span>
+                        @endif
                     </div>
+                </div>
+                <div class="col-md-8 mb-2">
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <strong>
@@ -83,22 +68,13 @@
                             </strong>
                         </div>
                         <div class="col-md-8">
-                            {{ $submission->conference?->name ?? '—' }}
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-md-4">
-                            <strong>
-                                Participant
-                            </strong>
-                        </div>
-                        <div class="col-md-8">
-                            @if ($submission->participant)
+                            @if ($reviewer->conference)
                                 <strong>
-                                    {{ $submission->participant->full_name }}
+                                    {{ $reviewer->conference->name }}
                                 </strong>
                                 <small class="text-muted d-block">
-                                    {{ $submission->participant->registration_number }}
+                                    {{ $reviewer->conference->short_name }}
+                                    ({{ $reviewer->conference->year }})
                                 </small>
                             @else
                                 —
@@ -108,106 +84,89 @@
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <strong>
-                                Topic
+                                Institution
                             </strong>
                         </div>
                         <div class="col-md-8">
-                            {{ $submission->topic?->name ?? '—' }}
+                            {{ $reviewer->institution ?: '—' }}
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <strong>
-                                Submitted At
+                                Expertise
                             </strong>
                         </div>
                         <div class="col-md-8">
-                            {{ $submission->submitted_at?->format('d F Y H:i') ?? '—' }}
+                            {{ $reviewer->expertise ?: '—' }}
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="border rounded-0 bg-light p-3">
-                        <h6 class="fw-bold">
-                            Paper File
-                        </h6>
-                        <p class="text-muted small">
-                            Current manuscript file.
-                        </p>
-                        @if ($submission->paper_file)
-                            <a href="{{ asset('storage/' . $submission->paper_file) }}" target="_blank"
-                                class="btn btn-danger btn-sm rounded-0">
-                                <i class="bi bi-file-earmark-pdf me-1"></i>
-                                Open Paper
-                            </a>
-                        @else
-                            <span class="text-muted">
-                                No file available.
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <strong>
+                                Account Role
+                            </strong>
+                        </div>
+                        <div class="col-md-8">
+                            <span class="badge text-bg-primary rounded-0">
+                                Reviewer
                             </span>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="card-body border-top">
-            <h5 class="fw-bold mb-2">Abstract</h5>
-            <div>{!! nl2br(e($submission->abstract)) !!}</div>
+            <h5 class="fw-bold mb-2">Biography</h5>
+            @if ($reviewer->bio)
+                <div>{!! nl2br(e($reviewer->bio)) !!}</div>
+            @else
+                <p class="text-muted mt-3 mb-0">
+                    No biography available.
+                </p>
+            @endif
         </div>
         <div class="card-body border-top">
-            <h5 class="fw-bold mb-2">Keywords</h5>
-            <p>{{ $submission->keywords }}</p>
-        </div>
-        <div class="card-body border-top">
-            <h5 class="fw-bold mb-2">Authors</h5>
+            <h5 class="fw-bold mb-2">Review History</h5>
             <div class="table-responsive">
-                <table class="table table-bordered align-middle">
+                <table class="table table-hover table-bordered align-middle">
                     <thead>
                         <tr>
-                            <th width="40">No</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Institution</th>
-                            <th>Role</th>
+                            <th>Submission</th>
+                            <th>Score</th>
+                            <th>Recommendation</th>
+                            <th>Reviewed At</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($submission->authors as $author)
+                        @forelse ($reviewer->reviews as $review)
                             <tr>
-                                <td class="align-top">
-                                    {{ $loop->iteration }}
-                                </td>
-                                <td class="align-top">
-                                    <strong>
-                                        {{ $author->name }}
-                                    </strong>
-                                </td>
-                                <td class="align-top">
-                                    {{ $author->email ?: '—' }}
-                                </td>
-                                <td class="align-top">
-                                    {{ $author->institution ?: '—' }}
-                                    @if ($author->department)
+                                <td>
+                                    @if ($review->submission)
+                                        <strong>
+                                            {{ $review->submission->submission_code }}
+                                        </strong>
                                         <small class="text-muted d-block">
-                                            {{ $author->department }}
+                                            {{ $review->submission->title }}
                                         </small>
+                                    @else
+                                        —
                                     @endif
                                 </td>
-                                <td class="align-top">
-                                    @if ($author->is_corresponding)
-                                        <span class="badge text-bg-success rounded-0">
-                                            Corresponding Author
-                                        </span>
-                                    @else
-                                        <span class="badge text-bg-secondary rounded-0">
-                                            Author
-                                        </span>
-                                    @endif
+                                <td>
+                                    {{ $review->score ?? '—' }}
+                                </td>
+                                <td>
+                                    {{ ucwords(str_replace('_', ' ', $review->recommendation)) }}
+                                </td>
+                                <td>
+                                    {{ $review->reviewed_at?->format('d M Y H:i') ?? '—' }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    No authors available.
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    No reviews have been completed yet.
                                 </td>
                             </tr>
                         @endforelse

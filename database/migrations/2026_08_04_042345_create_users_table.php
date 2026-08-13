@@ -13,15 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', [
-                'admin',
-                'participant',
-                'reviewer'
-            ])->default('participant');
-            $table->enum('status', [
-                'active',
-                'inactive'
-            ])->default('active');
+            $table->enum('role', ['admin', 'participant', 'reviewer'])->default('participant');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
     }

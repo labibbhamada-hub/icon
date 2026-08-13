@@ -34,6 +34,13 @@
             <h3 class="card-title">
                 Submission Information
             </h3>
+            <div class="float-end">
+                <a href="{{ route('admin.submissions.reviews.create', $submission) }}"
+                    class="btn btn-success btn-sm rounded-0">
+                    <i class="bi bi-person-plus"></i>
+                    Assign Reviewer
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="mb-2">
@@ -51,7 +58,7 @@
                     </span>
                 @elseif ($submission->status === 'revision')
                     <span class="badge text-bg-warning rounded-0">
-                        Revision
+                        Revision Required
                     </span>
                 @elseif ($submission->status === 'accepted')
                     <span class="badge text-bg-success rounded-0">
@@ -215,5 +222,114 @@
                 </table>
             </div>
         </div>
+        <div class="card-body border-top">
+            <h5 class="fw-bold mb-2">Reviewers</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Recommendation</th>
+                            <th width="80">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($submission->reviews as $review)
+                            <tr>
+                                <td class="align-top">
+                                    @if ($review->reviewer?->user)
+                                        <strong>
+                                            {{ $review->reviewer->user->name }}
+                                        </strong>
+                                        <small class="text-muted d-block">
+                                            {{ $review->reviewer->institution ?: $review->reviewer->user->email }}
+                                        </small>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                                <td class="align-top">
+                                    @if ($review->reviewed_at)
+                                        <span class="badge text-bg-success rounded-0">
+                                            Completed
+                                        </span>
+                                    @else
+                                        <span class="badge text-bg-warning rounded-0">
+                                            Pending
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="align-top">
+                                    {{ $review->score ?? '—' }}
+                                </td>
+                                <td class="align-top">
+                                    @if ($review->recommendation)
+                                        {{ ucwords(str_replace('_', ' ', $review->recommendation)) }}
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                                <td class="align-top">
+                                    <div class="btn-group gap-1">
+                                        @if ($review->reviewed_at)
+                                            <a href="{{ route('admin.reviews.show', $review) }}"
+                                                class="btn btn-info btn-sm rounded-0" title="View Review">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('admin.reviews.edit', $review) }}"
+                                                class="btn btn-primary btn-sm rounded-0" title="Review">
+                                                <i class="bi bi-clipboard-check"></i>
+                                            </a>
+                                            <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST"
+                                                class="d-inline delete-review-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-0"
+                                                    title="Remove Reviewer">
+                                                    <i class="bi bi-person-dash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    No reviewers assigned yet.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.delete-review-form').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Remove Reviewer?',
+                    text: 'This will remove the reviewer assignment from this submission.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, remove',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d'
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

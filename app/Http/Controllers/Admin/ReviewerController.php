@@ -65,10 +65,7 @@ class ReviewerController extends Controller
             'reviews.submission',
         ]);
 
-        return view(
-            'admin.reviewers.show',
-            compact('reviewer')
-        );
+        return view('admin.reviewers.show', compact('reviewer'));
     }
 
     public function edit(Reviewer $reviewer)
