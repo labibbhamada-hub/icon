@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Participant extends Model
 {
     protected $fillable = [
+        'user_id',
         'conference_id',
         'registration_number',
         'full_name',
@@ -27,6 +28,11 @@ class Participant extends Model
         'registered_at' => 'datetime',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function conference()
     {
         return $this->belongsTo(Conference::class);
@@ -35,5 +41,10 @@ class Participant extends Model
     public function submissions()
     {
         return $this->hasMany(Submission::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }

@@ -26,8 +26,21 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function participants()
+    {
+        return $this->hasMany(Participant::class);
+    }
+
     public function reviewers()
     {
         return $this->hasMany(Reviewer::class);
+    }
+
+    public function verifiedPayments()
+    {
+        return $this->hasMany(
+            Payment::class,
+            'verified_by'
+        );
     }
 }

@@ -45,10 +45,12 @@ class AuthController extends Controller
             case 'reviewer':
                 return redirect()->route('reviewer.dashboard');
             case 'participant':
-                return redirect('/participant/dashboard');
+                return redirect()->route('participant.dashboard');
             default:
                 Auth::logout();
-                abort(403);
+                return back()->withErrors([
+                    'email' => 'Your account does not have a valid portal.',
+                ]);
         }
     }
 

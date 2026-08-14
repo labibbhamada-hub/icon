@@ -119,7 +119,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-credit-card"></i>
                         <p>Payments</p>
                     </a>
