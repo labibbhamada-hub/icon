@@ -119,7 +119,7 @@
                                         </span>
                                     @elseif ($submission->status === 'camera_ready')
                                         <span class="badge text-bg-info rounded-0">
-                                            Camera Ready
+                                            Awaiting Camera Ready Approval
                                         </span>
                                     @else
                                         <span class="badge text-bg-dark rounded-0">

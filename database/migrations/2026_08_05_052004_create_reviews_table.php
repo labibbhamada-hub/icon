@@ -12,12 +12,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('submission_id')->constrained()->cascadeOnDelete();
             $table->foreignId('reviewer_id')->constrained()->cascadeOnDelete();
+            $table->unsignedInteger('review_round')->default(1)->after('reviewer_id');
             $table->decimal('score', 5, 2)->nullable();
             $table->text('comment')->nullable();
             $table->enum('recommendation', ['accept', 'minor_revision', 'major_revision', 'reject'])->nullable();
             $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
-            $table->unique(['submission_id', 'reviewer_id',]);
+            $table->unique(['submission_id', 'reviewer_id', 'review_round']);
+            $table->index(['submission_id', 'review_round']);
         });
     }
 

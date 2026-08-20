@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubmissionRequest;
+use App\Mail\SubmissionStatusMail;
 use App\Models\Conference;
 use App\Models\Participant;
 use App\Models\Submission;
 use App\Models\SubmissionAuthor;
 use App\Models\Topic;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -233,6 +235,78 @@ class SubmissionController extends Controller
             ->with(
                 'success',
                 'Submission deleted successfully.'
+            );
+    }
+
+    public function approveCameraReady(Submission $submission)
+    {
+        if ($submission->status !== 'camera_ready') {
+            return back()
+                ->with(
+                    'error',
+                    'This submission is not currently awaiting camera-ready approval.'
+                );
+        }
+
+        if (!$submission->camera_ready_file) {
+            return back()
+                ->with(
+                    'error',
+                    'Camera-ready file is not available.'
+                );
+        }
+
+        $submission->update([
+            'status' => 'published',
+        ]);
+
+        $submission->load('participant');
+
+        if ($submission->participant?->email) {
+
+            Mail::to(
+                $submission->participant->email
+            )->send(
+                new SubmissionStatusMail(
+                    $submission,
+                    'Your camera-ready paper has been approved and published successfully.'
+                )
+            );
+        }
+
+        return redirect()
+            ->route(
+                'admin.submissions.show',
+                $submission
+            )
+            ->with(
+                'success',
+                'Camera-ready paper approved and marked as published.'
+            );
+    }
+
+    public function requestCameraReadyCorrection(Submission $submission)
+    {
+        if ($submission->status !== 'camera_ready') {
+            return back()
+                ->with(
+                    'error',
+                    'This submission is not currently awaiting camera-ready approval.'
+                );
+        }
+
+        $submission->update([
+            'status' => 'accepted',
+        ]);
+
+        return redirect()
+            ->route(
+                'admin.submissions.show',
+                $submission
+            )
+            ->with(
+                'success',
+                'Camera-ready correction requested from participant.'
             );
     }
 

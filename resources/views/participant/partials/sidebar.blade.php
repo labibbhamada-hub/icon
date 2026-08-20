@@ -45,6 +45,13 @@
                         <p>My Submissions</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('participant.certificates.index') }}"
+                        class="nav-link {{ request()->routeIs('participant.certificates.*') ? 'active' : '' }} rounded-0">
+                        <i class="nav-icon bi bi-award"></i>
+                        <p>Certificates</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

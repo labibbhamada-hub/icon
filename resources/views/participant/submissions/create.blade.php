@@ -164,7 +164,7 @@
                         <span class="text-danger">*</span>
                     </label>
                     <input type="file" name="paper_file" accept="application/pdf"
-                        class="form-control @error('paper_file') is-invalid @enderror">
+                        class="form-control @error('paper_file') is-invalid @enderror rounded-0">
                     <div class="form-text">
                         PDF only. Maximum 10 MB.
                     </div>
@@ -176,14 +176,14 @@
                 </div>
             </div>
         </div>
-        <div class="card rounded-0 mt-3">
+        <div class="card rounded-0 mb-3">
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="bi bi-people me-2"></i>
                     Authors
                 </h3>
-                <div class="card-tools">
-                    <button type="button" id="add-author" class="btn btn-success btn-sm">
+                <div class="float-end">
+                    <button type="button" id="add-author" class="btn btn-success btn-sm rounded-0">
                         <i class="bi bi-plus-circle me-1"></i>
                         Add Author
                     </button>
@@ -191,43 +191,45 @@
             </div>
             <div class="card-body">
                 <div id="authors-container">
-                    <div class="author-item border rounded-0 p-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="author-item border rounded-0 p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong>
                                 Author 1
                             </strong>
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Name
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="authors[0][name]"
-                                    value="{{ old('authors.0.name', auth()->user()->name) }}" class="form-control">
+                                    value="{{ old('authors.0.name', auth()->user()->name) }}"
+                                    class="form-control rounded-0">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Email
                                 </label>
                                 <input type="email" name="authors[0][email]"
-                                    value="{{ old('authors.0.email', auth()->user()->email) }}" class="form-control">
+                                    value="{{ old('authors.0.email', auth()->user()->email) }}"
+                                    class="form-control rounded-0">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Institution
                                 </label>
                                 <input type="text" name="authors[0][institution]"
-                                    value="{{ old('authors.0.institution') }}" class="form-control">
+                                    value="{{ old('authors.0.institution') }}" class="form-control rounded-0">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Department
                                 </label>
                                 <input type="text" name="authors[0][department]"
-                                    value="{{ old('authors.0.department') }}" class="form-control">
+                                    value="{{ old('authors.0.department') }}" class="form-control rounded-0">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 mb-2">
                                 <input type="hidden" name="authors[0][is_corresponding]" value="0">
                                 <div class="form-check form-switch mt-2">
                                     <input type="checkbox" name="authors[0][is_corresponding]" value="1"
@@ -237,28 +239,23 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-2 mb-2">
                                 <label class="form-label">
                                     Order
                                 </label>
                                 <input type="number" name="authors[0][sort_order]" value="1" min="1"
-                                    class="form-control">
+                                    class="form-control rounded-0">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card rounded-0 mt-3">
-            <div class="card-body text-end">
-                <a href="{{ route('participant.submissions.index') }}" class="btn btn-secondary">
-                    Cancel
-                </a>
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-send me-1"></i>
-                    Submit Paper
-                </button>
-            </div>
+        <div class="text-end mb-2">
+            <button type="submit" class="btn btn-success rounded-0">
+                <i class="bi bi-send me-1"></i>
+                Submit Paper
+            </button>
         </div>
     </form>
 @endsection
@@ -267,196 +264,124 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
-            const container =
-                document.getElementById('authors-container');
-
-            const addButton =
-                document.getElementById('add-author');
-
+            const container = document.getElementById('authors-container');
+            const addButton = document.getElementById('add-author');
             let authorIndex = 1;
 
-
             addButton.addEventListener('click', function() {
-
-                const wrapper =
-                    document.createElement('div');
-
-                wrapper.className =
-                    'author-item border rounded-0 p-3 mb-3';
-
-
+                const wrapper = document.createElement('div');
+                wrapper.className = 'author-item border rounded-0 p-3 mb-2';
                 wrapper.innerHTML = `
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-
+                <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong>
                         Author ${authorIndex + 1}
                     </strong>
-
                     <button
                         type="button"
-                        class="btn btn-outline-danger btn-sm remove-author">
-
+                        class="btn btn-outline-danger btn-sm rounded-0 remove-author">
                         <i class="bi bi-trash"></i>
-
                         Remove
-
                     </button>
-
                 </div>
-
-
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-
+                <div class="row">
+                    <div class="col-md-6 mb-2">
                         <label class="form-label">
-
                             Name
                             <span class="text-danger">*</span>
-
                         </label>
-
                         <input
                             type="text"
                             name="authors[${authorIndex}][name]"
-                            class="form-control"
+                            class="form-control rounded-0"
                             placeholder="Author name">
-
                     </div>
-
-
-                    <div class="col-md-6">
-
+                    <div class="col-md-6 mb-2">
                         <label class="form-label">
                             Email
                         </label>
-
                         <input
                             type="email"
                             name="authors[${authorIndex}][email]"
-                            class="form-control"
+                            class="form-control rounded-0"
                             placeholder="author@example.com">
-
                     </div>
-
-
-                    <div class="col-md-6">
-
+                    <div class="col-md-6 mb-2">
                         <label class="form-label">
                             Institution
                         </label>
-
                         <input
                             type="text"
                             name="authors[${authorIndex}][institution]"
-                            class="form-control">
-
+                            class="form-control rounded-0">
                     </div>
-
-
-                    <div class="col-md-6">
-
+                    <div class="col-md-6 mb-2">
                         <label class="form-label">
                             Department
                         </label>
-
                         <input
                             type="text"
                             name="authors[${authorIndex}][department]"
-                            class="form-control">
-
+                            class="form-control rounded-0">
                     </div>
-
-
-                    <div class="col-md-4">
-
+                    <div class="col-md-4 mb-2">
                         <input
                             type="hidden"
                             name="authors[${authorIndex}][is_corresponding]"
                             value="0">
-
-                        <div class="form-check form-switch mt-2">
-
+                        <div class="form-check form-switch mb-2">
                             <input
                                 type="checkbox"
                                 name="authors[${authorIndex}][is_corresponding]"
                                 value="1"
                                 class="form-check-input">
-
                             <label class="form-check-label">
-
                                 Corresponding Author
-
                             </label>
-
                         </div>
-
                     </div>
-
-
-                    <div class="col-md-2">
-
+                    <div class="col-md-2 mb-2">
                         <label class="form-label">
                             Order
                         </label>
-
                         <input
                             type="number"
                             name="authors[${authorIndex}][sort_order]"
                             value="${authorIndex + 1}"
                             min="1"
-                            class="form-control">
-
+                            class="form-control rounded-0">
                     </div>
-
                 </div>
             `;
 
-
                 container.appendChild(wrapper);
-
                 authorIndex++;
-
             });
-
 
             container.addEventListener(
                 'click',
                 function(event) {
-
                     const button =
                         event.target.closest('.remove-author');
-
                     if (!button) {
                         return;
                     }
-
                     button.closest('.author-item').remove();
-
                     refreshLabels();
-
                 }
             );
-
 
             function refreshLabels() {
                 container
                     .querySelectorAll('.author-item')
                     .forEach(function(item, index) {
-
                         const title =
                             item.querySelector('strong');
-
                         if (title) {
                             title.textContent =
                                 `Author ${index + 1}`;
                         }
-
                     });
             }
-
         });
     </script>
 @endpush

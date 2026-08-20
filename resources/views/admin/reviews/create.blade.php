@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mb-2">
                     <div class="col-md-8 mb-2">
                         <label class="form-label">
                             Reviewer
@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 @if ($reviewers->isEmpty())
-                    <div class="alert alert-warning mt-4 mb-0">
+                    <div class="alert alert-warning rounded-0">
                         <i class="bi bi-exclamation-triangle me-2"></i>
                         No active reviewers are available for this
                         conference.

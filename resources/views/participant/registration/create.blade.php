@@ -54,15 +54,17 @@
                                 Conference
                                 <span class="text-danger">*</span>
                             </label>
-                            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror">
+                            <select name="conference_id" id="conference_id"
+                                class="form-select @error('conference_id') is-invalid @enderror">
                                 <option value="">
                                     Select Conference
                                 </option>
                                 @foreach ($conferences as $conference)
-                                    <option value="{{ $conference->id }}" @selected(old('conference_id') == $conference->id)>
-                                        {{ $conference->name }}
-                                        —
-                                        {{ $conference->year }}
+                                    <option value="{{ $conference->id }}"
+                                        data-regular-fee="{{ $conference->configuration?->regular_fee ?? 0 }}"
+                                        data-student-fee="{{ $conference->configuration?->student_fee ?? 0 }}"
+                                        @selected(old('conference_id') == $conference->id)>
+                                        {{ $conference->name }} — {{ $conference->year }}
                                     </option>
                                 @endforeach
                             </select>
@@ -71,6 +73,29 @@
                                     {{ $message }}
                                 </div>
                             @enderror
+                            <div id="registration-fee-card" class="alert alert-info rounded-0" style="display: none;">
+                                <div class="fw-semibold mb-2">
+                                    Registration Fee
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <small class="text-muted d-block">
+                                            Regular
+                                        </small>
+                                        <strong id="regular-fee">
+                                            Rp 0
+                                        </strong>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted d-block">
+                                            Student
+                                        </small>
+                                        <strong id="student-fee">
+                                            Rp 0
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
@@ -192,3 +217,52 @@
         </form>
     @endif
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const conferenceSelect =
+                document.getElementById('conference_id');
+            const feeCard =
+                document.getElementById('registration-fee-card');
+            const regularFee =
+                document.getElementById('regular-fee');
+            const studentFee =
+                document.getElementById('student-fee');
+
+            function formatRupiah(value) {
+                return 'Rp ' +
+                    new Intl.NumberFormat(
+                        'id-ID'
+                    ).format(
+                        Number(value || 0)
+                    );
+            }
+
+            function updateFee() {
+                const option =
+                    conferenceSelect.options[
+                        conferenceSelect.selectedIndex
+                    ];
+                if (!option || !option.value) {
+                    feeCard.style.display = 'none';
+                    return;
+                }
+                regularFee.textContent =
+                    formatRupiah(
+                        option.dataset.regularFee
+                    );
+                studentFee.textContent =
+                    formatRupiah(
+                        option.dataset.studentFee
+                    );
+                feeCard.style.display = '';
+            }
+            conferenceSelect.addEventListener(
+                'change',
+                updateFee
+            );
+            updateFee();
+        });
+    </script>
+@endpush

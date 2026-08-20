@@ -7,6 +7,8 @@ use App\Http\Requests\ReviewRequest;
 use App\Models\Reviewer;
 use App\Models\Review;
 use App\Models\Submission;
+use App\Mail\SubmissionStatusMail;
+use Illuminate\Support\Facades\Mail;
 
 class ReviewController extends Controller
 {
@@ -31,33 +33,89 @@ class ReviewController extends Controller
             'authors',
         ]);
 
+        $currentRound = Review::where(
+            'submission_id',
+            $submission->id
+        )
+            ->max('review_round');
+
+        $currentRound = $currentRound ?: 1;
+
         $assignedReviewerIds = Review::where(
             'submission_id',
             $submission->id
         )
+            ->where(
+                'review_round',
+                $currentRound
+            )
             ->pluck('reviewer_id');
 
         $reviewers = Reviewer::with('user')
-            ->where('conference_id', $submission->conference_id)
+            ->where(
+                'conference_id',
+                $submission->conference_id
+            )
             ->where('is_active', true)
-            ->whereNotIn('id', $assignedReviewerIds)
+            ->whereNotIn(
+                'id',
+                $assignedReviewerIds
+            )
             ->orderBy('id')
             ->get();
 
-        return view('admin.reviews.create', compact('submission', 'reviewers'));
+        return view('admin.reviews.create', compact('submission', 'reviewers', 'currentRound'));
     }
 
     public function storeForSubmission(
         ReviewRequest $request,
         Submission $submission
     ) {
+        $submission->load([
+            'conference.settings',
+        ]);
+
+        if (
+            !$submission->conference?->settings?->review_enabled
+            || $submission->conference?->settings?->maintenance_mode
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'Review workflow is currently disabled for this conference.'
+                );
+        }
+
+        $currentRound = Review::where(
+            'submission_id',
+            $submission->id
+        )
+            ->max('review_round');
+
+        $currentRound =
+            $currentRound ?: 1;
+
         Review::create([
-            'submission_id' => $submission->id,
-            'reviewer_id' => $request->validated('reviewer_id'),
-            'score' => null,
-            'comment' => null,
-            'recommendation' => null,
-            'reviewed_at' => null,
+            'submission_id' =>
+            $submission->id,
+
+            'reviewer_id' =>
+            $request->validated('reviewer_id'),
+
+            'review_round' =>
+            $currentRound,
+
+            'score' =>
+            null,
+
+            'comment' =>
+            null,
+
+            'recommendation' =>
+            null,
+
+            'reviewed_at' =>
+            null,
         ]);
 
         return redirect()
@@ -111,12 +169,39 @@ class ReviewController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        $this->updateSubmissionStatus(
-            $review->submission()->first()
-        );
+        $submission = $review->submission()->first();
+
+        $oldStatus = $submission->status;
+
+        $this->updateSubmissionStatus($submission);
+
+        $submission->refresh();
+
+        if ($oldStatus !== $submission->status) {
+            $message = match ($submission->status) {
+                'revision' => 'Your submission requires revision based on the reviewer evaluation.',
+                'accepted' => 'Congratulations! Your submission has been accepted.',
+                'rejected' => 'Your submission has been rejected based on the review result.',
+                default => 'Your submission status has been updated.',
+            };
+            $submission->load('participant');
+            if ($submission->participant?->email) {
+                Mail::to(
+                    $submission->participant->email
+                )->send(
+                    new SubmissionStatusMail(
+                        $submission,
+                        $message
+                    )
+                );
+            }
+        }
 
         return redirect()
-            ->route('admin.reviews.show', $review)
+            ->route(
+                'admin.reviews.show',
+                $review
+            )
             ->with(
                 'success',
                 'Review submitted successfully.'
@@ -133,21 +218,32 @@ class ReviewController extends Controller
             return;
         }
 
-        $hasPendingReview = $reviews->contains(function ($review) {
-            return is_null($review->reviewed_at);
-        });
+        $currentRound = $reviews
+            ->max('review_round');
+
+        $currentReviews = $reviews->where(
+            'review_round',
+            $currentRound
+        );
+
+        $hasPendingReview = $currentReviews->contains(
+            function ($review) {
+                return is_null($review->reviewed_at);
+            }
+        );
 
         if ($hasPendingReview) {
             $submission->update([
                 'status' => 'under_review',
             ]);
-
             return;
         }
 
-        if ($reviews->contains(function ($review) {
-            return $review->recommendation === 'reject';
-        })) {
+        if ($currentReviews->contains(
+            function ($review) {
+                return $review->recommendation === 'reject';
+            }
+        )) {
             $submission->update([
                 'status' => 'rejected',
             ]);
@@ -155,16 +251,18 @@ class ReviewController extends Controller
             return;
         }
 
-        if ($reviews->contains(function ($review) {
-            return in_array(
-                $review->recommendation,
-                [
-                    'minor_revision',
-                    'major_revision',
-                ],
-                true
-            );
-        })) {
+        if ($currentReviews->contains(
+            function ($review) {
+                return in_array(
+                    $review->recommendation,
+                    [
+                        'minor_revision',
+                        'major_revision',
+                    ],
+                    true
+                );
+            }
+        )) {
             $submission->update([
                 'status' => 'revision',
             ]);
@@ -172,11 +270,14 @@ class ReviewController extends Controller
             return;
         }
 
-        $allAccepted = $reviews->every(function ($review) {
-            return $review->recommendation === 'accept';
-        });
-
-        if ($allAccepted) {
+        if (
+            $currentReviews->isNotEmpty()
+            && $currentReviews->every(
+                function ($review) {
+                    return $review->recommendation === 'accept';
+                }
+            )
+        ) {
             $submission->update([
                 'status' => 'accepted',
             ]);

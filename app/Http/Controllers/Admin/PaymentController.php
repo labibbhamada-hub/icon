@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Mail\PaymentVerifiedMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -36,21 +38,34 @@ class PaymentController extends Controller
     {
         if ($payment->status === 'verified') {
             return back()
-                ->with('error', 'This payment has already been verified.');
+                ->with(
+                    'error',
+                    'This payment has already been verified.'
+                );
         }
 
         DB::transaction(function () use ($payment) {
-
             $payment->update([
                 'status' => 'verified',
                 'verified_at' => now(),
                 'verified_by' => auth()->id(),
             ]);
-
             $payment->participant->update([
                 'registration_status' => 'confirmed',
             ]);
         });
+
+        $payment->load([
+            'participant.conference',
+            'participant.user',
+        ]);
+
+        if ($payment->participant->email) {
+            Mail::to($payment->participant->email)
+                ->send(
+                    new PaymentVerifiedMail($payment)
+                );
+        }
 
         return redirect()
             ->route('admin.payments.show', $payment)

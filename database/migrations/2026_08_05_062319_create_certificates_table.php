@@ -10,12 +10,29 @@ return new class extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('registration_id')->constrained()->onDelete('cascade');
-            $table->string('certificate_number');
-            $table->string('certificate_type');
-            $table->string('certificate_file');
-            $table->string('issued_at');
+            $table->foreignId('participant_id')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('conference_id')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('submission_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+            $table->string('certificate_number')
+                ->unique();
+            $table->enum('type', [
+                'participant',
+                'presenter',
+                'speaker',
+                'committee',
+                'reviewer',
+            ])->default('participant');
+            $table->string('file_path')->nullable();
+            $table->timestamp('issued_at')->nullable();
             $table->timestamps();
+            $table->unique(['participant_id', 'conference_id', 'type']);
         });
     }
 

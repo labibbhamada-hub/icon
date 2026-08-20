@@ -205,7 +205,10 @@
                                         <strong>{{ $participant->submissions->count() }}</strong>
                                     </div>
                                 </div>
-                                @if ($participant->registration_status === 'confirmed' && $participant->conference?->status === 'submission_open')
+                                @if (
+                                    $participant->registration_status === 'confirmed' &&
+                                        $participant->conference?->settings?->submission_enabled &&
+                                        !$participant->conference?->settings?->maintenance_mode)
                                     <a href="{{ route('participant.submissions.create') }}"
                                         class="btn btn-outline-success btn-sm rounded-0">
                                         <i class="bi bi-file-earmark-plus me-1"></i>

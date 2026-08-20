@@ -61,39 +61,71 @@ class ReviewController extends Controller
     {
         $reviewer = Auth::user()
             ->reviewers()
-            ->where('is_active', true)
+            ->where(
+                'is_active',
+                true
+            )
             ->latest()
             ->first();
 
         if (!$reviewer) {
-            abort(403, 'Reviewer account is not active.');
+            abort(
+                403,
+                'Reviewer account is not active.'
+            );
         }
 
-        if ($review->reviewer_id !== $reviewer->id) {
+        if (
+            $review->reviewer_id !==
+            $reviewer->id
+        ) {
             abort(403);
+        }
+
+        $review->load([
+            'submission.conference.settings',
+            'submission.topic',
+            'submission.authors',
+            'reviewer.user',
+        ]);
+
+        if (
+            !$review->submission?->conference?->settings?->review_enabled
+            || $review->submission?->conference?->settings?->maintenance_mode
+        ) {
+            return redirect()
+                ->route(
+                    'reviewer.reviews.show',
+                    $review
+                )
+                ->with(
+                    'error',
+                    'Review workflow is currently disabled.'
+                );
         }
 
         if ($review->reviewed_at) {
             return redirect()
-                ->route('reviewer.reviews.show', $review)
+                ->route(
+                    'reviewer.reviews.show',
+                    $review
+                )
                 ->with(
                     'error',
                     'This review has already been submitted.'
                 );
         }
 
-        $review->load([
-            'submission.conference',
-            'submission.topic',
-            'submission.authors',
-            'reviewer.user',
-        ]);
-
-        return view('reviewer.reviews.edit', compact('review'));
+        return view(
+            'reviewer.reviews.edit',
+            compact('review')
+        );
     }
 
-    public function update(\App\Http\Requests\Reviewer\ReviewRequest $request, Review $review)
-    {
+    public function update(
+        \App\Http\Requests\Reviewer\ReviewRequest $request,
+        Review $review
+    ) {
         $reviewer = Auth::user()
             ->reviewers()
             ->where('is_active', true)
@@ -108,9 +140,31 @@ class ReviewController extends Controller
             abort(403);
         }
 
+        $review->load([
+            'submission.conference.settings',
+        ]);
+
+        if (
+            !$review->submission?->conference?->settings?->review_enabled
+            || $review->submission?->conference?->settings?->maintenance_mode
+        ) {
+            return redirect()
+                ->route(
+                    'reviewer.reviews.show',
+                    $review
+                )
+                ->with(
+                    'error',
+                    'Review workflow is currently disabled.'
+                );
+        }
+
         if ($review->reviewed_at) {
             return redirect()
-                ->route('reviewer.reviews.show', $review)
+                ->route(
+                    'reviewer.reviews.show',
+                    $review
+                )
                 ->with(
                     'error',
                     'This review has already been submitted.'
@@ -127,7 +181,10 @@ class ReviewController extends Controller
         ]);
 
         return redirect()
-            ->route('reviewer.reviews.show', $review)
+            ->route(
+                'reviewer.reviews.show',
+                $review
+            )
             ->with(
                 'success',
                 'Review submitted successfully.'

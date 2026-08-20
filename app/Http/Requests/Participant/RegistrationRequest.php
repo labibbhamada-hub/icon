@@ -17,19 +17,7 @@ class RegistrationRequest extends FormRequest
         return [
             'conference_id' => [
                 'required',
-                Rule::exists('conferences', 'id')
-                    ->where(function ($query) {
-                        $query->where(
-                            'status',
-                            'registration_open'
-                        );
-                    })
-                    ->whereNotIn(
-                        'id',
-                        auth()->user()
-                            ->participants()
-                            ->pluck('conference_id')
-                    ),
+                Rule::exists('conferences', 'id'),
             ],
 
             'phone' => [

@@ -34,6 +34,22 @@
             <h3 class="card-title">
                 {{ $conference->name }}
             </h3>
+            <div class="float-end">
+                <a href="{{ route('admin.conferences.settings.edit', $conference) }}"
+                    class="btn btn-secondary btn-sm rounded-0">
+                    <i class="bi bi-toggles me-1"></i>
+                    Settings
+                </a>
+                <a href="{{ route('admin.conferences.configuration.edit', $conference) }}"
+                    class="btn btn-primary btn-sm rounded-0">
+                    <i class="bi bi-sliders me-1"></i>
+                    Configuration
+                </a>
+                <a href="{{ route('admin.conferences.edit', $conference) }}" class="btn btn-warning btn-sm rounded-0">
+                    <i class="bi bi-pencil me-1"></i>
+                    Edit
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="row">
@@ -41,7 +57,7 @@
                     @if ($conference->logo)
                         <img src="{{ asset('storage/' . $conference->logo) }}" class="img-fluid rounded-0 border">
                     @else
-                        <div class="text-center p-5 border rounded">
+                        <div class="text-center p-5 border rounded-0">
                             <i class="bi bi-image display-4 text-secondary"></i>
                             <p class="mt-2">
                                 No Logo

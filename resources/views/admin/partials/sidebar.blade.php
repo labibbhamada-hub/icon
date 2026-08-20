@@ -154,7 +154,13 @@
                         </li>
                     </ul>
                 </li>
-                {{-- System --}}
+                <li class="nav-item">
+                    <a href="{{ route('admin.certificates.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.certificates.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-award"></i>
+                        <p>Certificates</p>
+                    </a>
+                </li>
                 <li class="nav-header">
                     SYSTEM
                 </li>
@@ -166,7 +172,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>

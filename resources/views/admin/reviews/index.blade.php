@@ -35,6 +35,7 @@
                             <th width="40">No</th>
                             <th>Submission</th>
                             <th>Reviewer</th>
+                            <th>Round</th>
                             <th>Score</th>
                             <th>Recommendation</th>
                             <th>Status</th>
@@ -44,10 +45,10 @@
                     <tbody>
                         @forelse ($reviews as $review)
                             <tr>
-                                <td>
+                                <td class="align-top">
                                     {{ $reviews->firstItem() + $loop->index }}
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($review->submission)
                                         <strong>
                                             {{ $review->submission->submission_code }}
@@ -59,7 +60,7 @@
                                         —
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($review->reviewer?->user)
                                         <strong>
                                             {{ $review->reviewer->user->name }}
@@ -71,10 +72,15 @@
                                         —
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
+                                    <span class="badge text-bg-secondary rounded-0">
+                                        Round {{ $review->review_round }}
+                                    </span>
+                                </td>
+                                <td class="align-top">
                                     {{ $review->score ?? '—' }}
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @php
                                         $recommendations = [
                                             'accept' => 'Accept',
@@ -87,7 +93,7 @@
                                         {{ $recommendations[$review->recommendation] ?? '—' }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     @if ($review->reviewed_at)
                                         <span class="badge text-bg-success rounded-0">
                                             Completed
@@ -98,7 +104,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="align-top">
                                     <a href="{{ route('admin.reviews.show', $review) }}"
                                         class="btn btn-info btn-sm rounded-0" title="View">
                                         <i class="bi bi-eye"></i>

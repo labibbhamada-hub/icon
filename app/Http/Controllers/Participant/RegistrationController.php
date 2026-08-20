@@ -29,13 +29,19 @@ class RegistrationController extends Controller
         $registeredConferenceIds = Participant::where(
             'user_id',
             Auth::id()
-        )
-            ->pluck('conference_id');
+        )->pluck('conference_id');
 
-        $conferences = Conference::where(
-            'status',
-            'registration_open'
-        )
+        $conferences = Conference::with([
+            'setting',
+            'configuration',
+        ])
+            ->whereHas('setting', function ($query) {
+                $query
+                    ->where('is_active', true)
+                    ->where('published', true)
+                    ->where('registration_enabled', true)
+                    ->where('maintenance_mode', false);
+            })
             ->whereNotIn(
                 'id',
                 $registeredConferenceIds
@@ -53,9 +59,48 @@ class RegistrationController extends Controller
     {
         $data = $request->validated();
 
-        $conference = Conference::findOrFail(
-            $data['conference_id']
-        );
+        $conference = Conference::with([
+            'setting',
+            'configuration',
+        ])
+            ->whereHas('setting', function ($query) {
+                $query
+                    ->where('is_active', true)
+                    ->where('published', true)
+                    ->where('registration_enabled', true)
+                    ->where('maintenance_mode', false);
+            })
+            ->findOrFail(
+                $data['conference_id']
+            );
+
+        if (!$conference->configuration) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Conference registration configuration has not been set.'
+                );
+        }
+
+        $participant = Participant::where(
+            'user_id',
+            Auth::id()
+        )
+            ->where(
+                'conference_id',
+                $conference->id
+            )
+            ->exists();
+
+        if ($participant) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'You are already registered for this conference.'
+                );
+        }
 
         $registrationNumber =
             $this->generateRegistrationNumber(
@@ -63,7 +108,8 @@ class RegistrationController extends Controller
             );
 
         Participant::create([
-            'user_id' => Auth::id(),
+            'user_id' =>
+            Auth::id(),
 
             'conference_id' =>
             $conference->id,

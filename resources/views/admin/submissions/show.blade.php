@@ -29,7 +29,7 @@
 @endsection
 
 @section('content')
-    <div class="card rounded-0">
+    <div class="card rounded-0 mb-3">
         <div class="card-header">
             <h3 class="card-title">
                 Submission Information
@@ -308,6 +308,138 @@
             </div>
         </div>
     </div>
+    <div class="card rounded-0 mb-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="bi bi-files me-2"></i>
+                Submission Files
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="border rounded-0 p-3 h-100">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Original Paper</small>
+                            <strong class="d-block">Manuscript</strong>
+                        </div>
+                        @if ($submission->paper_file)
+                            <a href="{{ asset('storage/' . $submission->paper_file) }}" target="_blank"
+                                class="btn btn-outline-danger btn-sm rounded-0">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>
+                                Open File
+                            </a>
+                        @else
+                            <span class="text-muted d-block">
+                                No file
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded-0 p-3 h-100">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Revised Paper</small>
+                            <strong class="d-block">Revision</strong>
+                        </div>
+                        @if ($submission->revised_file)
+                            <a href="{{ asset('storage/' . $submission->revised_file) }}" target="_blank"
+                                class="btn btn-outline-warning btn-sm rounded-0">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>
+                                Open File
+                            </a>
+                        @else
+                            <span class="text-muted d-block">
+                                No revised file
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded-0 p-3 h-100">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Camera Ready</small>
+                            <strong class="d-block">Final Paper</strong>
+                        </div>
+                        @if ($submission->camera_ready_file)
+                            <a href="{{ asset('storage/' . $submission->camera_ready_file) }}" target="_blank"
+                                class="btn btn-outline-success btn-sm rounded-0">
+                                <i class="bi bi-file-earmark-check me-1"></i>
+                                Open File
+                            </a>
+                        @else
+                            <span class="text-muted d-block">
+                                No camera-ready file
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if ($submission->status === 'camera_ready')
+        <div class="card rounded-0 mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="bi bi-file-earmark-check me-2"></i>
+                    Camera-Ready Approval
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info rounded-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    The participant has uploaded the final camera-ready paper.
+                    Please review the file before publishing the submission.
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="border rounded-0 p-4 h-100">
+                            <small class="text-muted d-block">
+                                Camera-Ready File
+                            </small>
+                            <strong class="d-block mt-1">
+                                Final Manuscript
+                            </strong>
+                            @if ($submission->camera_ready_file)
+                                <a href="{{ asset('storage/' . $submission->camera_ready_file) }}" target="_blank"
+                                    class="btn btn-outline-danger btn-sm mt-3">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>
+                                    Open Camera-Ready PDF
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded-0 p-4 h-100">
+                            <small class="text-muted d-block">
+                                Approval
+                            </small>
+                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                <form action="{{ route('admin.submissions.camera-ready.approve', $submission) }}"
+                                    method="POST" class="approve-camera-ready-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Approve & Publish
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.submissions.camera-ready.correction', $submission) }}"
+                                    method="POST" class="correction-camera-ready-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                        Request Correction
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @push('scripts')
@@ -331,5 +463,48 @@
                 });
             });
         });
+    </script>
+    <script>
+        document.querySelectorAll('.approve-camera-ready-form')
+            .forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: 'Approve Camera-Ready Paper?',
+                        text: 'The submission will be marked as Published.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, approve',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#198754',
+                        cancelButtonColor: '#6c757d'
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+        document.querySelectorAll('.correction-camera-ready-form')
+            .forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: 'Request Correction?',
+                        text: 'The participant will need to upload the camera-ready file again.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, request correction',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#f0ad4e',
+                        cancelButtonColor: '#6c757d'
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
     </script>
 @endpush

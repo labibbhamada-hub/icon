@@ -21,6 +21,11 @@ class Conference extends Model
         return $this->hasOne(ConferenceSetting::class);
     }
 
+    public function configuration()
+    {
+        return $this->hasOne(ConferenceConfiguration::class);
+    }
+
     public function topics()
     {
         return $this->hasMany(Topic::class);
@@ -54,5 +59,10 @@ class Conference extends Model
     public function reviewers()
     {
         return $this->hasMany(Reviewer::class);
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
     }
 }
