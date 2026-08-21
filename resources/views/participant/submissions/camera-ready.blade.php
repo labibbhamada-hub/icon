@@ -46,19 +46,19 @@
             </h3>
         </div>
         <div class="card-body">
-            <div class="alert alert-success rounded-0">
+            <div class="alert alert-success rounded-0 mb-2">
                 <i class="bi bi-check-circle me-2"></i>
                 Your paper has been accepted.
                 Please upload the final camera-ready version of your paper.
             </div>
             @if ($submission->camera_ready_file)
-                <div class="alert alert-warning rounded-0">
+                <div class="alert alert-warning rounded-0 mb-2">
                     <i class="bi bi-exclamation-triangle me-2"></i>
                     Your previous camera-ready file can be replaced by uploading
                     a new version.
                 </div>
             @endif
-            <div class="border rounded-0 p-3 mb-4 bg-light">
+            <div class="border rounded-0 p-3 mb-2 bg-light">
                 <small class="text-muted d-block">
                     Submission
                 </small>
@@ -70,22 +70,24 @@
                 </div>
             </div>
             @if ($submission->camera_ready_file)
-                <div class="alert alert-info rounded-0">
+                <div class="alert alert-info rounded-0 mb-2">
                     <i class="bi bi-info-circle me-2"></i>
                     A camera-ready file already exists.
                     Uploading a new file will replace it.
                 </div>
             @endif
-            <form action="{{ route('participant.submissions.camera-ready.upload', $submission) }}" method="POST"
-                enctype="multipart/form-data">
-                @csrf
+        </div>
+        <form action="{{ route('participant.submissions.camera-ready.upload', $submission) }}" method="POST"
+            enctype="multipart/form-data">
+            @csrf
+            <div class="card-body border-top">
                 <div class="mb-4">
                     <label class="form-label">
                         Camera-Ready File
                         <span class="text-danger">*</span>
                     </label>
                     <input type="file" name="camera_ready_file" accept="application/pdf"
-                        class="form-control @error('camera_ready_file') is-invalid @enderror">
+                        class="form-control @error('camera_ready_file') is-invalid @enderror rounded-0">
                     <div class="form-text">
                         PDF only. Maximum 10 MB.
                     </div>
@@ -95,16 +97,13 @@
                         </div>
                     @enderror
                 </div>
-                <div class="text-end">
-                    <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary">
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-upload me-1"></i>
-                        Upload Camera Ready
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-success rounded-0">
+                    <i class="bi bi-upload me-1"></i>
+                    Upload Camera Ready
+                </button>
+            </div>
+        </form>
     </div>
 @endsection

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index']);
 
+Route::get('/certificate/verify', [App\Http\Controllers\CertificateVerificationController::class, 'index'])->name('certificates.verify');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.store');

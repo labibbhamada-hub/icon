@@ -27,7 +27,7 @@
                 Reviewers List
             </h3>
             <div class="float-end">
-                <a href="{{ route('admin.submissions.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-person-plus"></i>
                     Add Reviewer
                 </a>

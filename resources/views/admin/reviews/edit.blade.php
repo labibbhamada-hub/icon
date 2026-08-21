@@ -5,7 +5,7 @@
 @section('header')
     <div class="row">
         <div class="col-sm-6 d-flex align-items-center gap-2">
-            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h1 class="mb-0 fs-3">
@@ -19,7 +19,7 @@
                         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ route('admin.submissions.index') }}">Reviews</a>
+                        <a href="{{ route('admin.reviews.index') }}">Reviews</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Review</li>
                 </ol>
@@ -39,7 +39,7 @@
                 </h3>
             </div>
             <div class="card-body">
-                <div class="border rounded-0 bg-light p-3 mb-4">
+                <div class="border rounded-0 bg-light p-3">
                     <div class="row">
                         <div class="col-md-8 mb-2">
                             <small class="text-muted">Submission</small>
@@ -52,6 +52,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="card-body border-top">
                 <div class="mb-2">
                     <label class="form-label">
                         Score

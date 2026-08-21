@@ -229,6 +229,7 @@
                     <thead>
                         <tr>
                             <th>Reviewer</th>
+                            <th>Round</th>
                             <th>Status</th>
                             <th>Score</th>
                             <th>Recommendation</th>
@@ -249,6 +250,11 @@
                                     @else
                                         —
                                     @endif
+                                </td>
+                                <td class="align-top">
+                                    <span class="badge text-bg-secondary rounded-0">
+                                        Round {{ $review->review_round }}
+                                    </span>
                                 </td>
                                 <td class="align-top">
                                     @if ($review->reviewed_at)
@@ -393,16 +399,18 @@
                 </div>
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-4 h-100">
-                            <small class="text-muted d-block">
-                                Camera-Ready File
-                            </small>
-                            <strong class="d-block mt-1">
-                                Final Manuscript
-                            </strong>
+                        <div class="border rounded-0 p-3 h-100">
+                            <div class="mb-2">
+                                <small class="text-muted d-block">
+                                    Camera-Ready File
+                                </small>
+                                <strong class="d-block">
+                                    Final Manuscript
+                                </strong>
+                            </div>
                             @if ($submission->camera_ready_file)
                                 <a href="{{ asset('storage/' . $submission->camera_ready_file) }}" target="_blank"
-                                    class="btn btn-outline-danger btn-sm mt-3">
+                                    class="btn btn-outline-danger btn-sm rounded-0">
                                     <i class="bi bi-file-earmark-pdf me-1"></i>
                                     Open Camera-Ready PDF
                                 </a>
@@ -410,16 +418,18 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-4 h-100">
-                            <small class="text-muted d-block">
-                                Approval
-                            </small>
-                            <div class="mt-3 d-flex flex-wrap gap-2">
+                        <div class="border rounded-0 p-3 h-100">
+                            <div class="mb-2">
+                                <small class="text-muted d-block">
+                                    Approval
+                                </small>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
                                 <form action="{{ route('admin.submissions.camera-ready.approve', $submission) }}"
                                     method="POST" class="approve-camera-ready-form">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success btn-sm rounded-0">
                                         <i class="bi bi-check-circle me-1"></i>
                                         Approve & Publish
                                     </button>
@@ -428,7 +438,7 @@
                                     method="POST" class="correction-camera-ready-form">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="btn btn-warning">
+                                    <button type="submit" class="btn btn-warning btn-sm rounded-0">
                                         <i class="bi bi-arrow-repeat me-1"></i>
                                         Request Correction
                                     </button>

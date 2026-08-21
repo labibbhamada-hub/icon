@@ -9,9 +9,11 @@ use Illuminate\Queue\SerializesModels;
 
 class SubmissionStatusMail extends Mailable
 {
+    use Queueable, SerializesModels;
+
     public function __construct(
         public Submission $submission,
-        public string $message
+        public string $statusMessage
     ) {}
 
     public function build()

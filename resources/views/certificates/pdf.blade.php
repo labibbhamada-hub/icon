@@ -131,121 +131,79 @@
 <body>
 
     <div class="certificate">
-
         <div class="inner">
-
             <div class="organization">
-
                 {{ $certificate->conference?->name }}
-
             </div>
-
             <div class="year">
-
                 {{ $certificate->conference?->year }}
-
             </div>
-
-
             <div class="title">
-
                 CERTIFICATE OF {{ strtoupper($certificate->type) }}
-
             </div>
-
-
             <div class="presented">
-
                 This certificate is proudly presented to
-
             </div>
-
-
             <div class="recipient">
-
                 {{ $certificate->participant?->full_name }}
-
             </div>
-
-
             <div class="description">
-
-                In recognition of participation and contribution
-                to the conference
-
+                @if ($certificate->type === 'reviewer')
+                    In recognition of valuable contribution as a reviewer
+                    in the conference.
+                @elseif ($certificate->type === 'presenter')
+                    In recognition of participation and contribution
+                    as a presenter in the conference.
+                @elseif ($certificate->type === 'speaker')
+                    In recognition of valuable contribution as a speaker
+                    in the conference.
+                @else
+                    In recognition of participation and contribution
+                    to the conference.
+                @endif
             </div>
-
-
             <div class="conference">
-
                 {{ $certificate->conference?->name }}
-
             </div>
-
-
-            @if ($certificate->submission)
+            @if ($certificate->submission && in_array($certificate->type, ['presenter'], true))
                 <div class="paper">
-
                     For the paper entitled:
-
                     <div class="paper-title">
-
                         "{{ $certificate->submission->title }}"
-
                     </div>
-
                 </div>
             @endif
-
-
             <div class="meta">
-
                 Certificate Number:
-
                 <strong>
                     {{ $certificate->certificate_number }}
                 </strong>
-
                 <br>
-
                 Issued:
-
                 {{ $certificate->issued_at?->format('d F Y') }}
-
+                <br>
+                Verify:
+                <strong>
+                    {{ url('/certificate/verify?certificate_number=' . urlencode($certificate->certificate_number)) }}
+                </strong>
             </div>
-
-
             <div class="signature">
-
                 <div class="signature-line"></div>
-
                 <div class="signature-name">
-
                     {{ $certificate->conference?->configuration?->chair_name ?? 'Conference Chair' }}
-
                 </div>
-
                 @if ($certificate->conference?->configuration?->chair_title)
                     <div class="signature-title">
-
                         {{ $certificate->conference->configuration->chair_title }}
-
                     </div>
                 @endif
-
                 <div class="signature-title">
-
                     {{ $certificate->conference?->short_name }}
                     {{ $certificate->conference?->year }}
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </body>
 
 </html>

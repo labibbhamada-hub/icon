@@ -223,7 +223,7 @@
                             Regular Registration Fee
                         </label>
                         <div class="input-group">
-                            <span class="input-group-text">
+                            <span class="input-group-text rounded-0">
                                 Rp
                             </span>
                             <input type="number" name="regular_fee" min="0" step="0.01"
@@ -241,7 +241,7 @@
                             Student Registration Fee
                         </label>
                         <div class="input-group">
-                            <span class="input-group-text">
+                            <span class="input-group-text rounded-0">
                                 Rp
                             </span>
                             <input type="number" name="student_fee" min="0" step="0.01"
@@ -302,17 +302,11 @@
                 </div>
             </div>
         </div>
-        <div class="card rounded-0 mb-3">
-            <div class="card-body text-end">
-                <a href="{{ route('admin.conferences.show', $conference) }}" class="btn btn-secondary">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Cancel
-                </a>
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Save Configuration
-                </button>
-            </div>
+        <div class="text-end mb-3">
+            <button type="submit" class="btn btn-success btn-sm rounded-0">
+                <i class="bi bi-check-circle me-1"></i>
+                Save Configuration
+            </button>
         </div>
     </form>
 @endsection

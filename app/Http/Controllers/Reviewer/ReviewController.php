@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Reviewer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
@@ -83,15 +84,15 @@ class ReviewController extends Controller
         }
 
         $review->load([
-            'submission.conference.settings',
+            'submission.conference.setting',
             'submission.topic',
             'submission.authors',
             'reviewer.user',
         ]);
 
         if (
-            !$review->submission?->conference?->settings?->review_enabled
-            || $review->submission?->conference?->settings?->maintenance_mode
+            !$review->submission?->conference?->setting?->review_enabled
+            || $review->submission?->conference?->setting?->maintenance_mode
         ) {
             return redirect()
                 ->route(
@@ -133,7 +134,10 @@ class ReviewController extends Controller
             ->first();
 
         if (!$reviewer) {
-            abort(403, 'Reviewer account is not active.');
+            abort(
+                403,
+                'Reviewer account is not active.'
+            );
         }
 
         if ($review->reviewer_id !== $reviewer->id) {
@@ -141,12 +145,12 @@ class ReviewController extends Controller
         }
 
         $review->load([
-            'submission.conference.settings',
+            'submission.conference.setting',
         ]);
 
         if (
-            !$review->submission?->conference?->settings?->review_enabled
-            || $review->submission?->conference?->settings?->maintenance_mode
+            !$review->submission?->conference?->setting?->review_enabled
+            || $review->submission?->conference?->setting?->maintenance_mode
         ) {
             return redirect()
                 ->route(
@@ -180,6 +184,12 @@ class ReviewController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        $submission = $review->submission;
+
+        $this->updateSubmissionStatus(
+            $submission
+        );
+
         return redirect()
             ->route(
                 'reviewer.reviews.show',
@@ -189,5 +199,99 @@ class ReviewController extends Controller
                 'success',
                 'Review submitted successfully.'
             );
+    }
+
+    private function updateSubmissionStatus(
+        Submission $submission
+    ): void {
+        $submission->load([
+            'reviews',
+        ]);
+
+        $reviews = $submission->reviews;
+
+        if ($reviews->isEmpty()) {
+            return;
+        }
+
+        // Ambil review round terbaru
+        $currentRound = $reviews
+            ->max('review_round');
+
+        $currentReviews = $reviews->where(
+            'review_round',
+            $currentRound
+        );
+
+        // Masih ada reviewer yang belum submit
+        $hasPendingReview = $currentReviews->contains(
+            function ($review) {
+                return is_null(
+                    $review->reviewed_at
+                );
+            }
+        );
+
+        if ($hasPendingReview) {
+
+            $submission->update([
+                'status' => 'under_review',
+            ]);
+
+            return;
+        }
+
+        // Ada reviewer yang menolak
+        $hasReject = $currentReviews->contains(
+            function ($review) {
+                return $review->recommendation === 'reject';
+            }
+        );
+
+        if ($hasReject) {
+
+            $submission->update([
+                'status' => 'rejected',
+            ]);
+
+            return;
+        }
+
+        // Ada reviewer meminta revisi
+        $hasRevision = $currentReviews->contains(
+            function ($review) {
+                return in_array(
+                    $review->recommendation,
+                    [
+                        'minor_revision',
+                        'major_revision',
+                    ],
+                    true
+                );
+            }
+        );
+
+        if ($hasRevision) {
+
+            $submission->update([
+                'status' => 'revision',
+            ]);
+
+            return;
+        }
+
+        // Semua reviewer menerima
+        $allAccepted = $currentReviews->every(
+            function ($review) {
+                return $review->recommendation === 'accept';
+            }
+        );
+
+        if ($allAccepted) {
+
+            $submission->update([
+                'status' => 'accepted',
+            ]);
+        }
     }
 }

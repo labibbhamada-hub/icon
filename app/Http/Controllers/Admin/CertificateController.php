@@ -32,7 +32,7 @@ class CertificateController extends Controller
     public function create()
     {
         $participants = Participant::with([
-            'conference.settings',
+            'conference.setting',
             'conference.configuration',
             'submissions',
         ])
@@ -41,7 +41,7 @@ class CertificateController extends Controller
                 'confirmed'
             )
             ->whereHas(
-                'conference.settings',
+                'conference.setting',
                 function ($query) {
                     $query
                         ->where(
@@ -81,7 +81,7 @@ class CertificateController extends Controller
         ]);
 
         $participant = Participant::with([
-            'conference.settings',
+            'conference.setting',
             'conference.configuration',
         ])
             ->findOrFail(
@@ -89,8 +89,8 @@ class CertificateController extends Controller
             );
 
         if (
-            !$participant->conference?->settings?->certificate_enabled
-            || $participant->conference?->settings?->maintenance_mode
+            !$participant->conference?->setting?->certificate_enabled
+            || $participant->conference?->setting?->maintenance_mode
         ) {
             return back()
                 ->with(

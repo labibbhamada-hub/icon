@@ -22,9 +22,9 @@
 @endsection
 
 @section('content')
-    <div class="row">
+    <div class="row mb-2">
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-primary rounded-0">
+            <div class="small-box text-bg-primary rounded-0 mb-2">
                 <div class="inner">
                     <h3>{{ $conferenceCount }}</h3>
                     <p>Conferences</p>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-success rounded-0">
+            <div class="small-box text-bg-success rounded-0 mb-2">
                 <div class="inner">
                     <h3>{{ $topicCount }}</h3>
                     <p>Topics</p>
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-warning rounded-0">
+            <div class="small-box text-bg-warning rounded-0 mb-2">
                 <div class="inner">
                     <h3>0</h3>
                     <p>Speakers</p>
@@ -66,31 +66,175 @@
             </div>
         </div>
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-info rounded-0">
+            <div class="small-box text-bg-info rounded-0 mb-2">
                 <div class="inner">
-                    <h3>0</h3>
+                    <h3>{{ $participantCount }}</h3>
                     <p>Participants</p>
                 </div>
                 <i class="small-box-icon bi bi-people"></i>
-                <a href="#"
+                <a href="{{ route('admin.participants.index') }}"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                    Coming Soon
+                    Manage Participants
                     <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
         </div>
     </div>
-    <div class="row">
-        {{-- Current Conference --}}
+    <div class="row mb-2">
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-success rounded-0 mb-2">
+                <div class="inner">
+                    <h3>
+                        {{ $confirmedParticipantCount }}
+                    </h3>
+                    <p>
+                        Confirmed Participants
+                    </p>
+                </div>
+                <i class="small-box-icon bi bi-person-check"></i>
+                <a href="{{ route('admin.participants.index') }}"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                    View Participants
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-warning rounded-0 mb-2">
+                <div class="inner">
+                    <h3>
+                        {{ $pendingPaymentCount }}
+                    </h3>
+                    <p>
+                        Pending Payments
+                    </p>
+                </div>
+                <i class="small-box-icon bi bi-credit-card"></i>
+                <a href="{{ route('admin.payments.index') }}"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                    Verify Payments
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-info rounded-0 mb-2">
+                <div class="inner">
+                    <h3>
+                        {{ $submissionCount }}
+                    </h3>
+                    <p>
+                        Submissions
+                    </p>
+                </div>
+                <i class="small-box-icon bi bi-file-earmark-text"></i>
+                <a href="{{ route('admin.submissions.index') }}"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                    View Submissions
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box text-bg-dark rounded-0 mb-2">
+                <div class="inner">
+                    <h3>
+                        {{ $publishedCount }}
+                    </h3>
+                    <p>
+                        Published Papers
+                    </p>
+                </div>
+                <i class="small-box-icon bi bi-journal-check"></i>
+                <a href="{{ route('admin.submissions.index') }}"
+                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                    View Submissions
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-lg-3 col-md-6">
+            <div class="card rounded-0 mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block">
+                                Under Review
+                            </small>
+                            <h3 class="mb-0">
+                                {{ $underReviewCount }}
+                            </h3>
+                        </div>
+                        <i class="bi bi-search fs-2 text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card rounded-0 mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block">
+                                Revision
+                            </small>
+                            <h3 class="mb-0">
+                                {{ $revisionCount }}
+                            </h3>
+                        </div>
+                        <i class="bi bi-arrow-repeat fs-2 text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card rounded-0 mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block">
+                                Accepted
+                            </small>
+                            <h3 class="mb-0">
+                                {{ $acceptedCount }}
+                            </h3>
+                        </div>
+                        <i class="bi bi-check-circle fs-2 text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card rounded-0 mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block">
+                                Certificates
+                            </small>
+                            <h3 class="mb-0">
+                                {{ $certificateCount }}
+                            </h3>
+                        </div>
+                        <i class="bi bi-award fs-2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-2">
         <div class="col-lg-8">
-            <div class="card rounded-0 mb-4">
+            <div class="card rounded-0 mb-2">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-calendar-event me-2"></i>
                         Current Conference
                     </h3>
                     <div class="float-end">
-                        <a href="{{ route('admin.conferences.index') }}" class="btn btn-sm btn-outline-primary rounded-0">
+                        <a href="{{ route('admin.conferences.index') }}"
+                            class="btn btn-sm btn-outline-primary rounded-0">
                             View All
                         </a>
                     </div>
@@ -199,8 +343,7 @@
                 </div>
             </div>
         </div>
-        {{-- Quick Actions --}}
-        <div class="col-lg-4">
+        <div class="col-lg-4 mb-2">
             <div class="card rounded-0 mb-4">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -231,8 +374,8 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-7">
+    <div class="row mb-2">
+        <div class="col-lg-7 mb-2">
             <div class="card rounded-0 mb-4">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -319,8 +462,7 @@
                 </div>
             </div>
         </div>
-        {{-- System Information --}}
-        <div class="col-lg-5">
+        <div class="col-lg-5 mb-2">
             <div class="card rounded-0 mb-4">
                 <div class="card-header">
                     <h3 class="card-title">

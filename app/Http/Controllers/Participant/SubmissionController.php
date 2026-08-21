@@ -46,7 +46,7 @@ class SubmissionController extends Controller
     public function create()
     {
         $participants = Participant::with([
-            'conference.settings',
+            'conference.setting',
             'conference.configuration',
         ])
             ->where(
@@ -57,7 +57,7 @@ class SubmissionController extends Controller
                 'registration_status',
                 'confirmed'
             )
-            ->whereHas('conference.settings', function ($query) {
+            ->whereHas('conference.setting', function ($query) {
                 $query
                     ->where('is_active', true)
                     ->where('submission_enabled', true)
@@ -105,7 +105,7 @@ class SubmissionController extends Controller
         $data = $request->validated();
 
         $participant = Participant::with([
-            'conference.settings',
+            'conference.setting',
             'conference.configuration',
         ])
             ->where(
@@ -123,8 +123,8 @@ class SubmissionController extends Controller
             ->firstOrFail();
 
         if (
-            !$participant->conference?->settings?->submission_enabled
-            || $participant->conference?->settings?->maintenance_mode
+            !$participant->conference?->setting?->submission_enabled
+            || $participant->conference?->setting?->maintenance_mode
         ) {
             return back()
                 ->withInput()
@@ -253,7 +253,7 @@ class SubmissionController extends Controller
         );
 
         $submission->load([
-            'conference.settings',
+            'conference.setting',
             'topic',
             'authors',
         ]);
@@ -273,11 +273,11 @@ class SubmissionController extends Controller
             );
 
         $submission->load([
-            'conference.settings',
+            'conference.setting',
         ]);
 
         if (
-            !$submission->conference?->settings?->review_enabled
+            !$submission->conference?->setting?->review_enabled
         ) {
             return redirect()
                 ->route(
@@ -322,11 +322,11 @@ class SubmissionController extends Controller
         );
 
         $submission->load([
-            'conference.settings',
+            'conference.setting',
         ]);
 
         if (
-            !$submission->conference?->settings?->review_enabled
+            !$submission->conference?->setting?->review_enabled
         ) {
             return redirect()
                 ->route(
@@ -448,12 +448,12 @@ class SubmissionController extends Controller
         $participant = $this->getOwnedSubmissionParticipant($submission);
 
         $submission->load([
-            'conference.settings',
+            'conference.setting',
         ]);
 
         if (
-            !$submission->conference?->settings?->submission_enabled
-            || $submission->conference?->settings?->maintenance_mode
+            !$submission->conference?->setting?->submission_enabled
+            || $submission->conference?->setting?->maintenance_mode
         ) {
             return redirect()
                 ->route(
@@ -498,12 +498,12 @@ class SubmissionController extends Controller
         );
 
         $submission->load([
-            'conference.settings',
+            'conference.setting',
         ]);
 
         if (
-            !$submission->conference?->settings?->submission_enabled
-            || $submission->conference?->settings?->maintenance_mode
+            !$submission->conference?->setting?->submission_enabled
+            || $submission->conference?->setting?->maintenance_mode
         ) {
             return redirect()
                 ->route(

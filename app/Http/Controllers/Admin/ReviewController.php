@@ -72,12 +72,12 @@ class ReviewController extends Controller
         Submission $submission
     ) {
         $submission->load([
-            'conference.settings',
+            'conference.setting',
         ]);
 
         if (
-            !$submission->conference?->settings?->review_enabled
-            || $submission->conference?->settings?->maintenance_mode
+            !$submission->conference?->setting?->review_enabled
+            || $submission->conference?->setting?->maintenance_mode
         ) {
             return back()
                 ->with(
@@ -92,30 +92,38 @@ class ReviewController extends Controller
         )
             ->max('review_round');
 
-        $currentRound =
-            $currentRound ?: 1;
+        $currentRound = $currentRound ?: 1;
+
+        $alreadyAssigned = Review::where(
+            'submission_id',
+            $submission->id
+        )
+            ->where(
+                'reviewer_id',
+                $request->validated('reviewer_id')
+            )
+            ->where(
+                'review_round',
+                $currentRound
+            )
+            ->exists();
+
+        if ($alreadyAssigned) {
+            return back()
+                ->with(
+                    'error',
+                    'This reviewer has already been assigned in the current review round.'
+                );
+        }
 
         Review::create([
-            'submission_id' =>
-            $submission->id,
-
-            'reviewer_id' =>
-            $request->validated('reviewer_id'),
-
-            'review_round' =>
-            $currentRound,
-
-            'score' =>
-            null,
-
-            'comment' =>
-            null,
-
-            'recommendation' =>
-            null,
-
-            'reviewed_at' =>
-            null,
+            'submission_id' => $submission->id,
+            'reviewer_id' => $request->validated('reviewer_id'),
+            'review_round' => $currentRound,
+            'score' => null,
+            'comment' => null,
+            'recommendation' => null,
+            'reviewed_at' => null,
         ]);
 
         return redirect()

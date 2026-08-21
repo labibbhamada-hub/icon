@@ -156,7 +156,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.certificates.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.certificates.*') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('admin.certificates.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-award"></i>
                         <p>Certificates</p>
                     </a>

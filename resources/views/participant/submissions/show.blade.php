@@ -105,57 +105,67 @@
                     </span>
                 @endif
             </div>
-            @if ($submission->status === 'revision')
-                <div class="alert alert-warning rounded-0 mb-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>
-                                Revision Required
-                            </strong>
-                            <div class="small">
-                                Your paper requires revision based on the review result.
+        </div>
+        @if (
+            $submission->status === 'revision' ||
+                $submission->status === 'accepted' ||
+                $submission->status === 'camera_ready' ||
+                $submission->status === 'published')
+            <div class="card-body border-top">
+                @if ($submission->status === 'revision')
+                    <div class="alert alert-warning rounded-0 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>
+                                    Revision Required
+                                </strong>
+                                <div class="small">
+                                    Your paper requires revision based on the review result.
+                                </div>
                             </div>
+                            <a href="{{ route('participant.submissions.revision', $submission) }}"
+                                class="btn btn-warning btn-sm rounded-0">
+                                <i class="bi bi-arrow-repeat me-1"></i>
+                                Submit Revision
+                            </a>
                         </div>
-                        <a href="{{ route('participant.submissions.revision', $submission) }}"
-                            class="btn btn-warning btn-sm">
-                            <i class="bi bi-arrow-repeat me-1"></i>
-                            Submit Revision
-                        </a>
                     </div>
-                </div>
-            @endif
-            @if ($submission->status === 'accepted')
-                <div class="alert alert-success rounded-0 mb-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>
-                                Paper Accepted
-                            </strong>
-                            <div class="small">
-                                Please upload the final camera-ready version.
+                @endif
+                @if ($submission->status === 'accepted')
+                    <div class="alert alert-success rounded-0 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>
+                                    Paper Accepted
+                                </strong>
+                                <div class="small">
+                                    Please upload the final camera-ready version.
+                                </div>
                             </div>
+                            <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
+                                class="btn btn-success btn-sm rounded-0">
+                                <i class="bi bi-file-earmark-check me-1"></i>
+                                Upload Camera Ready
+                            </a>
                         </div>
-                        <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
-                            class="btn btn-success btn-sm">
-                            <i class="bi bi-file-earmark-check me-1"></i>
-                            Upload Camera Ready
-                        </a>
                     </div>
-                </div>
-            @endif
-            @if ($submission->status === 'camera_ready')
-                <div class="alert alert-info rounded-0 mb-2">
-                    <i class="bi bi-hourglass-split me-2"></i>
-                    Your camera-ready paper has been submitted and is currently
-                    waiting for administrative approval.
-                </div>
-            @endif
-            @if ($submission->status === 'published')
-                <div class="alert alert-success rounded-0 mt-4">
-                    <i class="bi bi-check-circle me-2"></i>
-                    Your paper has been approved and published successfully.
-                </div>
-            @endif
+                @endif
+                @if ($submission->status === 'camera_ready')
+                    <div class="alert alert-info rounded-0 mb-2">
+                        <i class="bi bi-hourglass-split me-2"></i>
+                        Your camera-ready paper has been submitted and is currently
+                        waiting for administrative approval.
+                    </div>
+                @endif
+                @if ($submission->status === 'published')
+                    <div class="alert alert-success rounded-0 mb-2">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Your paper has been approved and published successfully.
+                    </div>
+                @endif
+            </div>
+        @endif
+        <div class="card-body border-top">
             <div class="row mb-2">
                 <div class="col-md-4">
                     <strong>

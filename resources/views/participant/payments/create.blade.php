@@ -51,7 +51,7 @@
     @else
         <form action="{{ route('participant.payments.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <div class="card rounded-0">
+            <div class="card rounded-0 mb-3">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-calendar-check me-2"></i>
@@ -64,7 +64,7 @@
                         <span class="text-danger">*</span>
                     </label>
                     <select name="participant_id" id="participant_id"
-                        class="form-select @error('participant_id') is-invalid @enderror">
+                        class="form-select @error('participant_id') is-invalid @enderror rounded-0">
                         <option value="">
                             Select Registration
                         </option>
@@ -92,7 +92,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="card rounded-0 mt-3" id="payment-information-card" style="display: none;">
+            <div class="card rounded-0 mb-3" id="payment-information-card" style="display: none;">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-bank me-2"></i>
@@ -100,13 +100,12 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-info rounded-0">
-                        <div class="fw-semibold mb-3">
-                            Please transfer the exact amount to
-                            the following account:
+                    <div class="alert alert-info rounded-0 mb-2">
+                        <div class="fw-semibold mb-2">
+                            Please transfer the exact amount to the following account:
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
                                 <small class="text-muted d-block">
                                     Bank
                                 </small>
@@ -114,7 +113,7 @@
                                     —
                                 </strong>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 mb-2">
                                 <small class="text-muted d-block">
                                     Account Number
                                 </small>
@@ -122,7 +121,7 @@
                                     —
                                 </strong>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 mb-2">
                                 <small class="text-muted d-block">
                                     Account Name
                                 </small>
@@ -132,8 +131,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row g-3 mt-1">
-                        <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
                             <div class="border rounded-0 p-3">
                                 <small class="text-muted d-block">
                                     Participant Type
@@ -143,7 +142,7 @@
                                 </strong>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <div class="border rounded-0 p-3">
                                 <small class="text-muted d-block">
                                     Registration Fee
@@ -156,7 +155,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card rounded-0 mt-3" id="payment-form-card" style="display: none;">
+            <div class="card rounded-0 mb-3" id="payment-form-card" style="display: none;">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-upload me-2"></i>
@@ -164,36 +163,36 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Payment Method
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" value="Bank Transfer" readonly>
+                            <input type="text" class="form-control rounded-0" value="Bank Transfer" readonly>
                             <input type="hidden" name="payment_method" value="bank_transfer">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Payment Date
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="datetime-local" name="paid_at"
                                 value="{{ old('paid_at', now()->format('Y-m-d\TH:i')) }}"
-                                class="form-control @error('paid_at') is-invalid @enderror">
+                                class="form-control @error('paid_at') is-invalid @enderror rounded-0">
                             @error('paid_at')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 mb-2">
                             <label class="form-label">
                                 Transfer Proof
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="file" name="proof_file" accept=".jpg,.jpeg,.png,.webp,.pdf"
-                                class="form-control @error('proof_file') is-invalid @enderror">
+                                class="form-control @error('proof_file') is-invalid @enderror rounded-0">
                             <div class="form-text">
                                 JPG, JPEG, PNG, WebP, or PDF.
                                 Maximum 5 MB.
@@ -204,11 +203,11 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 mb-2">
                             <label class="form-label">
                                 Notes
                             </label>
-                            <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror"
+                            <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror rounded-0"
                                 placeholder="Optional payment information...">{{ old('notes') }}</textarea>
                             @error('notes')
                                 <div class="invalid-feedback">
@@ -219,10 +218,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-end">
-                    <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary">
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success btn-sm rounded-0">
                         <i class="bi bi-check-circle me-1"></i>
                         Submit Payment Proof
                     </button>
@@ -231,7 +227,6 @@
         </form>
     @endif
 @endsection
-
 
 @push('scripts')
     <script>
