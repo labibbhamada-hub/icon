@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ParticipantRequest;
 use App\Models\Conference;
 use App\Models\Participant;
+use App\Exports\ParticipantsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 class ParticipantController extends Controller
 {
@@ -62,5 +65,23 @@ class ParticipantController extends Controller
         $participant->delete();
 
         return redirect()->route('admin.participants.index')->with('success', 'Participant deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $conferenceId = $request->integer('conference_id');
+
+        $suffix = $conferenceId
+            ? '-conference-' . $conferenceId
+            : '-all';
+
+        return Excel::download(
+            new ParticipantsExport($conferenceId),
+            'participants' .
+                $suffix .
+                '-' .
+                now()->format('Y-m-d') .
+                '.xlsx'
+        );
     }
 }

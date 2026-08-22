@@ -133,7 +133,7 @@ class PaymentController extends Controller
             ->file('proof_file')
             ->store(
                 'payments/proofs',
-                'public'
+                'local'
             );
 
         // 9. Simpan payment

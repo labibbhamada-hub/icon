@@ -27,6 +27,10 @@
                 Submissions List
             </h3>
             <div class="float-end">
+                <a href="{{ route('admin.submissions.export') }}" class="btn btn-dark btn-sm rounded-0">
+                    <i class="bi bi-file-earmark-excel me-1"></i>
+                    Export Excel
+                </a>
                 <a href="{{ route('admin.submissions.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle"></i>
                     Add Submission

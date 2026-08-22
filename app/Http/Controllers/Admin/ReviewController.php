@@ -8,7 +8,10 @@ use App\Models\Reviewer;
 use App\Models\Review;
 use App\Models\Submission;
 use App\Mail\SubmissionStatusMail;
+use App\Exports\ReviewsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
@@ -196,7 +199,7 @@ class ReviewController extends Controller
             if ($submission->participant?->email) {
                 Mail::to(
                     $submission->participant->email
-                )->send(
+                )->queue(
                     new SubmissionStatusMail(
                         $submission,
                         $message
@@ -309,5 +312,23 @@ class ReviewController extends Controller
                 'success',
                 'Reviewer assignment removed successfully.'
             );
+    }
+
+    public function export(Request $request)
+    {
+        $conferenceId = $request->integer('conference_id');
+
+        $suffix = $conferenceId
+            ? '-conference-' . $conferenceId
+            : '-all';
+
+        return Excel::download(
+            new ReviewsExport($conferenceId),
+            'reviews' .
+                $suffix .
+                '-' .
+                now()->format('Y-m-d') .
+                '.xlsx'
+        );
     }
 }

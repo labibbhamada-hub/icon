@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Participant;
 use App\Models\Submission;
+use App\Exports\CertificatesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -347,5 +349,23 @@ class CertificateController extends Controller
         );
 
         return $filePath;
+    }
+
+    public function export(Request $request)
+    {
+        $conferenceId = $request->integer('conference_id');
+
+        $suffix = $conferenceId
+            ? '-conference-' . $conferenceId
+            : '-all';
+
+        return Excel::download(
+            new CertificatesExport($conferenceId),
+            'certificates' .
+                $suffix .
+                '-' .
+                now()->format('Y-m-d') .
+                '.xlsx'
+        );
     }
 }

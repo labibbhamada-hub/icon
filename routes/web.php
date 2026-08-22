@@ -9,9 +9,16 @@ Route::get('/certificate/verify', [App\Http\Controllers\CertificateVerificationC
 Route::middleware('guest')->group(function () {
     Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.store');
+    Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register.store');
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/verify-email', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+    Route::get('/verify-email/{id}/{hash}', [App\Http\Controllers\Auth\EmailVerificationController::class, 'verify',])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('/email/verification-notification', [App\Http\Controllers\Auth\EmailVerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 });
 
@@ -37,8 +44,10 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::resource('important-dates', App\Http\Controllers\Admin\ImportantDateController::class);
 
+        Route::get('participants/export', [App\Http\Controllers\Admin\ParticipantController::class, 'export'])->name('participants.export');
         Route::resource('participants', App\Http\Controllers\Admin\ParticipantController::class);
 
+        Route::get('submissions/export', [App\Http\Controllers\Admin\SubmissionController::class, 'export'])->name('submissions.export');
         Route::patch('submissions/{submission}/camera-ready/approve', [App\Http\Controllers\Admin\SubmissionController::class, 'approveCameraReady'])->name('submissions.camera-ready.approve');
         Route::patch('submissions/{submission}/camera-ready/correction', [App\Http\Controllers\Admin\SubmissionController::class, 'requestCameraReadyCorrection'])->name('submissions.camera-ready.correction');
         Route::resource('submissions', App\Http\Controllers\Admin\SubmissionController::class);
@@ -47,19 +56,25 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('submissions/{submission}/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'storeForSubmission'])->name('submissions.reviews.store');
         Route::resource('reviewers', App\Http\Controllers\Admin\ReviewerController::class);
 
+        Route::get('reviews/export', [App\Http\Controllers\Admin\ReviewController::class, 'export'])->name('reviews.export');
         Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class);
 
         Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 
         Route::get('payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/export', [App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
+        Route::get('payments/{payment}/proof/download', [App\Http\Controllers\Admin\PaymentController::class, 'downloadProof'])->name('payments.proof.download');
         Route::get('payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
         Route::patch('payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('payments.verify');
         Route::patch('payments/{payment}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
         Route::delete('payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'destroy'])->name('payments.destroy');
 
+        Route::get('certificates/export', [App\Http\Controllers\Admin\CertificateController::class, 'export'])->name('certificates.export');
         Route::post('certificates/{certificate}/regenerate', [App\Http\Controllers\Admin\CertificateController::class, 'regenerate'])->name('certificates.regenerate');
         Route::get('certificates/{certificate}/download', [App\Http\Controllers\Admin\CertificateController::class, 'download'])->name('certificates.download');
         Route::resource('certificates', App\Http\Controllers\Admin\CertificateController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+
+        Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     });
 
 Route::middleware(['auth', 'role:reviewer'])
@@ -69,10 +84,11 @@ Route::middleware(['auth', 'role:reviewer'])
 
         Route::get('/dashboard', [App\Http\Controllers\Reviewer\DashboardController::class, 'index'])->name('dashboard');
 
+        Route::get('/reviews/{review}/paper/download', [App\Http\Controllers\Reviewer\ReviewController::class, 'downloadPaper'])->name('reviews.paper.download');
         Route::resource('/reviews', App\Http\Controllers\Reviewer\ReviewController::class);
     });
 
-Route::middleware(['auth', 'role:participant'])
+Route::middleware(['auth', 'role:participant', 'verified'])
     ->prefix('participant')
     ->name('participant.')
     ->group(function () {
@@ -100,6 +116,10 @@ Route::middleware(['auth', 'role:participant'])
         Route::post('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadRevision'])->name('submissions.revision.upload');
         Route::get('/submissions/{submission}/camera-ready', [App\Http\Controllers\Participant\SubmissionController::class, 'cameraReady'])->name('submissions.camera-ready');
         Route::post('/submissions/{submission}/camera-ready', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadCameraReady'])->name('submissions.camera-ready.upload');
+
+        Route::get('/submissions/{submission}/paper/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadPaper'])->name('submissions.paper.download');
+        Route::get('/submissions/{submission}/revision/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadRevision'])->name('submissions.revision.download');
+        Route::get('/submissions/{submission}/camera-ready/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadCameraReady'])->name('submissions.camera-ready.download');
 
         Route::get('/certificates', [App\Http\Controllers\Participant\CertificateController::class, 'index'])->name('certificates.index');
         Route::get('/certificates/{certificate}', [App\Http\Controllers\Participant\CertificateController::class, 'show'])->name('certificates.show');

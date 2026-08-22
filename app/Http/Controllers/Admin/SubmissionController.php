@@ -4,15 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubmissionRequest;
-use App\Mail\SubmissionStatusMail;
 use App\Models\Conference;
 use App\Models\Participant;
 use App\Models\Submission;
 use App\Models\SubmissionAuthor;
 use App\Models\Topic;
+use App\Mail\SubmissionStatusMail;
+use App\Exports\SubmissionsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class SubmissionController extends Controller
@@ -266,10 +269,10 @@ class SubmissionController extends Controller
 
             Mail::to(
                 $submission->participant->email
-            )->send(
+            )->queue(
                 new SubmissionStatusMail(
                     $submission,
-                    'Your camera-ready paper has been approved and published successfully.'
+                    'Your camera-ready paper has been approved and your paper has been published successfully.'
                 )
             );
         }
@@ -324,5 +327,23 @@ class SubmissionController extends Controller
         );
 
         return $code;
+    }
+
+    public function export(Request $request)
+    {
+        $conferenceId = $request->integer('conference_id');
+
+        $suffix = $conferenceId
+            ? '-conference-' . $conferenceId
+            : '-all';
+
+        return Excel::download(
+            new SubmissionsExport($conferenceId),
+            'submissions' .
+                $suffix .
+                '-' .
+                now()->format('Y-m-d') .
+                '.xlsx'
+        );
     }
 }

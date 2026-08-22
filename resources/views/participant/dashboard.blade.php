@@ -23,8 +23,8 @@
 
 @section('content')
     @if ($participants->isEmpty())
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
+        <div class="row">
+            <div class="col-12">
                 <div class="card rounded-0">
                     <div class="card-body text-center py-5">
                         <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center mx-auto mb-2"

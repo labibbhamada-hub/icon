@@ -180,7 +180,7 @@
                 </div>
                 <div class="card-body">
                     @if ($payment->proof_file)
-                        <a href="{{ asset('storage/' . $payment->proof_file) }}" target="_blank"
+                        <a href="{{ route('admin.payments.proof.download', $payment) }}"
                             class="btn btn-outline-danger rounded-0 w-100">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Payment Proof

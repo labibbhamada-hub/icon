@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Reviewer;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\Submission;
+use App\Mail\SubmissionStatusMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -201,6 +204,40 @@ class ReviewController extends Controller
             );
     }
 
+    public function downloadPaper(Review $review)
+    {
+        $reviewer = Auth::user()
+            ->reviewers()
+            ->where('is_active', true)
+            ->latest()
+            ->first();
+
+        if (!$reviewer) {
+            abort(403);
+        }
+
+        if ($review->reviewer_id !== $reviewer->id) {
+            abort(403);
+        }
+
+        $review->load('submission');
+
+        $submission = $review->submission;
+
+        abort_unless(
+            $submission?->paper_file
+                && Storage::disk('local')->exists(
+                    $submission->paper_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $submission->paper_file,
+            basename($submission->paper_file)
+        );
+    }
+
     private function updateSubmissionStatus(
         Submission $submission
     ): void {
@@ -249,10 +286,24 @@ class ReviewController extends Controller
         );
 
         if ($hasReject) {
-
             $submission->update([
                 'status' => 'rejected',
             ]);
+
+            $submission->load([
+                'participant',
+            ]);
+
+            if ($submission->participant?->email) {
+                Mail::to(
+                    $submission->participant->email
+                )->queue(
+                    new SubmissionStatusMail(
+                        $submission,
+                        'We are sorry to inform you that your submission has not been accepted for publication.'
+                    )
+                );
+            }
 
             return;
         }
@@ -277,6 +328,22 @@ class ReviewController extends Controller
                 'status' => 'revision',
             ]);
 
+            $submission->load([
+                'participant',
+            ]);
+
+            if ($submission->participant?->email) {
+
+                Mail::to(
+                    $submission->participant->email
+                )->queue(
+                    new \App\Mail\SubmissionStatusMail(
+                        $submission,
+                        'Your paper requires revision based on the reviewer feedback. Please log in to the participant portal and upload your revised manuscript.'
+                    )
+                );
+            }
+
             return;
         }
 
@@ -287,11 +354,29 @@ class ReviewController extends Controller
             }
         );
 
-        if ($allAccepted) {
-
+        if (
+            $currentReviews->isNotEmpty()
+            && $allAccepted
+        ) {
             $submission->update([
                 'status' => 'accepted',
             ]);
+
+            $submission->load([
+                'participant',
+            ]);
+
+            if ($submission->participant?->email) {
+
+                Mail::to(
+                    $submission->participant->email
+                )->queue(
+                    new SubmissionStatusMail(
+                        $submission,
+                        'Congratulations! Your paper has been accepted. Please log in to the participant portal to upload the final camera-ready version.'
+                    )
+                );
+            }
         }
     }
 }

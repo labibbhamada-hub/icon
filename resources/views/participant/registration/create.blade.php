@@ -40,7 +40,7 @@
     @else
         <form action="{{ route('participant.registration.store') }}" method="POST">
             @csrf
-            <div class="card rounded-0">
+            <div class="card rounded-0 mb-3">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="bi bi-calendar-check me-2"></i>
@@ -48,14 +48,14 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
                             <label class="form-label">
                                 Conference
                                 <span class="text-danger">*</span>
                             </label>
                             <select name="conference_id" id="conference_id"
-                                class="form-select @error('conference_id') is-invalid @enderror">
+                                class="form-select @error('conference_id') is-invalid @enderror rounded-0">
                                 <option value="">
                                     Select Conference
                                 </option>
@@ -73,37 +73,43 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                            <div id="registration-fee-card" class="alert alert-info rounded-0" style="display: none;">
-                                <div class="fw-semibold mb-2">
-                                    Registration Fee
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <small class="text-muted d-block">
-                                            Regular
-                                        </small>
-                                        <strong id="regular-fee">
-                                            Rp 0
-                                        </strong>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <small class="text-muted d-block">
-                                            Student
-                                        </small>
-                                        <strong id="student-fee">
-                                            Rp 0
-                                        </strong>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body border-top" id="registration-fee-card" style="display: none;">
+                    <div class="alert alert-info rounded-0">
+                        <div class="fw-semibold">
+                            Registration Fee
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">
+                                    Regular
+                                </small>
+                                <strong id="regular-fee">
+                                    Rp 0
+                                </strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">
+                                    Student
+                                </small>
+                                <strong id="student-fee">
+                                    Rp 0
+                                </strong>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+                </div>
+                <div class="card-body border-top">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Participant Type
                                 <span class="text-danger">*</span>
                             </label>
                             <select name="participant_type"
-                                class="form-select @error('participant_type') is-invalid @enderror">
+                                class="form-select @error('participant_type') is-invalid @enderror rounded-0">
                                 <option value="regular" @selected(old('participant_type', 'regular') === 'regular')>
                                     Regular
                                 </option>
@@ -117,13 +123,13 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Attendance Type
                                 <span class="text-danger">*</span>
                             </label>
                             <select name="attendance_type"
-                                class="form-select @error('attendance_type') is-invalid @enderror">
+                                class="form-select @error('attendance_type') is-invalid @enderror rounded-0">
                                 <option value="offline" @selected(old('attendance_type', 'offline') === 'offline')>
                                     Offline
                                 </option>
@@ -140,24 +146,25 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Phone Number
                             </label>
                             <input type="text" name="phone" value="{{ old('phone') }}"
-                                class="form-control @error('phone') is-invalid @enderror" placeholder="+62 812 3456 7890">
+                                class="form-control @error('phone') is-invalid @enderror rounded-0"
+                                placeholder="+62 812 3456 7890">
                             @error('phone')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Institution
                             </label>
                             <input type="text" name="institution" value="{{ old('institution') }}"
-                                class="form-control @error('institution') is-invalid @enderror"
+                                class="form-control @error('institution') is-invalid @enderror rounded-0"
                                 placeholder="University / Institution">
                             @error('institution')
                                 <div class="invalid-feedback">
@@ -165,37 +172,37 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <label class="form-label">
                                 Department
                             </label>
                             <input type="text" name="department" value="{{ old('department') }}"
-                                class="form-control @error('department') is-invalid @enderror">
+                                class="form-control @error('department') is-invalid @enderror rounded-0">
                             @error('department')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 mb-2">
                             <label class="form-label">
                                 Country
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="country" value="{{ old('country', 'Indonesia') }}"
-                                class="form-control @error('country') is-invalid @enderror">
+                                class="form-control @error('country') is-invalid @enderror rounded-0">
                             @error('country')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 mb-2">
                             <label class="form-label">
                                 City
                             </label>
                             <input type="text" name="city" value="{{ old('city') }}"
-                                class="form-control @error('city') is-invalid @enderror">
+                                class="form-control @error('city') is-invalid @enderror rounded-0">
                             @error('city')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -205,10 +212,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-end">
-                    <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary">
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success rounded-0">
                         <i class="bi bi-check-circle me-1"></i>
                         Submit Registration
                     </button>

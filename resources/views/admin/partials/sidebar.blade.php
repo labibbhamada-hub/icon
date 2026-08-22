@@ -161,6 +161,13 @@
                         <p>Certificates</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.reports.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }} rounded-0">
+                        <i class="nav-icon bi bi-bar-chart-line"></i>
+                        <p>Reports</p>
+                    </a>
+                </li>
                 <li class="nav-header">
                     SYSTEM
                 </li>
@@ -172,7 +179,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }} rounded-0">
+                    <a href="#"
+                        class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }} rounded-0">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>

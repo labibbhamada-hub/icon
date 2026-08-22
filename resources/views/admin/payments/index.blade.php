@@ -25,6 +25,12 @@
                 <i class="bi bi-credit-card me-2"></i>
                 Payment List
             </h3>
+            <div class="float-end">
+                <a href="{{ route('admin.payments.export') }}" class="btn btn-dark btn-sm rounded-0">
+                    <i class="bi bi-file-earmark-excel me-1"></i>
+                    Export Excel
+                </a>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

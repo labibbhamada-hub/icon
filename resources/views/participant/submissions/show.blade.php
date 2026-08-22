@@ -46,23 +46,23 @@
             </h3>
             <div class="float-end">
                 @if ($submission->paper_file)
-                    <a href="{{ asset('storage/' . $submission->paper_file) }}" target="_blank"
+                    <a href="{{ route('participant.submissions.paper.download', $submission) }}"
                         class="btn btn-outline-danger btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-pdf"></i>
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
                         Original Paper
                     </a>
                 @endif
                 @if ($submission->revised_file)
-                    <a href="{{ asset('storage/' . $submission->revised_file) }}" target="_blank"
+                    <a href="{{ route('participant.submissions.revision.download', $submission) }}"
                         class="btn btn-outline-warning btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-pdf"></i>
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
                         Revised Paper
                     </a>
                 @endif
                 @if ($submission->camera_ready_file)
-                    <a href="{{ asset('storage/' . $submission->camera_ready_file) }}" target="_blank"
+                    <a href="{{ route('participant.submissions.camera-ready.download', $submission) }}"
                         class="btn btn-outline-success btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-pdf"></i>
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
                         Camera Ready
                     </a>
                 @endif

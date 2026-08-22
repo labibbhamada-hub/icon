@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Participant\CameraReadyRequest;
 use App\Http\Requests\Participant\RevisionRequest;
 use App\Http\Requests\Participant\SubmissionRequest;
+use App\Mail\SubmissionStatusMail;
 use App\Models\Participant;
 use App\Models\Review;
 use App\Models\Submission;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class SubmissionController extends Controller
 {
@@ -158,7 +160,7 @@ class SubmissionController extends Controller
                 ->file('paper_file')
                 ->store(
                     'submissions/papers',
-                    'public'
+                    'local'
                 );
 
             $submission = Submission::create([
@@ -222,6 +224,22 @@ class SubmissionController extends Controller
 
             return $submission;
         });
+
+        $submission->load([
+            'participant',
+        ]);
+
+        if ($submission->participant?->email) {
+
+            Mail::to(
+                $submission->participant->email
+            )->queue(
+                new SubmissionStatusMail(
+                    $submission,
+                    'Your submission has been received successfully and is now waiting for the review process.'
+                )
+            );
+        }
 
         return redirect()
             ->route(
@@ -360,7 +378,7 @@ class SubmissionController extends Controller
             ->file('revised_file')
             ->store(
                 'submissions/revisions',
-                'public'
+                'local'
             );
 
         DB::transaction(function () use (
@@ -537,7 +555,7 @@ class SubmissionController extends Controller
             ->file('camera_ready_file')
             ->store(
                 'submissions/camera-ready',
-                'public'
+                'local'
             );
 
         DB::transaction(function () use (
@@ -570,6 +588,60 @@ class SubmissionController extends Controller
                 'success',
                 'Camera-ready paper uploaded successfully.'
             );
+    }
+
+    public function downloadPaper(Submission $submission)
+    {
+        $this->getOwnedSubmissionParticipant($submission);
+
+        abort_unless(
+            $submission->paper_file
+                && Storage::disk('local')->exists(
+                    $submission->paper_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $submission->paper_file,
+            basename($submission->paper_file)
+        );
+    }
+
+    public function downloadRevision(Submission $submission)
+    {
+        $this->getOwnedSubmissionParticipant($submission);
+
+        abort_unless(
+            $submission->revised_file
+                && Storage::disk('local')->exists(
+                    $submission->revised_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $submission->revised_file,
+            basename($submission->revised_file)
+        );
+    }
+
+    public function downloadCameraReady(Submission $submission)
+    {
+        $this->getOwnedSubmissionParticipant($submission);
+
+        abort_unless(
+            $submission->camera_ready_file
+                && Storage::disk('local')->exists(
+                    $submission->camera_ready_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $submission->camera_ready_file,
+            basename($submission->camera_ready_file)
+        );
     }
 
     private function getOwnedSubmissionParticipant(

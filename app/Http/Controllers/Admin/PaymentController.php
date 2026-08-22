@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Mail\PaymentVerifiedMail;
+use App\Exports\PaymentsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
@@ -53,6 +56,11 @@ class PaymentController extends Controller
             $payment->participant->update([
                 'registration_status' => 'confirmed',
             ]);
+            Mail::to(
+                $payment->participant->email
+            )->queue(
+                new PaymentVerifiedMail($payment)
+            );
         });
 
         $payment->load([
@@ -62,7 +70,7 @@ class PaymentController extends Controller
 
         if ($payment->participant->email) {
             Mail::to($payment->participant->email)
-                ->send(
+                ->queue(
                     new PaymentVerifiedMail($payment)
                 );
         }
@@ -122,5 +130,39 @@ class PaymentController extends Controller
                 'success',
                 'Payment deleted successfully.'
             );
+    }
+
+    public function export(Request $request)
+    {
+        $conferenceId = $request->integer('conference_id');
+
+        $suffix = $conferenceId
+            ? '-conference-' . $conferenceId
+            : '-all';
+
+        return Excel::download(
+            new PaymentsExport($conferenceId),
+            'payments' .
+                $suffix .
+                '-' .
+                now()->format('Y-m-d') .
+                '.xlsx'
+        );
+    }
+
+    public function downloadProof(Payment $payment)
+    {
+        abort_unless(
+            $payment->proof_file
+                && Storage::disk('local')->exists(
+                    $payment->proof_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $payment->proof_file,
+            basename($payment->proof_file)
+        );
     }
 }

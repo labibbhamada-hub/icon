@@ -130,7 +130,7 @@
                 </div>
                 @if ($review->submission?->paper_file)
                     <div class="card-footer">
-                        <a href="{{ asset('storage/' . $review->submission->paper_file) }}" target="_blank"
+                        <a href="{{ route('reviewer.reviews.paper.download', $review) }}"
                             class="btn btn-danger btn-sm rounded-0">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper

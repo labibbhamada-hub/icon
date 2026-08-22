@@ -27,6 +27,10 @@
                 Participants List
             </h3>
             <div class="float-end">
+                <a href="{{ route('admin.participants.export') }}" class="btn btn-dark btn-sm rounded-0">
+                    <i class="bi bi-file-earmark-excel me-1"></i>
+                    Export Excel
+                </a>
                 <a href="{{ route('admin.participants.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-person-plus"></i>
                     Add Participant

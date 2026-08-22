@@ -38,12 +38,13 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control rounded-0" placeholder="Password" required>
+                        <input type="password" name="password" class="form-control rounded-0" placeholder="Password"
+                            required>
                         <div class="input-group-text rounded-0">
                             <span class="bi bi-lock-fill"></span>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-6">
                             <div class="form-check">
                                 <input class="form-check-input rounded-0" type="checkbox" name="remember" id="remember">
@@ -59,10 +60,18 @@
                         </div>
                     </div>
                     <div class="d-grid mt-4">
-                        <button class="btn btn-success rounded-0">
+                        <button type="submit" class="btn btn-success rounded-0">
                             <i class="bi bi-box-arrow-in-right me-2"></i>
                             Sign In
                         </button>
+                    </div>
+                    <div class="text-center mt-4">
+                        <span class="text-muted">
+                            Don't have an account?
+                        </span>
+                        <a href="{{ route('register') }}" class="text-decoration-none">
+                            Create an account
+                        </a>
                     </div>
                 </form>
             </div>
