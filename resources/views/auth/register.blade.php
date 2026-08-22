@@ -13,7 +13,7 @@
                 Conference Management System
             </p>
         </div>
-        <div class="card card-outline card-primary shadow rounded-0">
+        <div class="card card-outline card-success shadow rounded-0">
             <div class="card-header text-center">
                 <h5 class="mb-0">
                     Register
@@ -115,7 +115,7 @@
                         </div>
                     </div>
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary rounded-0">
+                        <button type="submit" class="btn btn-success rounded-0">
                             <i class="bi bi-box-arrow-in-right me-2"></i>
                             Register
                         </button>
