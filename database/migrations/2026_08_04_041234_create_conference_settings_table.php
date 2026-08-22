@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('certificate_enabled')->default(false);
             $table->boolean('published')->default(false);
             $table->boolean('maintenance_mode')->default(false);
+            $table->enum('review_mode', ['open', 'single_blind', 'double_blind'])->default('open');
             $table->timestamps();
         });
     }
