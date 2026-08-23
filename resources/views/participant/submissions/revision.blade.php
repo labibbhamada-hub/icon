@@ -1,7 +1,5 @@
 @extends('layouts.participant')
-
 @section('title', 'Submit Revision')
-
 @section('header')
     <div class="row align-items-top">
         <div class="col-sm-6">
@@ -36,7 +34,6 @@
         </div>
     </div>
 @endsection
-
 @section('content')
     <div class="card rounded-0">
         <div class="card-header">
@@ -49,11 +46,35 @@
             enctype="multipart/form-data">
             @csrf
             <div class="card-body">
-                <div class="alert alert-warning rounded-0">
+                <div class="alert alert-warning rounded-0 mb-2">
                     <i class="bi bi-exclamation-triangle me-2"></i>
                     Your paper has been returned for revision.
                     Please upload the revised manuscript.
                 </div>
+                @if ($revisionDeadline)
+                    <div class="alert alert-info rounded-0 mb-0">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-calendar-event fs-5"></i>
+                            <div>
+                                <strong>
+                                    {{ $revisionDeadline->title }}
+                                </strong>
+                                <div class="mt-1">
+                                    @if ($revisionDeadline->end_date)
+                                        {{ $revisionDeadline->date->format('d M Y') }}
+                                        -
+                                        {{ $revisionDeadline->end_date->format('d M Y') }}
+                                    @else
+                                        Deadline:
+                                        {{ $revisionDeadline->date->format('d M Y') }}
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            <div class="card-body border-top">
                 <div class="border rounded-0 p-3 mb-2 bg-light">
                     <small class="text-muted d-block">
                         Submission
@@ -66,12 +87,14 @@
                     </div>
                 </div>
                 @if ($submission->revised_file)
-                    <div class="alert alert-info rounded-0">
+                    <div class="alert alert-info rounded-0 mb-2">
                         <i class="bi bi-file-earmark-pdf me-2"></i>
                         A previous revised file exists.
                         Uploading a new file will replace it.
                     </div>
                 @endif
+            </div>
+            <div class="card-body border-top">
                 <div class="mb-2">
                     <label class="form-label">
                         Revised Paper

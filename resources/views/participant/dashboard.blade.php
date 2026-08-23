@@ -136,6 +136,68 @@
                 </div>
             </div>
         @endif
+        @if ($importantDates->isNotEmpty())
+            <div class="card rounded-0 mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        Important Dates
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach ($participants as $participant)
+                            @php
+                                $conferenceDates = $importantDates->get($participant->conference_id, collect());
+                            @endphp
+                            @if ($conferenceDates->isNotEmpty())
+                                <div class="col-lg-6 mb-3">
+                                    <div class="border rounded-0 h-100 p-3">
+                                        <h6 class="fw-bold mb-1">
+                                            {{ $participant->conference?->name ?? 'Conference' }}
+                                        </h6>
+                                        <small class="text-muted d-block mb-3">
+                                            {{ $participant->conference?->short_name ?? '—' }}
+                                            @if ($participant->conference?->year)
+                                                ({{ $participant->conference->year }})
+                                            @endif
+                                        </small>
+                                        <div class="list-group list-group-flush">
+                                            @foreach ($conferenceDates as $importantDate)
+                                                <div class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                                        <div>
+                                                            <div class="fw-semibold">
+                                                                {{ $importantDate->title }}
+                                                            </div>
+                                                            @if ($importantDate->description)
+                                                                <small class="text-muted d-block mt-1">
+                                                                    {{ $importantDate->description }}
+                                                                </small>
+                                                            @endif
+                                                        </div>
+                                                        <div class="text-end text-nowrap">
+                                                            <small class="fw-semibold">
+                                                                {{ $importantDate->date->format('d M Y') }}
+                                                            </small>
+                                                            @if ($importantDate->end_date)
+                                                                <small class="text-muted d-block">
+                                                                    to {{ $importantDate->end_date->format('d M Y') }}
+                                                                </small>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="card rounded-0 mb-3">
             <div class="card-header">
                 <h3 class="card-title">

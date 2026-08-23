@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index']);
 
 Route::get('/certificate/verify', [App\Http\Controllers\CertificateVerificationController::class, 'index'])->name('certificates.verify');
+Route::get('/loa/verify/{submissionCode}', [App\Http\Controllers\LoaVerificationController::class, 'show'])->name('loa.verify');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
@@ -92,11 +93,13 @@ Route::middleware(['auth', 'role:participant', 'verified'])
     ->prefix('participant')
     ->name('participant.')
     ->group(function () {
-
         Route::get('/dashboard', [App\Http\Controllers\Participant\DashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/profile', [App\Http\Controllers\Participant\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::get('/notifications', [App\Http\Controllers\Participant\NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Participant\NotificationController::class, 'read'])->name('notifications.read');
+        Route::post('/notifications/read-all', [App\Http\Controllers\Participant\NotificationController::class, 'readAll'])->name('notifications.read-all');
 
+        Route::get('/profile', [App\Http\Controllers\Participant\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [App\Http\Controllers\Participant\ProfileController::class, 'update'])->name('profile.update');
 
         Route::get('/registration', [App\Http\Controllers\Participant\RegistrationController::class, 'index'])->name('registration.index');
@@ -111,6 +114,8 @@ Route::middleware(['auth', 'role:participant', 'verified'])
         Route::get('/submissions/create', [App\Http\Controllers\Participant\SubmissionController::class, 'create'])->name('submissions.create');
         Route::post('/submissions', [App\Http\Controllers\Participant\SubmissionController::class, 'store'])->name('submissions.store');
         Route::get('/submissions/{submission}', [App\Http\Controllers\Participant\SubmissionController::class, 'show'])->name('submissions.show');
+        Route::get('/submissions/{submission}/loa', [App\Http\Controllers\Participant\SubmissionController::class, 'loa'])->name('submissions.loa');
+        Route::get('/submissions/{submission}/loa/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadLoa'])->name('submissions.loa.download');
 
         Route::get('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'revision'])->name('submissions.revision');
         Route::post('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadRevision'])->name('submissions.revision.upload');

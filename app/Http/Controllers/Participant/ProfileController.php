@@ -14,9 +14,22 @@ class ProfileController extends Controller
     {
         $participant = Participant::with('conference')
             ->where('user_id', Auth::id())
-            ->firstOrFail();
+            ->latest()
+            ->first();
 
-        return view('participant.profile.edit', compact('participant'));
+        if (!$participant) {
+            return redirect()
+                ->route('participant.registration.create')
+                ->with(
+                    'info',
+                    'Please register for a conference before completing your participant profile.'
+                );
+        }
+
+        return view(
+            'participant.profile.edit',
+            compact('participant')
+        );
     }
 
     public function update(Request $request)
@@ -24,7 +37,18 @@ class ProfileController extends Controller
         $participant = Participant::where(
             'user_id',
             Auth::id()
-        )->firstOrFail();
+        )
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return redirect()
+                ->route('participant.registration.create')
+                ->with(
+                    'info',
+                    'Please register for a conference before updating your participant profile.'
+                );
+        }
 
         $validated = $request->validate([
             'full_name' => [

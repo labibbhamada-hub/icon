@@ -1,7 +1,5 @@
 @extends('layouts.participant')
-
 @section('title', 'New Submission')
-
 @section('header')
     <div class="row align-items-top">
         <div class="col-sm-6">
@@ -36,7 +34,6 @@
         </div>
     </div>
 @endsection
-
 @section('content')
     @if ($errors->any())
         <div class="alert alert-danger rounded-0">
@@ -50,7 +47,6 @@
             </ul>
         </div>
     @endif
-
     <form action="{{ route('participant.submissions.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="card rounded-0 mb-3">
@@ -67,10 +63,17 @@
                 </label>
                 <select name="participant_id" id="participant_id"
                     class="form-select @error('participant_id') is-invalid @enderror rounded-0">
-                    <option value="">Select Registration</option>
+                    <option value="">
+                        Select Registration
+                    </option>
                     @foreach ($participants as $participant)
-                        <option value="{{ $participant->id }}" data-conference="{{ $participant->conference_id }}"
-                            @selected(old('participant_id') == $participant->id)>
+                        @php
+                            $deadline = $submissionDeadlines->get($participant->conference_id);
+                        @endphp
+                        <option value="{{ $participant->id }}"
+                            data-deadline-start="{{ $deadline?->date?->format('d M Y') }}"
+                            data-deadline-end="{{ $deadline?->end_date?->format('d M Y') }}"
+                            data-deadline-title="{{ $deadline?->title }}" @selected(old('participant_id') == $participant->id)>
                             {{ $participant->conference->name }}
                             —
                             {{ $participant->registration_number }}
@@ -85,6 +88,19 @@
                         {{ $message }}
                     </div>
                 @enderror
+            </div>
+            <div class="card-body border-top d-none" id="deadline-info">
+                <div class="alert alert-info rounded-0 mb-2">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-calendar-event fs-5"></i>
+                        <div>
+                            <strong id="deadline-title">
+                                Submission Deadline
+                            </strong>
+                            <div id="deadline-date" class="mt-1"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card rounded-0 mb-3">
@@ -259,15 +275,40 @@
         </div>
     </form>
 @endsection
-
-
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const participantSelect = document.getElementById('participant_id');
+            const deadlineInfo = document.getElementById('deadline-info');
+            const deadlineTitle = document.getElementById('deadline-title');
+            const deadlineDate = document.getElementById('deadline-date');
+
+            function updateDeadline() {
+                const option = participantSelect.options[participantSelect.selectedIndex];
+                if (!option || !option.value) {
+                    deadlineInfo.classList.add('d-none');
+                    return;
+                }
+                const deadlineTitleValue = option.dataset.deadlineTitle;
+                const deadlineStart = option.dataset.deadlineStart;
+                const deadlineEnd = option.dataset.deadlineEnd;
+                if (!deadlineTitleValue || !deadlineStart) {
+                    deadlineInfo.classList.add('d-none');
+                    return;
+                }
+                deadlineTitle.textContent = deadlineTitleValue;
+                if (deadlineEnd) {
+                    deadlineDate.textContent = `${deadlineStart} - ${deadlineEnd}`;
+                } else {
+                    deadlineDate.textContent = `Deadline: ${deadlineStart}`;
+                }
+                deadlineInfo.classList.remove('d-none');
+            }
+            participantSelect.addEventListener('change', updateDeadline);
+            updateDeadline();
             const container = document.getElementById('authors-container');
             const addButton = document.getElementById('add-author');
             let authorIndex = 1;
-
             addButton.addEventListener('click', function() {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'author-item border rounded-0 p-3 mb-2';
@@ -352,11 +393,9 @@
                     </div>
                 </div>
             `;
-
                 container.appendChild(wrapper);
                 authorIndex++;
             });
-
             container.addEventListener(
                 'click',
                 function(event) {

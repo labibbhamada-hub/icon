@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\Submission;
 use App\Mail\SubmissionStatusMail;
+use App\Jobs\SendRevisionRequiredWhatsApp;
+use App\Jobs\SendSubmissionAcceptedWhatsApp;
+use App\Notifications\ConferenceNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -321,39 +324,48 @@ class ReviewController extends Controller
                 );
             }
         );
-
         if ($hasRevision) {
-
             $submission->update([
                 'status' => 'revision',
             ]);
-
             $submission->load([
                 'participant',
             ]);
-
             if ($submission->participant?->email) {
-
                 Mail::to(
                     $submission->participant->email
                 )->queue(
-                    new \App\Mail\SubmissionStatusMail(
+                    new SubmissionStatusMail(
                         $submission,
                         'Your paper requires revision based on the reviewer feedback. Please log in to the participant portal and upload your revised manuscript.'
                     )
                 );
             }
-
+            if ($submission->participant?->phone) {
+                SendRevisionRequiredWhatsApp::dispatch(
+                    $submission->participant->id,
+                    $submission->id
+                );
+            }
+            if ($submission->participant?->user) {
+                $submission->participant->user->notify(
+                    new ConferenceNotification(
+                        'Revision Required',
+                        'Your paper requires revision based on the reviewer feedback. Please log in to the participant portal and upload your revised manuscript.',
+                        'Upload Revision',
+                        route('participant.submissions.revision', $submission),
+                        'warning'
+                    )
+                );
+            }
             return;
         }
-
         // Semua reviewer menerima
         $allAccepted = $currentReviews->every(
             function ($review) {
                 return $review->recommendation === 'accept';
             }
         );
-
         if (
             $currentReviews->isNotEmpty()
             && $allAccepted
@@ -361,13 +373,10 @@ class ReviewController extends Controller
             $submission->update([
                 'status' => 'accepted',
             ]);
-
             $submission->load([
                 'participant',
             ]);
-
             if ($submission->participant?->email) {
-
                 Mail::to(
                     $submission->participant->email
                 )->queue(
@@ -375,6 +384,12 @@ class ReviewController extends Controller
                         $submission,
                         'Congratulations! Your paper has been accepted. Please log in to the participant portal to upload the final camera-ready version.'
                     )
+                );
+            }
+            if ($submission->participant?->phone) {
+                SendSubmissionAcceptedWhatsApp::dispatch(
+                    $submission->participant->id,
+                    $submission->id
                 );
             }
         }

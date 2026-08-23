@@ -147,17 +147,21 @@
                             @enderror
                         </div>
                         <div class="col-md-6 mb-2">
-                            <label class="form-label">
-                                Phone Number
+                            <label for="phone" class="form-label">
+                                Phone / WhatsApp
                             </label>
-                            <input type="text" name="phone" value="{{ old('phone') }}"
-                                class="form-control @error('phone') is-invalid @enderror rounded-0"
-                                placeholder="+62 812 3456 7890">
+                            <input type="text" id="phone" name="phone"
+                                value="{{ old('phone', $participant->phone ?? '') }}"
+                                class="form-control rounded-0 @error('phone') is-invalid @enderror"
+                                placeholder="e.g. 081234567890" autocomplete="tel">
                             @error('phone')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
+                            <div class="form-text">
+                                This number will be used for conference notifications via WhatsApp.
+                            </div>
                         </div>
                         <div class="col-md-6 mb-2">
                             <label class="form-label">

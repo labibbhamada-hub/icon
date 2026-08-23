@@ -66,6 +66,12 @@
                         Camera Ready
                     </a>
                 @endif
+                @if (in_array($submission->status, ['accepted', 'camera_ready', 'published'], true))
+                    <a href="{{ route('participant.submissions.loa', $submission) }}" class="btn btn-success btn-sm rounded-0">
+                        <i class="bi bi-file-earmark-check me-1"></i>
+                        View LOA
+                    </a>
+                @endif
             </div>
         </div>
         <div class="card-body">

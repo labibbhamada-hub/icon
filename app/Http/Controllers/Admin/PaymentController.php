@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Mail\PaymentVerifiedMail;
 use App\Exports\PaymentsExport;
+use App\Jobs\SendPaymentVerifiedWhatsApp;
+use App\Notifications\ConferenceNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,32 +50,45 @@ class PaymentController extends Controller
         }
 
         DB::transaction(function () use ($payment) {
+            $payment->load([
+                'participant.user',
+            ]);
+
             $payment->update([
                 'status' => 'verified',
                 'verified_at' => now(),
                 'verified_by' => auth()->id(),
             ]);
+
             $payment->participant->update([
                 'registration_status' => 'confirmed',
             ]);
+
             Mail::to(
                 $payment->participant->email
             )->queue(
                 new PaymentVerifiedMail($payment)
             );
-        });
 
-        $payment->load([
-            'participant.conference',
-            'participant.user',
-        ]);
-
-        if ($payment->participant->email) {
-            Mail::to($payment->participant->email)
-                ->queue(
-                    new PaymentVerifiedMail($payment)
+            if ($payment->participant?->phone) {
+                SendPaymentVerifiedWhatsApp::dispatch(
+                    $payment->participant->id,
+                    $payment->id
                 );
-        }
+            }
+
+            if ($payment->participant?->user) {
+                $payment->participant->user->notify(
+                    new ConferenceNotification(
+                        'Payment Verified',
+                        'Your payment has been successfully verified. Your conference registration is now confirmed.',
+                        'View Payment',
+                        route('participant.payments.index'),
+                        'success'
+                    )
+                );
+            }
+        });
 
         return redirect()
             ->route('admin.payments.show', $payment)

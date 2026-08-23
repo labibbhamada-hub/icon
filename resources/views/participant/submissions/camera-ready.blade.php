@@ -1,7 +1,5 @@
 @extends('layouts.participant')
-
 @section('title', 'Camera Ready')
-
 @section('header')
     <div class="row align-items-center">
         <div class="col-sm-6">
@@ -36,7 +34,6 @@
         </div>
     </div>
 @endsection
-
 @section('content')
     <div class="card rounded-0">
         <div class="card-header">
@@ -51,6 +48,28 @@
                 Your paper has been accepted.
                 Please upload the final camera-ready version of your paper.
             </div>
+            @if ($cameraReadyDeadline)
+                <div class="alert alert-info rounded-0 mb-2">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-calendar-event fs-5"></i>
+                        <div>
+                            <strong>
+                                {{ $cameraReadyDeadline->title }}
+                            </strong>
+                            <div class="mt-1">
+                                @if ($cameraReadyDeadline->end_date)
+                                    {{ $cameraReadyDeadline->date->format('d M Y') }}
+                                    -
+                                    {{ $cameraReadyDeadline->end_date->format('d M Y') }}
+                                @else
+                                    Deadline:
+                                    {{ $cameraReadyDeadline->date->format('d M Y') }}
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
             @if ($submission->camera_ready_file)
                 <div class="alert alert-warning rounded-0 mb-2">
                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -58,6 +77,8 @@
                     a new version.
                 </div>
             @endif
+        </div>
+        <div class="card-body border-top">
             <div class="border rounded-0 p-3 mb-2 bg-light">
                 <small class="text-muted d-block">
                     Submission

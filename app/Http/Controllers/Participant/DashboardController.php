@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Participant;
 use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use App\Models\Payment;
+use App\Models\ImportantDate;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -28,6 +29,22 @@ class DashboardController extends Controller
             ->map(function ($items) {
                 return $items->first();
             });
+        $importantDates = ImportantDate::whereIn(
+            'conference_id',
+            $participants->pluck('conference_id')->unique()
+        )
+            ->where('is_active', true)
+            ->whereIn('type', [
+                'registration',
+                'full_paper_submission',
+                'revision',
+                'camera_ready',
+                'conference',
+            ])
+            ->orderBy('date')
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('conference_id');
         $nextAction = null;
         $actionPriority = PHP_INT_MAX;
         foreach ($participants as $participant) {
@@ -199,6 +216,7 @@ class DashboardController extends Controller
         return view('participant.dashboard', compact(
             'participants',
             'payments',
+            'importantDates',
             'nextAction',
         ));
     }

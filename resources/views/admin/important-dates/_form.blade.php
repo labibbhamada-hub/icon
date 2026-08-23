@@ -29,7 +29,7 @@
             </label>
             <input type="text" name="title" value="{{ old('title', $importantDate->title ?? '') }}"
                 class="form-control @error('title') is-invalid @enderror rounded-0"
-                placeholder="e.g. Abstract Submission Deadline">
+                placeholder="e.g. Full Paper Submission Deadline">
             @error('title')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -46,8 +46,10 @@
                     'abstract_submission' => 'Abstract Submission',
                     'full_paper_submission' => 'Full Paper Submission',
                     'registration' => 'Registration',
-                    'conference' => 'Conference',
+                    'review' => 'Review',
+                    'revision' => 'Revision',
                     'camera_ready' => 'Camera Ready',
+                    'conference' => 'Conference',
                     'other' => 'Other',
                 ];
             @endphp
@@ -120,7 +122,7 @@
                 </div>
             @enderror
             <div class="form-text">
-                Leave empty if this event only has one date.
+                Use an end date when this event covers a period.
             </div>
         </div>
         <div class="col-12 mb-2">

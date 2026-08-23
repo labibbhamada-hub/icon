@@ -11,6 +11,7 @@ use App\Models\SubmissionAuthor;
 use App\Models\Topic;
 use App\Mail\SubmissionStatusMail;
 use App\Exports\SubmissionsExport;
+use App\Jobs\SendCameraReadyApprovedWhatsApp;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -250,7 +251,6 @@ class SubmissionController extends Controller
                     'This submission is not currently awaiting camera-ready approval.'
                 );
         }
-
         if (!$submission->camera_ready_file) {
             return back()
                 ->with(
@@ -258,15 +258,13 @@ class SubmissionController extends Controller
                     'Camera-ready file is not available.'
                 );
         }
-
         $submission->update([
             'status' => 'published',
         ]);
-
-        $submission->load('participant');
-
+        $submission->load([
+            'participant',
+        ]);
         if ($submission->participant?->email) {
-
             Mail::to(
                 $submission->participant->email
             )->queue(
@@ -276,7 +274,12 @@ class SubmissionController extends Controller
                 )
             );
         }
-
+        if ($submission->participant?->phone) {
+            SendCameraReadyApprovedWhatsApp::dispatch(
+                $submission->participant->id,
+                $submission->id
+            );
+        }
         return redirect()
             ->route(
                 'admin.submissions.show',
