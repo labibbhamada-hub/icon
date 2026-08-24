@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('department')->nullable();
             $table->boolean('is_corresponding')->default(false);
             $table->unsignedInteger('sort_order')->default(0);
+            $table->text('camera_ready_correction_reason')
+                ->nullable()
+                ->after('camera_ready_file');
             $table->timestamps();
         });
     }

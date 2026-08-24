@@ -31,11 +31,11 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::get('conferences/{conference}/settings', [App\Http\Controllers\Admin\ConferenceSettingController::class, 'edit'])->name('conferences.settings.edit');
         Route::put('conferences/{conference}/settings', [App\Http\Controllers\Admin\ConferenceSettingController::class, 'update'])->name('conferences.settings.update');
-
         Route::get('conferences/{conference}/configuration', [App\Http\Controllers\Admin\ConferenceConfigurationController::class, 'edit'])->name('conferences.configuration.edit');
         Route::put('conferences/{conference}/configuration', [App\Http\Controllers\Admin\ConferenceConfigurationController::class, 'update'])->name('conferences.configuration.update');
-
         Route::resource('conferences', App\Http\Controllers\Admin\ConferenceController::class);
+
+        Route::resource('registration-types', \App\Http\Controllers\Admin\ConferenceRegistrationTypeController::class)->parameters(['registration-types' => 'conference_registration_type'])->names('registration-types');
 
         Route::resource('topics', App\Http\Controllers\Admin\TopicController::class);
 
@@ -96,6 +96,7 @@ Route::middleware(['auth', 'role:participant', 'verified'])
         Route::get('/dashboard', [App\Http\Controllers\Participant\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/notifications', [App\Http\Controllers\Participant\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/{notification}', [App\Http\Controllers\Participant\NotificationController::class, 'show'])->name('notifications.show');
         Route::patch('/notifications/{notification}/read', [App\Http\Controllers\Participant\NotificationController::class, 'read'])->name('notifications.read');
         Route::post('/notifications/read-all', [App\Http\Controllers\Participant\NotificationController::class, 'readAll'])->name('notifications.read-all');
 

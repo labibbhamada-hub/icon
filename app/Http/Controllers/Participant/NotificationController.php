@@ -19,6 +19,22 @@ class NotificationController extends Controller
             compact('notifications')
         );
     }
+    public function show(string $notification)
+    {
+        $notification = Auth::user()
+            ->notifications()
+            ->where('id', $notification)
+            ->firstOrFail();
+        if (!$notification->read_at) {
+            $notification->markAsRead();
+        }
+        $actionUrl = $notification->data['action_url'] ?? null;
+        if ($actionUrl) {
+            return redirect($actionUrl);
+        }
+        return redirect()
+            ->route('participant.notifications.index');
+    }
     public function read(string $notification)
     {
         $notification = Auth::user()

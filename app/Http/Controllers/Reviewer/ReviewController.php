@@ -392,6 +392,17 @@ class ReviewController extends Controller
                     $submission->id
                 );
             }
+            if ($submission->participant?->user) {
+                $submission->participant->user->notify(
+                    new ConferenceNotification(
+                        'Paper Accepted',
+                        'Congratulations! Your paper has been accepted. Your Letter of Acceptance is now available in the participant portal.',
+                        'View LOA',
+                        route('participant.submissions.loa', $submission),
+                        'success'
+                    )
+                );
+            }
         }
     }
 }

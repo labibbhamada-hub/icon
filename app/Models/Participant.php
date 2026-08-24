@@ -9,6 +9,8 @@ class Participant extends Model
     protected $fillable = [
         'user_id',
         'conference_id',
+        'registration_type_id',
+        'presentation_type',
         'registration_number',
         'full_name',
         'email',
@@ -36,6 +38,14 @@ class Participant extends Model
     public function conference()
     {
         return $this->belongsTo(Conference::class);
+    }
+
+    public function registrationType()
+    {
+        return $this->belongsTo(
+            ConferenceRegistrationType::class,
+            'registration_type_id'
+        );
     }
 
     public function submissions()

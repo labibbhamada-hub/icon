@@ -17,6 +17,7 @@ class Submission extends Model
         'paper_file',
         'revised_file',
         'camera_ready_file',
+        'camera_ready_correction_reason',
         'status',
         'submitted_at',
     ];

@@ -26,6 +26,11 @@ class Conference extends Model
         return $this->hasOne(ConferenceConfiguration::class);
     }
 
+    public function registrationTypes()
+    {
+        return $this->hasMany(ConferenceRegistrationType::class);
+    }
+
     public function topics()
     {
         return $this->hasMany(Topic::class);

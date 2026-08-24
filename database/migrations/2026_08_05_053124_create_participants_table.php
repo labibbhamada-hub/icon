@@ -12,6 +12,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('conference_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('registration_type_id')
+                ->nullable()
+                ->after('conference_id')
+                ->constrained('conference_registration_types')
+                ->nullOnDelete();
+            $table->string('presentation_type', 20)
+                ->nullable();
             $table->string('registration_number')->unique();
             $table->string('full_name');
             $table->string('email');

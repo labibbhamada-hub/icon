@@ -30,10 +30,16 @@ class RegistrationController extends Controller
             'user_id',
             Auth::id()
         )->pluck('conference_id');
-
-        $conferences = Conference::with([
+        $conference = Conference::with([
             'setting',
             'configuration',
+            'registrationTypes' => function ($query) {
+                $query
+                    ->where('is_active', true)
+                    ->orderBy('category')
+                    ->orderBy('sort_order')
+                    ->orderBy('name');
+            },
         ])
             ->whereHas('setting', function ($query) {
                 $query
@@ -47,18 +53,16 @@ class RegistrationController extends Controller
                 $registeredConferenceIds
             )
             ->orderByDesc('year')
-            ->get();
-
+            ->first();
         return view(
             'participant.registration.create',
-            compact('conferences')
+            compact('conference')
         );
     }
 
     public function store(RegistrationRequest $request)
     {
         $data = $request->validated();
-
         $conference = Conference::with([
             'setting',
             'configuration',
@@ -73,16 +77,10 @@ class RegistrationController extends Controller
             ->findOrFail(
                 $data['conference_id']
             );
-
-        if (!$conference->configuration) {
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    'Conference registration configuration has not been set.'
-                );
-        }
-
+        $registrationType = $conference->registrationTypes()
+            ->where('id', $data['registration_type_id'])
+            ->where('is_active', true)
+            ->firstOrFail();
         $participant = Participant::where(
             'user_id',
             Auth::id()
@@ -92,7 +90,6 @@ class RegistrationController extends Controller
                 $conference->id
             )
             ->exists();
-
         if ($participant) {
             return back()
                 ->withInput()
@@ -101,56 +98,26 @@ class RegistrationController extends Controller
                     'You are already registered for this conference.'
                 );
         }
-
-        $registrationNumber =
-            $this->generateRegistrationNumber(
-                $conference
-            );
-
+        $registrationNumber = $this->generateRegistrationNumber(
+            $conference
+        );
         Participant::create([
-            'user_id' =>
-            Auth::id(),
-
-            'conference_id' =>
-            $conference->id,
-
-            'registration_number' =>
-            $registrationNumber,
-
-            'full_name' =>
-            Auth::user()->name,
-
-            'email' =>
-            Auth::user()->email,
-
-            'phone' =>
-            $data['phone'] ?? null,
-
-            'institution' =>
-            $data['institution'] ?? null,
-
-            'department' =>
-            $data['department'] ?? null,
-
-            'country' =>
-            $data['country'],
-
-            'city' =>
-            $data['city'] ?? null,
-
-            'participant_type' =>
-            $data['participant_type'],
-
-            'attendance_type' =>
-            $data['attendance_type'],
-
-            'registration_status' =>
-            'pending',
-
-            'registered_at' =>
-            now(),
+            'user_id' => Auth::id(),
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => $registrationNumber,
+            'full_name' => Auth::user()->name,
+            'email' => Auth::user()->email,
+            'phone' => $data['phone'] ?? null,
+            'institution' => $data['institution'] ?? null,
+            'department' => $data['department'] ?? null,
+            'country' => $data['country'],
+            'city' => $data['city'] ?? null,
+            'participant_type' => $registrationType->category,
+            'attendance_type' => $data['attendance_type'],
+            'registration_status' => 'pending',
+            'registered_at' => now(),
         ]);
-
         return redirect()
             ->route(
                 'participant.registration.index'

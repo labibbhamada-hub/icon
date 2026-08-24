@@ -438,6 +438,7 @@
                                     method="POST" class="correction-camera-ready-form">
                                     @csrf
                                     @method('PATCH')
+                                    <input type="hidden" name="correction_reason" class="correction-reason-input">
                                     <button type="submit" class="btn btn-warning btn-sm rounded-0">
                                         <i class="bi bi-arrow-repeat me-1"></i>
                                         Request Correction
@@ -495,22 +496,34 @@
                     });
                 });
             });
-
+            
         document.querySelectorAll('.correction-camera-ready-form')
             .forEach(function(form) {
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
                     Swal.fire({
-                        title: 'Request Correction?',
-                        text: 'The participant will need to upload the camera-ready file again.',
+                        title: 'Request Camera-Ready Correction',
+                        input: 'textarea',
+                        inputLabel: 'Correction Reason',
+                        inputPlaceholder: 'Explain what the participant needs to correct...',
+                        inputAttributes: {
+                            'aria-label': 'Correction Reason'
+                        },
+                        inputValue: '',
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'Yes, request correction',
+                        confirmButtonText: 'Send Correction Request',
                         cancelButtonText: 'Cancel',
                         confirmButtonColor: '#f0ad4e',
-                        cancelButtonColor: '#6c757d'
+                        cancelButtonColor: '#6c757d',
+                        inputValidator: function(value) {
+                            if (!value || !value.trim()) {
+                                return 'Correction reason is required.';
+                            }
+                        }
                     }).then(function(result) {
                         if (result.isConfirmed) {
+                            form.querySelector('.correction-reason-input').value = result.value.trim();
                             form.submit();
                         }
                     });

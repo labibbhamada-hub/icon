@@ -23,7 +23,7 @@
             max-width: 720px;
             background: #ffffff;
             border: 1px solid #d9e0ea;
-            border-radius: 10px;
+            border-radius: 0px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
@@ -51,7 +51,7 @@
 
         .status {
             padding: 14px 16px;
-            border-radius: 6px;
+            border-radius: 0px;
             margin-bottom: 20px;
         }
 

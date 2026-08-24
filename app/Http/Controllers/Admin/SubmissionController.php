@@ -12,6 +12,8 @@ use App\Models\Topic;
 use App\Mail\SubmissionStatusMail;
 use App\Exports\SubmissionsExport;
 use App\Jobs\SendCameraReadyApprovedWhatsApp;
+use App\Jobs\SendCameraReadyCorrectionWhatsApp;
+use App\Notifications\ConferenceNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -280,6 +282,17 @@ class SubmissionController extends Controller
                 $submission->id
             );
         }
+        if ($submission->participant?->user) {
+            $submission->participant->user->notify(
+                new ConferenceNotification(
+                    'Camera Ready Approved',
+                    'Your camera-ready paper has been approved and your paper has been published successfully.',
+                    'View Submission',
+                    route('participant.submissions.show', $submission),
+                    'success'
+                )
+            );
+        }
         return redirect()
             ->route(
                 'admin.submissions.show',
@@ -291,7 +304,7 @@ class SubmissionController extends Controller
             );
     }
 
-    public function requestCameraReadyCorrection(Submission $submission)
+    public function requestCameraReadyCorrection(Request $request, Submission $submission)
     {
         if ($submission->status !== 'camera_ready') {
             return back()
@@ -301,9 +314,55 @@ class SubmissionController extends Controller
                 );
         }
 
+        $validated = $request->validate([
+            'correction_reason' => [
+                'required',
+                'string',
+                'max:5000',
+            ],
+        ]);
+
         $submission->update([
             'status' => 'accepted',
+            'camera_ready_correction_reason' => $validated['correction_reason'],
         ]);
+
+        $submission->load([
+            'participant.user',
+        ]);
+
+        if ($submission->participant?->email) {
+            Mail::to(
+                $submission->participant->email
+            )->queue(
+                new SubmissionStatusMail(
+                    $submission,
+                    'Your camera-ready paper requires correction. Please review the correction reason in the participant portal and upload the corrected manuscript.'
+                )
+            );
+        }
+
+        if ($submission->participant?->phone) {
+            SendCameraReadyCorrectionWhatsApp::dispatch(
+                $submission->participant->id,
+                $submission->id
+            );
+        }
+
+        if ($submission->participant?->user) {
+            $submission->participant->user->notify(
+                new ConferenceNotification(
+                    'Camera-Ready Correction Required',
+                    'Your camera-ready paper requires correction. Please review the correction reason and upload the corrected manuscript.',
+                    'Upload Camera Ready',
+                    route(
+                        'participant.submissions.camera-ready',
+                        $submission
+                    ),
+                    'warning'
+                )
+            );
+        }
 
         return redirect()
             ->route(
