@@ -255,17 +255,23 @@
                 <div class="row">
                     @foreach ($participants as $participant)
                         <div class="col-12 mb-3">
-                            <div class="border rounded-0 h-100 p-3">
-                                <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div class="border rounded-0 p-3">
+
+                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                     <div>
-                                        <h5 class="fw-bold">{{ $participant->conference?->name ?? 'Conference' }}</h5>
+                                        <h5 class="fw-bold mb-1">
+                                            {{ $participant->conference?->name ?? 'Conference' }}
+                                        </h5>
+
                                         <small class="text-muted">
                                             {{ $participant->conference?->short_name ?? '—' }}
+
                                             @if ($participant->conference?->year)
                                                 ({{ $participant->conference->year }})
                                             @endif
                                         </small>
                                     </div>
+
                                     <div>
                                         @if ($participant->registration_status === 'confirmed')
                                             <span class="badge text-bg-success rounded-0">
@@ -282,50 +288,75 @@
                                         @endif
                                     </div>
                                 </div>
+
                                 <hr>
-                                <div class="row mb-2">
-                                    <div class="col-6 mb-2">
-                                        <small class="text-muted d-block">Registration</small>
-                                        <strong>{{ $participant->registration_number }}</strong>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <small class="text-muted d-block">
+                                            Registration
+                                        </small>
+
+                                        <strong>
+                                            {{ $participant->registration_number }}
+                                        </strong>
                                     </div>
-                                    <div class="col-6 mb-2">
-                                        <small class="text-muted d-block">Participant Type</small>
-                                        <span>{{ ucfirst($participant->participant_type) }}</span>
+
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <small class="text-muted d-block">
+                                            Registration Type
+                                        </small>
+
+                                        <strong>
+                                            {{ $participant->registrationType?->name ?? ucfirst($participant->participant_type) }}
+                                        </strong>
                                     </div>
-                                    <div class="col-6 mb-2">
-                                        <small class="text-muted d-block">Attendance</small>
-                                        <span>{{ ucfirst($participant->attendance_type) }}</span>
+
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <small class="text-muted d-block">
+                                            Attendance
+                                        </small>
+
+                                        <strong>
+                                            {{ ucfirst($participant->attendance_type) }}
+                                        </strong>
                                     </div>
-                                    <div class="col-6 mb-2">
-                                        <small class="text-muted d-block">Submissions</small>
-                                        <strong>{{ $participant->submissions->count() }}</strong>
+
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <small class="text-muted d-block">
+                                            Submissions
+                                        </small>
+
+                                        <strong>
+                                            {{ $participant->submissions->count() }}
+                                        </strong>
                                     </div>
                                 </div>
+
                                 @if ($participant->submissions->isNotEmpty())
                                     <hr>
-                                    <div class="mt-3">
+
+                                    <div>
                                         <div class="small text-muted mb-2">
-                                            Submission Progress
+                                            Recent Submissions
                                         </div>
-                                        <div class="row">
+
+                                        <div class="list-group">
                                             @foreach ($participant->submissions->sortByDesc('created_at')->take(3) as $submission)
-                                                <div class="col-lg-6 mb-2">
-                                                    <div class="border rounded-0 p-3 h-100">
-                                                        <div
-                                                            class="d-flex justify-content-between align-items-start gap-3">
-                                                            <div>
-                                                                <strong>
-                                                                    {{ $submission->submission_code }}
-                                                                </strong>
-                                                                <small class="d-block text-muted">
-                                                                    {{ \Illuminate\Support\Str::limit($submission->title, 70) }}
-                                                                </small>
+                                                <div class="list-group-item rounded-0 px-3 py-3">
+                                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                                        <div>
+                                                            <strong>
+                                                                {{ $submission->submission_code }}
+                                                            </strong>
+
+                                                            <div class="mt-1">
+                                                                {{ \Illuminate\Support\Str::limit($submission->title, 80) }}
                                                             </div>
-                                                            @if ($submission->status === 'draft')
-                                                                <span class="badge text-bg-secondary rounded-0">
-                                                                    Draft
-                                                                </span>
-                                                            @elseif ($submission->status === 'submitted')
+                                                        </div>
+
+                                                        <div class="text-nowrap">
+                                                            @if ($submission->status === 'submitted')
                                                                 <span class="badge text-bg-primary rounded-0">
                                                                     Submitted
                                                                 </span>
@@ -355,96 +386,32 @@
                                                                 </span>
                                                             @else
                                                                 <span class="badge text-bg-secondary rounded-0">
-                                                                    Unknown
+                                                                    {{ ucfirst($submission->status) }}
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        <div class="row mt-3 g-2 text-center">
-                                                            <div class="col">
-                                                                <div
-                                                                    class="small {{ in_array($submission->status, ['submitted', 'under_review', 'revision', 'accepted', 'camera_ready', 'published', 'rejected']) ? 'text-primary fw-semibold' : 'text-muted' }}">
-                                                                    <i class="bi bi-check-circle-fill"></i>
-                                                                    <div>Submitted</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div
-                                                                    class="small {{ in_array($submission->status, ['under_review', 'revision', 'accepted', 'camera_ready', 'published', 'rejected']) ? 'text-primary fw-semibold' : 'text-muted' }}">
-                                                                    <i class="bi bi-search"></i>
-                                                                    <div>Review</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                @if ($submission->status === 'rejected')
-                                                                    <div class="small text-danger fw-semibold">
-                                                                        <i class="bi bi-x-circle-fill"></i>
-                                                                        <div>Rejected</div>
-                                                                    </div>
-                                                                @else
-                                                                    <div
-                                                                        class="small {{ in_array($submission->status, ['revision', 'accepted', 'camera_ready', 'published']) ? 'text-primary fw-semibold' : 'text-muted' }}">
-                                                                        <i class="bi bi-check2-circle"></i>
-                                                                        <div>Decision</div>
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-                                                            <div class="col">
-                                                                <div
-                                                                    class="small {{ in_array($submission->status, ['camera_ready', 'published']) ? 'text-primary fw-semibold' : 'text-muted' }}">
-                                                                    <i class="bi bi-file-earmark-check"></i>
-                                                                    <div>Camera Ready</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div
-                                                                    class="small {{ $submission->status === 'published' ? 'text-success fw-semibold' : 'text-muted' }}">
-                                                                    <i class="bi bi-journal-check"></i>
-                                                                    <div>Published</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mt-3">
-                                                            <a href="{{ route('participant.submissions.show', $submission) }}"
-                                                                class="btn btn-outline-primary btn-sm rounded-0">
-                                                                <i class="bi bi-eye me-1"></i>
-                                                                View Submission
-                                                            </a>
-                                                            @if ($submission->status === 'revision')
-                                                                <a href="{{ route('participant.submissions.revision', $submission) }}"
-                                                                    class="btn btn-warning btn-sm rounded-0">
-                                                                    <i class="bi bi-arrow-repeat me-1"></i>
-                                                                    Upload Revision
-                                                                </a>
-                                                            @elseif ($submission->status === 'accepted')
-                                                                <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
-                                                                    class="btn btn-success btn-sm rounded-0">
-                                                                    <i class="bi bi-upload me-1"></i>
-                                                                    Upload Camera Ready
-                                                                </a>
-                                                            @elseif ($submission->status === 'published')
-                                                                <a href="{{ route('participant.certificates.index') }}"
-                                                                    class="btn btn-dark btn-sm rounded-0">
-                                                                    <i class="bi bi-award me-1"></i>
-                                                                    View Certificate
-                                                                </a>
-                                                            @endif
-                                                        </div>
+
                                                     </div>
+
+                                                    <div class="mt-3">
+
+                                                        <a href="{{ route('participant.submissions.show', $submission) }}"
+                                                            class="btn btn-outline-primary btn-sm rounded-0">
+
+                                                            <i class="bi bi-eye me-1"></i>
+                                                            View Submission
+
+                                                        </a>
+
+                                                    </div>
+
                                                 </div>
                                             @endforeach
+
                                         </div>
                                     </div>
                                 @endif
-                                @if (
-                                    $participant->registration_status === 'confirmed' &&
-                                        $participant->conference?->settings?->submission_enabled &&
-                                        !$participant->conference?->settings?->maintenance_mode)
-                                    <a href="{{ route('participant.submissions.create') }}"
-                                        class="btn btn-outline-success btn-sm rounded-0 mt-2">
-                                        <i class="bi bi-file-earmark-plus me-1"></i>
-                                        Submit Paper
-                                    </a>
-                                @endif
+
                             </div>
                         </div>
                     @endforeach

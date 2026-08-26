@@ -13,7 +13,13 @@ class ConferenceConfigurationController extends Controller
     {
         $configuration = $conference->configuration;
 
-        return view('admin.conference-configurations.edit', compact('conference', 'configuration'));
+        return view(
+            'admin.conference-configurations.edit',
+            compact(
+                'conference',
+                'configuration'
+            )
+        );
     }
 
     public function update(
@@ -21,36 +27,6 @@ class ConferenceConfigurationController extends Controller
         Conference $conference
     ) {
         $validated = $request->validate([
-            'bank_name' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'account_number' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'account_name' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'regular_fee' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'student_fee' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
             'chair_name' => [
                 'nullable',
                 'string',
@@ -81,7 +57,9 @@ class ConferenceConfigurationController extends Controller
         $configuration = $conference->configuration;
 
         if (!$configuration) {
-            $configuration = $conference->configuration()->create();
+            $configuration = $conference
+                ->configuration()
+                ->create();
         }
 
         if ($request->hasFile('logo')) {
@@ -114,7 +92,9 @@ class ConferenceConfigurationController extends Controller
                 );
         }
 
-        $configuration->update($validated);
+        $configuration->update(
+            $validated
+        );
 
         return redirect()
             ->route(

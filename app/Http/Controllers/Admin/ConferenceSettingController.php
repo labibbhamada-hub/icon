@@ -4,19 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Conference;
+use App\Models\ConferenceAttendanceOption;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConferenceSettingController extends Controller
 {
     public function edit(Conference $conference)
     {
         $settings = $conference->setting;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Create default settings automatically if not exists
-        |--------------------------------------------------------------------------
-        */
 
         if (!$settings) {
             $settings = $conference->setting()->create([
@@ -31,19 +27,24 @@ class ConferenceSettingController extends Controller
             ]);
         }
 
+        $attendanceOptions = $conference
+            ->attendanceOptions
+            ->pluck('type')
+            ->values()
+            ->all();
+
         return view(
             'admin.conference-settings.settings',
             compact(
                 'conference',
-                'settings'
+                'settings',
+                'attendanceOptions'
             )
         );
     }
 
-    public function update(
-        Request $request,
-        Conference $conference
-    ) {
+    public function update(Request $request, Conference $conference)
+    {
         $validated = $request->validate([
             'is_active' => [
                 'nullable',
@@ -84,46 +85,67 @@ class ConferenceSettingController extends Controller
                 'nullable',
                 'boolean',
             ],
+
+            'attendance_types' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'attendance_types.*' => [
+                'required',
+                'string',
+                'in:online,offline,hybrid',
+            ],
         ]);
+        
+        DB::transaction(function () use (
+            $validated,
+            $conference
+        ) {
+            $settings = $conference->setting;
 
-        $settings = $conference->setting;
+            if (!$settings) {
+                $settings = $conference->setting()->create();
+            }
 
-        if (!$settings) {
-            $settings = $conference->setting()->create();
-        }
+            $settings->update([
+                'is_active' =>
+                (bool) ($validated['is_active'] ?? false),
 
-        /*
-        |--------------------------------------------------------------------------
-        | Checkbox yang tidak dicentang tidak dikirim oleh browser.
-        | Karena itu kita set setiap field secara eksplisit.
-        |--------------------------------------------------------------------------
-        */
+                'registration_enabled' =>
+                (bool) ($validated['registration_enabled'] ?? false),
 
-        $settings->update([
-            'is_active' =>
-            $request->boolean('is_active'),
+                'submission_enabled' =>
+                (bool) ($validated['submission_enabled'] ?? false),
 
-            'registration_enabled' =>
-            $request->boolean('registration_enabled'),
+                'payment_enabled' =>
+                (bool) ($validated['payment_enabled'] ?? false),
 
-            'submission_enabled' =>
-            $request->boolean('submission_enabled'),
+                'review_enabled' =>
+                (bool) ($validated['review_enabled'] ?? false),
 
-            'payment_enabled' =>
-            $request->boolean('payment_enabled'),
+                'certificate_enabled' =>
+                (bool) ($validated['certificate_enabled'] ?? false),
 
-            'review_enabled' =>
-            $request->boolean('review_enabled'),
+                'published' =>
+                (bool) ($validated['published'] ?? false),
 
-            'certificate_enabled' =>
-            $request->boolean('certificate_enabled'),
+                'maintenance_mode' =>
+                (bool) ($validated['maintenance_mode'] ?? false),
+            ]);
 
-            'published' =>
-            $request->boolean('published'),
+            $conference->attendanceOptions()->delete();
 
-            'maintenance_mode' =>
-            $request->boolean('maintenance_mode'),
-        ]);
+            foreach (
+                $validated['attendance_types'] as $index => $type
+            ) {
+                $conference->attendanceOptions()->create([
+                    'type' => $type,
+                    'sort_order' => $index + 1,
+                ]);
+            }
+        });
 
         return redirect()
             ->route(

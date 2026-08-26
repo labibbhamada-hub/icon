@@ -34,21 +34,31 @@
             <h3 class="card-title">
                 {{ $conference->name }}
             </h3>
-            <div class="float-end">
+            <div class="float-end d-flex gap-1 flex-wrap">
+
                 <a href="{{ route('admin.conferences.settings.edit', $conference) }}"
                     class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-toggles me-1"></i>
                     Settings
                 </a>
+
                 <a href="{{ route('admin.conferences.configuration.edit', $conference) }}"
                     class="btn btn-primary btn-sm rounded-0">
                     <i class="bi bi-sliders me-1"></i>
                     Configuration
                 </a>
+
+                <a href="{{ route('admin.conferences.payment-methods.index', $conference) }}"
+                    class="btn btn-info btn-sm rounded-0">
+                    <i class="bi bi-credit-card me-1"></i>
+                    Payment Methods
+                </a>
+
                 <a href="{{ route('admin.conferences.edit', $conference) }}" class="btn btn-warning btn-sm rounded-0">
                     <i class="bi bi-pencil me-1"></i>
                     Edit
                 </a>
+
             </div>
         </div>
         <div class="card-body">

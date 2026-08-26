@@ -30,6 +30,10 @@ return new class extends Migration
                 'camera_ready',
                 'published',
             ])->default('draft');
+            $table->string('presentation_type', 20)->nullable();
+            $table->string('presentation_mode', 20)->nullable();
+            $table->foreignId('presenter_author_id')->nullable()->constrained('submission_authors')->nullOnDelete();
+            $table->boolean('presentation_completed')->default(false);
             $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
         });

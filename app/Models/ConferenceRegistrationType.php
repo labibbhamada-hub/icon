@@ -12,6 +12,8 @@ class ConferenceRegistrationType extends Model
         'code',
         'category',
         'fee',
+        'included_papers',
+        'additional_paper_fee',
         'currency',
         'description',
         'benefits',
@@ -20,6 +22,8 @@ class ConferenceRegistrationType extends Model
     ];
     protected $casts = [
         'fee' => 'decimal:2',
+        'included_papers' => 'integer',
+        'additional_paper_fee' => 'decimal:2',
         'is_active' => 'boolean',
     ];
     public function conference()

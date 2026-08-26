@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Participant;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Participant;
 use Illuminate\Validation\Rule;
 
 class SubmissionRequest extends FormRequest
@@ -14,22 +15,20 @@ class SubmissionRequest extends FormRequest
 
     public function rules(): array
     {
-        $participant = auth()->user()
-            ->participants()
-            ->where('registration_status', 'confirmed')
-            ->find($this->input('participant_id'));
+        $participant = Participant::with('registrationType')
+            ->where('user_id', auth()->id())
+            ->where('id', $this->input('participant_id'))
+            ->first();
 
         return [
             'participant_id' => [
                 'required',
                 Rule::exists('participants', 'id')
                     ->where(function ($query) {
-                        $query
-                            ->where('user_id', auth()->id())
-                            ->where(
-                                'registration_status',
-                                'confirmed'
-                            );
+                        $query->where(
+                            'user_id',
+                            auth()->id()
+                        );
                     }),
             ],
 
@@ -42,13 +41,15 @@ class SubmissionRequest extends FormRequest
                             return;
                         }
 
-                        $query->where(
-                            'conference_id',
-                            $participant->conference_id
-                        )->where(
-                            'is_active',
-                            true
-                        );
+                        $query
+                            ->where(
+                                'conference_id',
+                                $participant->conference_id
+                            )
+                            ->where(
+                                'is_active',
+                                true
+                            );
                     }),
             ],
 
@@ -122,6 +123,32 @@ class SubmissionRequest extends FormRequest
     {
         return [
             function ($validator) {
+                $participant = Participant::with('registrationType')
+                    ->where('user_id', auth()->id())
+                    ->where(
+                        'id',
+                        $this->input('participant_id')
+                    )
+                    ->first();
+
+                if (!$participant) {
+                    return;
+                }
+
+                $canSubmit =
+                    $participant->registration_status === 'confirmed'
+                    || (
+                        $participant->registration_status === 'pending'
+                        && $participant->registrationType?->category === 'presenter'
+                    );
+
+                if (!$canSubmit) {
+                    $validator->errors()->add(
+                        'participant_id',
+                        'You must have a confirmed registration or an active presenter registration to submit a paper.'
+                    );
+                }
+
                 $authors = $this->input('authors', []);
 
                 $correspondingCount = collect($authors)
@@ -147,7 +174,7 @@ class SubmissionRequest extends FormRequest
             'Registration is required.',
 
             'participant_id.exists' =>
-            'You must have a confirmed registration for this conference.',
+            'You are not authorized to use this registration.',
 
             'topic_id.required' =>
             'Topic is required.',

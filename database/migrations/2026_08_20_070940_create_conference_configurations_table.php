@@ -23,22 +23,6 @@ return new class extends Migration
             $table->string('signature_file')
                 ->nullable();
 
-            // Payment
-            $table->string('bank_name')
-                ->nullable();
-
-            $table->string('account_number')
-                ->nullable();
-
-            $table->string('account_name')
-                ->nullable();
-
-            $table->decimal('regular_fee', 15, 2)
-                ->default(0);
-
-            $table->decimal('student_fee', 15, 2)
-                ->default(0);
-
             // Certificate
             $table->string('chair_name')
                 ->nullable();

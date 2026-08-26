@@ -15,6 +15,8 @@ return new class extends Migration
             $table->string('code', 50);
             $table->string('category', 30);
             $table->decimal('fee', 15, 2)->default(0);
+            $table->unsignedInteger('included_papers')->default(0);
+            $table->decimal('additional_paper_fee', 15, 2)->default(0);
             $table->string('currency', 10)->default('IDR');
             $table->text('description')->nullable();
             $table->text('benefits')->nullable();

@@ -35,6 +35,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('conferences/{conference}/configuration', [App\Http\Controllers\Admin\ConferenceConfigurationController::class, 'update'])->name('conferences.configuration.update');
         Route::resource('conferences', App\Http\Controllers\Admin\ConferenceController::class);
 
+        Route::resource('conferences.payment-methods', App\Http\Controllers\Admin\ConferencePaymentMethodController::class)->except(['show'])->scoped();
+
         Route::resource('registration-types', \App\Http\Controllers\Admin\ConferenceRegistrationTypeController::class)->parameters(['registration-types' => 'conference_registration_type'])->names('registration-types');
 
         Route::resource('topics', App\Http\Controllers\Admin\TopicController::class);
@@ -117,6 +119,8 @@ Route::middleware(['auth', 'role:participant', 'verified'])
         Route::get('/submissions/{submission}', [App\Http\Controllers\Participant\SubmissionController::class, 'show'])->name('submissions.show');
         Route::get('/submissions/{submission}/loa', [App\Http\Controllers\Participant\SubmissionController::class, 'loa'])->name('submissions.loa');
         Route::get('/submissions/{submission}/loa/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadLoa'])->name('submissions.loa.download');
+        Route::get('/submissions/{submission}/presentation', [App\Http\Controllers\Participant\PresentationController::class, 'edit'])->name('submissions.presentation.edit');
+        Route::put('/submissions/{submission}/presentation', [App\Http\Controllers\Participant\PresentationController::class, 'update'])->name('submissions.presentation.update');
 
         Route::get('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'revision'])->name('submissions.revision');
         Route::post('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadRevision'])->name('submissions.revision.upload');

@@ -155,6 +155,106 @@
         <div class="card rounded-0 mb-3">
             <div class="card-header">
                 <h3 class="card-title">
+                    <i class="bi bi-globe2 me-2"></i>
+                    Attendance Options
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info rounded-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Select how participants can attend this conference.
+                    At least one option must be enabled.
+                </div>
+                @php
+                    $selectedAttendanceTypes = old('attendance_types', $attendanceOptions ?? []);
+                @endphp
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <div class="border rounded-0 p-3 h-100">
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_online"
+                                    name="attendance_types[]" value="online" @checked(in_array('online', $selectedAttendanceTypes, true))>
+
+                                <label class="form-check-label fw-semibold" for="attendance_online">
+
+                                    <i class="bi bi-camera-video me-1"></i>
+                                    Online
+
+                                </label>
+                            </div>
+
+                            <div class="form-text">
+                                Participants attend the conference remotely.
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="border rounded-0 p-3 h-100">
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_offline"
+                                    name="attendance_types[]" value="offline" @checked(in_array('offline', $selectedAttendanceTypes, true))>
+
+                                <label class="form-check-label fw-semibold" for="attendance_offline">
+
+                                    <i class="bi bi-building me-1"></i>
+                                    Offline
+
+                                </label>
+                            </div>
+
+                            <div class="form-text">
+                                Participants attend at the conference venue.
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="border rounded-0 p-3 h-100">
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_hybrid"
+                                    name="attendance_types[]" value="hybrid" @checked(in_array('hybrid', $selectedAttendanceTypes, true))>
+
+                                <label class="form-check-label fw-semibold" for="attendance_hybrid">
+
+                                    <i class="bi bi-diagram-3 me-1"></i>
+                                    Hybrid
+
+                                </label>
+                            </div>
+
+                            <div class="form-text">
+                                Participants can attend online or at the venue.
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                @error('attendance_types')
+                    <div class="text-danger small mt-2">
+                        {{ $message }}
+                    </div>
+                @enderror
+
+                @error('attendance_types.*')
+                    <div class="text-danger small mt-2">
+                        {{ $message }}
+                    </div>
+                @enderror
+
+            </div>
+        </div>
+        <div class="card rounded-0 mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
                     <i class="bi bi-diagram-3 me-2"></i>
                     Conference Workflow
                 </h3>

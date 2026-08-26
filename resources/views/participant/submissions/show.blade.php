@@ -67,7 +67,8 @@
                     </a>
                 @endif
                 @if (in_array($submission->status, ['accepted', 'camera_ready', 'published'], true))
-                    <a href="{{ route('participant.submissions.loa', $submission) }}" class="btn btn-success btn-sm rounded-0">
+                    <a href="{{ route('participant.submissions.loa', $submission) }}"
+                        class="btn btn-success btn-sm rounded-0">
                         <i class="bi bi-file-earmark-check me-1"></i>
                         View LOA
                     </a>
@@ -139,19 +140,20 @@
                 @endif
                 @if ($submission->status === 'accepted')
                     <div class="alert alert-success rounded-0 mb-2">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center gap-3">
                             <div>
                                 <strong>
                                     Paper Accepted
                                 </strong>
                                 <div class="small">
-                                    Please upload the final camera-ready version.
+                                    Your paper has been accepted. Please complete your presentation details before
+                                    proceeding to payment and camera-ready submission.
                                 </div>
                             </div>
-                            <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
-                                class="btn btn-success btn-sm rounded-0">
-                                <i class="bi bi-file-earmark-check me-1"></i>
-                                Upload Camera Ready
+                            <a href="{{ route('participant.submissions.presentation.edit', $submission) }}"
+                                class="btn btn-primary btn-sm rounded-0 text-nowrap">
+                                <i class="bi bi-easel2 me-1"></i>
+                                Presentation Details
                             </a>
                         </div>
                     </div>

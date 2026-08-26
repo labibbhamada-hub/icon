@@ -54,46 +54,63 @@ class SubmissionController extends Controller
 
     public function create()
     {
-        $participants = Participant::with([
+        $participant = Participant::with([
             'conference.setting',
             'conference.configuration',
+            'registrationType',
         ])
-            ->where(
-                'user_id',
-                Auth::id()
-            )
-            ->where(
-                'registration_status',
-                'confirmed'
-            )
+            ->where('user_id', Auth::id())
+            ->where(function ($query) {
+                $query
+                    ->where('registration_status', 'confirmed')
+                    ->orWhere(function ($query) {
+                        $query
+                            ->where(
+                                'registration_status',
+                                'pending'
+                            )
+                            ->whereHas(
+                                'registrationType',
+                                function ($query) {
+                                    $query->where(
+                                        'category',
+                                        'presenter'
+                                    );
+                                }
+                            );
+                    });
+            })
             ->whereHas('conference.setting', function ($query) {
                 $query
                     ->where('is_active', true)
+                    ->where('published', true)
                     ->where('submission_enabled', true)
                     ->where('maintenance_mode', false);
             })
-            ->get();
+            ->latest()
+            ->first();
 
-        $participants = $participants
-            ->filter(function ($participant) {
-                return $this->isSubmissionOpen(
-                    $participant->conference_id
-                );
-            })
-            ->values();
-
-        if ($participants->isEmpty()) {
+        if (!$participant) {
             return redirect()
                 ->route('participant.submissions.index')
                 ->with(
                     'error',
-                    'You do not have any conference registration currently open for paper submission.'
+                    'You do not have a conference registration currently open for paper submission.'
                 );
         }
 
-        $submissionDeadlines = ImportantDate::whereIn(
+        if (!$this->isSubmissionOpen($participant->conference_id)) {
+            return redirect()
+                ->route('participant.submissions.index')
+                ->with(
+                    'error',
+                    'The paper submission deadline has passed for this conference.'
+                );
+        }
+
+        $submissionDeadline = ImportantDate::where(
             'conference_id',
-            $participants->pluck('conference_id')
+            $participant->conference_id
         )
             ->where(
                 'type',
@@ -104,13 +121,7 @@ class SubmissionController extends Controller
                 true
             )
             ->orderByDesc('date')
-            ->get()
-            ->groupBy('conference_id')
-            ->map(function ($dates) {
-                return $dates->first();
-            });
-
-        $participant = $participants->first();
+            ->first();
 
         $topics = Topic::where(
             'conference_id',
@@ -127,21 +138,21 @@ class SubmissionController extends Controller
         return view(
             'participant.submissions.create',
             compact(
-                'participants',
+                'participant',
                 'topics',
-                'submissionDeadlines'
+                'submissionDeadline'
             )
         );
     }
 
-    public function store(
-        SubmissionRequest $request
-    ) {
+    public function store(SubmissionRequest $request)
+    {
         $data = $request->validated();
 
         $participant = Participant::with([
             'conference.setting',
             'conference.configuration',
+            'registrationType',
         ])
             ->where(
                 'id',
@@ -151,11 +162,42 @@ class SubmissionController extends Controller
                 'user_id',
                 Auth::id()
             )
-            ->where(
-                'registration_status',
-                'confirmed'
-            )
+            ->where(function ($query) {
+                $query
+                    ->where(
+                        'registration_status',
+                        'confirmed'
+                    )
+                    ->orWhere(function ($query) {
+                        $query
+                            ->where(
+                                'registration_status',
+                                'pending'
+                            )
+                            ->whereHas(
+                                'registrationType',
+                                function ($query) {
+                                    $query->where(
+                                        'category',
+                                        'presenter'
+                                    );
+                                }
+                            );
+                    });
+            })
             ->firstOrFail();
+
+        $canSubmit =
+            $participant->registration_status === 'confirmed'
+            || (
+                $participant->registration_status === 'pending'
+                && $participant->registrationType?->category === 'presenter'
+            );
+
+        abort_unless(
+            $canSubmit,
+            403
+        );
 
         if (
             !$participant->conference?->setting?->submission_enabled

@@ -14,6 +14,7 @@ class DashboardController extends Controller
     {
         $participants = Participant::with([
             'conference.setting',
+            'registrationType',
             'submissions.topic',
         ])
             ->where('user_id', Auth::id())
@@ -50,53 +51,121 @@ class DashboardController extends Controller
         foreach ($participants as $participant) {
             $payment = $payments->get($participant->id);
             $submissions = $participant->submissions->sortByDesc('created_at');
+            $isPresenter = $participant->registrationType?->category === 'presenter';
             if ($participant->registration_status === 'pending') {
-                if (!$payment) {
-                    $candidate = [
-                        'priority' => 10,
-                        'type' => 'warning',
-                        'icon' => 'bi-credit-card',
-                        'title' => 'Payment Required',
-                        'description' => 'Your conference registration is waiting for payment.',
-                        'button' => 'Submit Payment',
-                        'route' => route('participant.payments.create'),
-                    ];
-                    if ($candidate['priority'] < $actionPriority) {
-                        $nextAction = $candidate;
-                        $actionPriority = $candidate['priority'];
+                if (!$isPresenter) {
+                    if (!$payment) {
+                        $candidate = [
+                            'priority' => 10,
+                            'type' => 'warning',
+                            'icon' => 'bi-credit-card',
+                            'title' => 'Payment Required',
+                            'description' => 'Your conference registration is waiting for payment.',
+                            'button' => 'Submit Payment',
+                            'route' => route('participant.payments.create'),
+                        ];
+                        if ($candidate['priority'] < $actionPriority) {
+                            $nextAction = $candidate;
+                            $actionPriority = $candidate['priority'];
+                        }
+                    } elseif ($payment->status === 'rejected') {
+                        $candidate = [
+                            'priority' => 1,
+                            'type' => 'danger',
+                            'icon' => 'bi-exclamation-circle',
+                            'title' => 'Payment Rejected',
+                            'description' => 'Your payment requires attention. Please review your payment and submit a new proof.',
+                            'button' => 'Review Payment',
+                            'route' => route('participant.payments.index'),
+                        ];
+                        if ($candidate['priority'] < $actionPriority) {
+                            $nextAction = $candidate;
+                            $actionPriority = $candidate['priority'];
+                        }
+                    } elseif ($payment->status === 'pending') {
+                        $candidate = [
+                            'priority' => 5,
+                            'type' => 'warning',
+                            'icon' => 'bi-hourglass-split',
+                            'title' => 'Payment Verification',
+                            'description' => 'Your payment proof has been submitted and is waiting for verification.',
+                            'button' => 'View Payment',
+                            'route' => route('participant.payments.index'),
+                        ];
+                        if ($candidate['priority'] < $actionPriority) {
+                            $nextAction = $candidate;
+                            $actionPriority = $candidate['priority'];
+                        }
                     }
-                } elseif ($payment->status === 'rejected') {
-                    $candidate = [
-                        'priority' => 1,
-                        'type' => 'danger',
-                        'icon' => 'bi-exclamation-circle',
-                        'title' => 'Payment Rejected',
-                        'description' => 'Your payment requires attention. Please review your payment and submit a new proof.',
-                        'button' => 'Review Payment',
-                        'route' => route('participant.payments.index'),
-                    ];
-                    if ($candidate['priority'] < $actionPriority) {
-                        $nextAction = $candidate;
-                        $actionPriority = $candidate['priority'];
+                    continue;
+                }
+                if ($payment) {
+                    if ($payment->status === 'rejected') {
+                        $candidate = [
+                            'priority' => 1,
+                            'type' => 'danger',
+                            'icon' => 'bi-exclamation-circle',
+                            'title' => 'Payment Rejected',
+                            'description' => 'Your payment requires attention. Please review your payment and submit a new proof.',
+                            'button' => 'Review Payment',
+                            'route' => route('participant.payments.index'),
+                        ];
+                        if ($candidate['priority'] < $actionPriority) {
+                            $nextAction = $candidate;
+                            $actionPriority = $candidate['priority'];
+                        }
+                        continue;
                     }
-                } elseif ($payment->status === 'pending') {
-                    $candidate = [
-                        'priority' => 5,
-                        'type' => 'warning',
-                        'icon' => 'bi-hourglass-split',
-                        'title' => 'Payment Verification',
-                        'description' => 'Your payment proof has been submitted and is waiting for verification.',
-                        'button' => 'View Payment',
-                        'route' => route('participant.payments.index'),
-                    ];
-                    if ($candidate['priority'] < $actionPriority) {
-                        $nextAction = $candidate;
-                        $actionPriority = $candidate['priority'];
+                    if ($payment->status === 'pending') {
+                        $candidate = [
+                            'priority' => 5,
+                            'type' => 'warning',
+                            'icon' => 'bi-hourglass-split',
+                            'title' => 'Payment Verification',
+                            'description' => 'Your payment proof has been submitted and is waiting for verification.',
+                            'button' => 'View Payment',
+                            'route' => route('participant.payments.index'),
+                        ];
+                        if ($candidate['priority'] < $actionPriority) {
+                            $nextAction = $candidate;
+                            $actionPriority = $candidate['priority'];
+                        }
+                        continue;
                     }
                 }
-                continue;
+                if ($submissions->isEmpty()) {
+                    if (
+                        $participant->conference?->setting?->submission_enabled
+                        && !$participant->conference?->setting?->maintenance_mode
+                    ) {
+                        $candidate = [
+                            'priority' => 20,
+                            'type' => 'success',
+                            'icon' => 'bi-file-earmark-plus',
+                            'title' => 'Submit Your Paper',
+                            'description' => 'You can submit your paper for review before completing presenter payment.',
+                            'button' => 'Submit Paper',
+                            'route' => route('participant.submissions.create'),
+                        ];
+                    } else {
+                        $candidate = [
+                            'priority' => 90,
+                            'type' => 'info',
+                            'icon' => 'bi-hourglass',
+                            'title' => 'Waiting for Submission',
+                            'description' => 'Submission is currently not open.',
+                            'button' => null,
+                            'route' => null,
+                        ];
+                    }
+                    if ($candidate['priority'] < $actionPriority) {
+                        $nextAction = $candidate;
+                        $actionPriority = $candidate['priority'];
+                    }
+                    continue;
+                }
             }
-            if ($participant->registration_status !== 'confirmed') {
+            if ($participant->registration_status !== 'confirmed' && !$isPresenter) {
                 continue;
             }
             if ($submissions->isEmpty()) {
@@ -150,9 +219,12 @@ class DashboardController extends Controller
                             'type' => 'success',
                             'icon' => 'bi-check-circle',
                             'title' => 'Paper Accepted',
-                            'description' => 'Congratulations! Your paper has been accepted. Please upload the final camera-ready version.',
-                            'button' => 'Upload Camera Ready',
-                            'route' => route('participant.submissions.camera-ready', $submission),
+                            'description' => 'Congratulations! Your paper has been accepted. Please complete your presentation details before proceeding to the next step.',
+                            'button' => 'Presentation Details',
+                            'route' => route(
+                                'participant.submissions.presentation.edit',
+                                $submission
+                            ),
                         ];
                         break;
                     case 'under_review':

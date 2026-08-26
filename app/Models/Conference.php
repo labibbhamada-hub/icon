@@ -26,9 +26,21 @@ class Conference extends Model
         return $this->hasOne(ConferenceConfiguration::class);
     }
 
+    public function attendanceOptions()
+    {
+        return $this->hasMany(ConferenceAttendanceOption::class)->orderBy('sort_order');
+    }
+
     public function registrationTypes()
     {
         return $this->hasMany(ConferenceRegistrationType::class);
+    }
+
+    public function paymentMethods()
+    {
+        return $this->hasMany(
+            ConferencePaymentMethod::class
+        )->orderBy('sort_order');
     }
 
     public function topics()

@@ -19,11 +19,16 @@ class Submission extends Model
         'camera_ready_file',
         'camera_ready_correction_reason',
         'status',
+        'presentation_type',
+        'presentation_mode',
+        'presenter_author_id',
+        'presentation_completed',
         'submitted_at',
     ];
 
     protected $casts = [
         'submitted_at' => 'datetime',
+        'presentation_completed' => 'boolean',
     ];
 
     public function conference()
@@ -44,6 +49,11 @@ class Submission extends Model
     public function authors()
     {
         return $this->hasMany(SubmissionAuthor::class)->orderBy('sort_order');
+    }
+
+    public function presenterAuthor()
+    {
+        return $this->belongsTo(SubmissionAuthor::class, 'presenter_author_id');
     }
 
     public function reviews()

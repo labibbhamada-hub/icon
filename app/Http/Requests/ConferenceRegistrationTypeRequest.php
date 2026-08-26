@@ -56,6 +56,16 @@ class ConferenceRegistrationTypeRequest extends FormRequest
                 'numeric',
                 'min:0',
             ],
+            'included_papers' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
+            'additional_paper_fee' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
             'currency' => [
                 'required',
                 'string',
@@ -88,6 +98,8 @@ class ConferenceRegistrationTypeRequest extends FormRequest
             'code' => 'code',
             'category' => 'category',
             'fee' => 'registration fee',
+            'included_papers' => 'included papers',
+            'additional_paper_fee' => 'additional paper fee',
             'currency' => 'currency',
             'description' => 'description',
             'benefits' => 'benefits',

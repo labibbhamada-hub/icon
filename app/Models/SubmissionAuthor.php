@@ -24,4 +24,9 @@ class SubmissionAuthor extends Model
     {
         return $this->belongsTo(Submission::class);
     }
+
+    public function presentedSubmissions()
+    {
+        return $this->hasMany(Submission::class, 'presenter_author_id');
+    }
 }

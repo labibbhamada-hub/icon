@@ -85,6 +85,40 @@
                 </div>
             @enderror
         </div>
+        <div class="col-md-3 mb-2">
+            <label class="form-label">
+                Included Papers
+                <span class="text-danger">*</span>
+            </label>
+            <input type="number" name="included_papers" min="0"
+                value="{{ old('included_papers', $conferenceRegistrationType->included_papers ?? 0) }}"
+                class="form-control @error('included_papers') is-invalid @enderror rounded-0">
+            @error('included_papers')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+            <div class="form-text">
+                Number of accepted papers included in this registration.
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <label class="form-label">
+                Additional Paper Fee
+                <span class="text-danger">*</span>
+            </label>
+            <input type="number" name="additional_paper_fee" min="0" step="0.01"
+                value="{{ old('additional_paper_fee', $conferenceRegistrationType->additional_paper_fee ?? 0) }}"
+                class="form-control @error('additional_paper_fee') is-invalid @enderror rounded-0">
+            @error('additional_paper_fee')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+            <div class="form-text">
+                Fee for each additional accepted paper.
+            </div>
+        </div>
         <div class="col-md-6 mb-2">
             <label class="form-label">
                 Currency
