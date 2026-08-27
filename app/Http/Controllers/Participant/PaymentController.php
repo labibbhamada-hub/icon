@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Participant\PaymentRequest;
 use App\Models\Participant;
 use App\Models\Payment;
+use App\Services\PaymentCalculationService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 class PaymentController extends Controller
 {
@@ -20,7 +23,9 @@ class PaymentController extends Controller
             ->pluck('id');
 
         $payments = Payment::with([
-            'participant.conference.setting',
+            'participant.conference',
+            'participant.registrationType',
+            'paymentMethod',
             'verifier',
         ])
             ->whereIn(
@@ -36,21 +41,55 @@ class PaymentController extends Controller
         );
     }
 
-    public function create()
-    {
+    public function create(
+        PaymentCalculationService $paymentCalculationService
+    ) {
         $participants = Participant::with([
             'conference.setting',
-            'conference.configuration',
-        ])
-            ->where('user_id', Auth::id())
-            ->where('registration_status', 'pending')
-            ->whereHas('conference.setting', function ($query) {
+            'conference.paymentMethods' => function ($query) {
                 $query
                     ->where('is_active', true)
-                    ->where('payment_enabled', true)
-                    ->where('maintenance_mode', false);
+                    ->orderBy('sort_order')
+                    ->orderBy('name');
+            },
+            'registrationType',
+            'submissions',
+        ])
+            ->where(
+                'user_id',
+                Auth::id()
+            )
+            ->whereHas(
+                'conference.setting',
+                function ($query) {
+                    $query
+                        ->where(
+                            'is_active',
+                            true
+                        )
+                        ->where(
+                            'payment_enabled',
+                            true
+                        )
+                        ->where(
+                            'maintenance_mode',
+                            false
+                        );
+                }
+            )
+            ->get()
+            ->filter(function (Participant $participant) use (
+                $paymentCalculationService
+            ) {
+                return $paymentCalculationService
+                    ->canPay($participant);
             })
-            ->get();
+            ->filter(function (Participant $participant) {
+                return !$this->hasPendingPayment(
+                    $participant
+                );
+            })
+            ->values();
 
         return view(
             'participant.payments.create',
@@ -58,108 +97,152 @@ class PaymentController extends Controller
         );
     }
 
-    public function store(PaymentRequest $request)
-    {
+    public function store(
+        PaymentRequest $request,
+        PaymentCalculationService $paymentCalculationService
+    ) {
         $data = $request->validated();
 
         $participant = Participant::with([
             'conference.setting',
-            'conference.configuration',
+            'conference.paymentMethods',
+            'registrationType',
+            'submissions',
         ])
-            ->where('id', $data['participant_id'])
-            ->where('user_id', Auth::id())
-            ->where('registration_status', 'pending')
+            ->where(
+                'id',
+                $data['participant_id']
+            )
+            ->where(
+                'user_id',
+                Auth::id()
+            )
             ->firstOrFail();
 
-        // 1. Cek apakah payment sedang aktif
         if (
             !$participant->conference?->setting?->payment_enabled
             || $participant->conference?->setting?->maintenance_mode
         ) {
             return back()
+                ->withInput()
                 ->with(
                     'error',
                     'Payment submission is currently unavailable.'
                 );
         }
 
-        // 2. Ambil konfigurasi payment conference
-        $configuration =
-            $participant->conference->configuration;
-
-        // 3. Pastikan configuration sudah tersedia
-        if (!$configuration) {
-            return back()
-                ->with(
-                    'error',
-                    'Payment configuration has not been set for this conference.'
-                );
-        }
-
-        // 4. Pastikan rekening bank sudah lengkap
         if (
-            empty($configuration->bank_name)
-            || empty($configuration->account_number)
-            || empty($configuration->account_name)
+            !$paymentCalculationService->canPay(
+                $participant
+            )
         ) {
             return back()
+                ->withInput()
                 ->with(
                     'error',
-                    'Payment account has not been configured for this conference.'
+                    'This registration is not yet eligible for payment.'
                 );
         }
 
-        // 5. Tentukan nominal otomatis
-        $amount =
-            $participant->participant_type === 'student'
-            ? $configuration->student_fee
-            : $configuration->regular_fee;
-
-        // 6. Pastikan nominal sudah diatur
-        if ($amount <= 0) {
+        if (
+            $this->hasPendingPayment(
+                $participant
+            )
+        ) {
             return back()
+                ->withInput()
                 ->with(
                     'error',
-                    'Registration fee has not been configured for this conference.'
+                    'A payment for this registration is already being processed.'
                 );
         }
 
-        // 7. Generate payment code
-        $paymentCode =
-            $this->generatePaymentCode();
+        $calculation =
+            $paymentCalculationService
+            ->calculate($participant);
 
-        // 8. Simpan bukti transfer
-        $proofFile = $request
-            ->file('proof_file')
-            ->store(
-                'payments/proofs',
-                'local'
-            );
+        if ($calculation['outstanding_amount'] <= 0) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'There is no outstanding payment for this registration.'
+                );
+        }
 
-        // 9. Simpan payment
-        Payment::create([
-            'participant_id' => $participant->id,
-            'payment_code' => $paymentCode,
-            'amount' => $amount,
-            'payment_method' => 'bank_transfer',
-            'proof_file' => $proofFile,
-            'status' => 'pending',
-            'notes' => $data['notes'] ?? null,
-            'paid_at' => $data['paid_at'],
-        ]);
+        DB::beginTransaction();
 
-        return redirect()
-            ->route('participant.payments.index')
-            ->with(
-                'success',
-                'Payment proof submitted successfully.'
-            );
+        try {
+            $paymentCode =
+                $this->generatePaymentCode();
+
+            $proofFile = $request
+                ->file('proof_file')
+                ->store(
+                    'payments/proofs',
+                    'local'
+                );
+
+            Payment::create([
+                'participant_id' =>
+                $participant->id,
+
+                'payment_method_id' =>
+                $data['payment_method_id'],
+
+                'payment_code' =>
+                $paymentCode,
+
+                'amount' =>
+                $calculation['outstanding_amount'],
+
+                'proof_file' =>
+                $proofFile,
+
+                'status' =>
+                'pending',
+
+                'notes' =>
+                $data['notes'] ?? null,
+
+                'paid_at' =>
+                $data['paid_at'],
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route(
+                    'participant.payments.index'
+                )
+                ->with(
+                    'success',
+                    'Payment proof submitted successfully.'
+                );
+        } catch (Throwable $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
+
+    private function hasPendingPayment(
+        Participant $participant
+    ): bool {
+        return $participant
+            ->payments()
+            ->where(
+                'status',
+                'pending'
+            )
+            ->exists();
     }
 
     private function generatePaymentCode(): string
     {
         do {
-            $code = 'PAY-ICON26-' .
+            $code =
+                'PAY-ICON26-' .
                 strtoupper(
                     Str::random(6)
                 );

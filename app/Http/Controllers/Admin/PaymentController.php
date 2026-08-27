@@ -20,6 +20,8 @@ class PaymentController extends Controller
     {
         $payments = Payment::with([
             'participant.conference',
+            'participant.registrationType',
+            'paymentMethod',
             'verifier',
         ])
             ->latest()
@@ -32,11 +34,16 @@ class PaymentController extends Controller
     {
         $payment->load([
             'participant.conference',
+            'participant.registrationType',
             'participant.user',
+            'paymentMethod',
             'verifier',
         ]);
 
-        return view('admin.payments.show', compact('payment'));
+        return view(
+            'admin.payments.show',
+            compact('payment')
+        );
     }
 
     public function verify(Payment $payment)
@@ -133,7 +140,7 @@ class PaymentController extends Controller
         }
 
         if ($payment->proof_file) {
-            Storage::disk('public')
+            Storage::disk('local')
                 ->delete($payment->proof_file);
         }
 

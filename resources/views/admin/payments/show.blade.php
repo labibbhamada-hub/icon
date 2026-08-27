@@ -55,7 +55,7 @@
                                     Payment Amount
                                 </small>
                                 <div class="fs-3 fw-bold mt-2">
-                                    Rp
+                                    {{ $payment->participant?->registrationType?->currency ?? 'IDR' }}
                                     {{ number_format($payment->amount, 0, ',', '.') }}
                                 </div>
                             </div>
@@ -88,7 +88,12 @@
                                     Payment Method
                                 </small>
                                 <div class="fw-semibold mt-3">
-                                    {{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}
+                                    {{ $payment->paymentMethod?->name ?? '—' }}
+                                    @if ($payment->paymentMethod?->type)
+                                        <small class="text-muted d-block mt-1">
+                                            {{ ucwords(str_replace('_', ' ', $payment->paymentMethod->type)) }}
+                                        </small>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -125,6 +130,17 @@
                         </div>
                         <div class="col-md-8">
                             {{ $payment->participant?->conference?->name ?? '—' }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <strong>
+                                Registration Type
+                            </strong>
+                        </div>
+
+                        <div class="col-md-8">
+                            {{ $payment->participant?->registrationType?->name ?? '—' }}
                         </div>
                     </div>
                     <div class="row mb-2">

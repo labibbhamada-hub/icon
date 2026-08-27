@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('participant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('payment_method_id')->after('participant_id')->constrained('conference_payment_methods')->restrictOnDelete();
             $table->string('payment_code')->unique();
             $table->decimal('amount', 15, 2);
-            $table->string('payment_method')->default('bank_transfer');
             $table->string('proof_file')->nullable();
             $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
             $table->text('notes')->nullable();

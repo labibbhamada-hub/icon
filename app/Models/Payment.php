@@ -8,9 +8,9 @@ class Payment extends Model
 {
     protected $fillable = [
         'participant_id',
+        'payment_method_id',
         'payment_code',
         'amount',
-        'payment_method',
         'proof_file',
         'status',
         'notes',
@@ -27,7 +27,17 @@ class Payment extends Model
 
     public function participant()
     {
-        return $this->belongsTo(Participant::class);
+        return $this->belongsTo(
+            Participant::class
+        );
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(
+            ConferencePaymentMethod::class,
+            'payment_method_id'
+        );
     }
 
     public function verifier()

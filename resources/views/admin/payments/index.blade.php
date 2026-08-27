@@ -41,6 +41,7 @@
                             <th>Payment</th>
                             <th>Participant</th>
                             <th>Conference</th>
+                            <th>Payment Method</th>
                             <th>Amount</th>
                             <th>Status</th>
                             <th width="40">Action</th>
@@ -76,10 +77,29 @@
                                     {{ $payment->participant?->conference?->short_name ?? '—' }}
                                 </td>
                                 <td class="align-top">
+
+                                    @if ($payment->paymentMethod)
+                                        <strong>
+                                            {{ $payment->paymentMethod->name }}
+                                        </strong>
+
+                                        @if ($payment->paymentMethod->type)
+                                            <small class="text-muted d-block">
+                                                {{ ucwords(str_replace('_', ' ', $payment->paymentMethod->type)) }}
+                                            </small>
+                                        @endif
+                                    @else
+                                        —
+                                    @endif
+
+                                </td>
+                                <td class="align-top">
+
                                     <strong>
-                                        Rp
+                                        {{ $payment->participant?->registrationType?->currency ?? 'IDR' }}
                                         {{ number_format($payment->amount, 0, ',', '.') }}
                                     </strong>
+
                                 </td>
                                 <td class="align-top">
                                     @if ($payment->status === 'verified')
@@ -105,7 +125,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <i class="bi bi-credit-card display-5 text-muted"></i>
                                     <h5 class="mt-3">
                                         No Payments Found

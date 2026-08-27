@@ -214,18 +214,73 @@ class DashboardController extends Controller
                         ];
                         break;
                     case 'accepted':
-                        $candidate = [
-                            'priority' => 3,
-                            'type' => 'success',
-                            'icon' => 'bi-check-circle',
-                            'title' => 'Paper Accepted',
-                            'description' => 'Congratulations! Your paper has been accepted. Please complete your presentation details before proceeding to the next step.',
-                            'button' => 'Presentation Details',
-                            'route' => route(
-                                'participant.submissions.presentation.edit',
-                                $submission
-                            ),
-                        ];
+                        $presentationComplete =
+                            !empty($submission->presentation_type)
+                            && !empty($submission->presentation_mode)
+                            && !empty($submission->presenter_author_id);
+                        if (!$presentationComplete) {
+                            $candidate = [
+                                'priority' => 3,
+                                'type' => 'success',
+                                'icon' => 'bi-easel',
+                                'title' => 'Complete Presentation Details',
+                                'description' => 'Your paper has been accepted. Please complete your presentation details before proceeding to payment.',
+                                'button' => 'Presentation Details',
+                                'route' => route(
+                                    'participant.submissions.presentation.edit',
+                                    $submission
+                                ),
+                            ];
+                        } elseif (!$payment) {
+                            $candidate = [
+                                'priority' => 4,
+                                'type' => 'warning',
+                                'icon' => 'bi-credit-card',
+                                'title' => 'Payment Required',
+                                'description' => 'Your presentation details are complete. Please complete the payment for your accepted paper.',
+                                'button' => 'Submit Payment',
+                                'route' => route(
+                                    'participant.payments.create'
+                                ),
+                            ];
+                        } elseif ($payment->status === 'rejected') {
+                            $candidate = [
+                                'priority' => 2,
+                                'type' => 'danger',
+                                'icon' => 'bi-exclamation-circle',
+                                'title' => 'Payment Rejected',
+                                'description' => 'Your payment was rejected. Please review the payment information and submit a new proof.',
+                                'button' => 'Review Payment',
+                                'route' => route(
+                                    'participant.payments.index'
+                                ),
+                            ];
+                        } elseif ($payment->status === 'pending') {
+                            $candidate = [
+                                'priority' => 4,
+                                'type' => 'warning',
+                                'icon' => 'bi-hourglass-split',
+                                'title' => 'Payment Verification',
+                                'description' => 'Your payment proof has been submitted and is waiting for administrator verification.',
+                                'button' => 'View Payment',
+                                'route' => route(
+                                    'participant.payments.index'
+                                ),
+                            ];
+                        } elseif ($payment->status === 'verified') {
+                            $candidate = [
+                                'priority' => 5,
+                                'type' => 'info',
+                                'icon' => 'bi-file-earmark-check',
+                                'title' => 'Submit Camera-Ready Paper',
+                                'description' => 'Your paper, presentation details, and payment are complete. Please upload the final camera-ready version of your paper.',
+                                'button' => 'Upload Camera Ready',
+                                'route' => route(
+                                    'participant.submissions.camera-ready',
+                                    $submission
+                                ),
+                            ];
+                        }
                         break;
                     case 'under_review':
                         $candidate = [

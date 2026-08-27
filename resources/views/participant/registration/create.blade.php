@@ -9,12 +9,10 @@
                 <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
-
                 <h1 class="mb-0 fs-3">
                     Register for {{ $conference?->short_name ?? 'Conference' }}
                 </h1>
             </div>
-
             <p class="text-muted mb-0">
                 Complete your conference registration.
             </p>
@@ -77,70 +75,59 @@
                         How will you participate?
                     </h3>
                 </div>
-
                 <div class="card-body">
-
+                    @error('registration_type_id')
+                        <div class="alert alert-danger rounded-0 mb-3">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-exclamation-circle fs-5"></i>
+                                <div>
+                                    <strong>
+                                        Registration Type Required
+                                    </strong>
+                                    <div class="small mt-1">
+                                        Please choose how you would like to participate
+                                        in this conference.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @enderror
                     <div class="row g-3">
-
                         @foreach ($conference->registrationTypes as $registrationType)
                             <div class="col-md-6">
-
                                 <label class="d-block h-100">
-
                                     <input type="radio" name="registration_type_id" value="{{ $registrationType->id }}"
-                                        class="btn-check registration-type-option" @checked(old('registration_type_id') == $registrationType->id) required>
-
+                                        class="btn-check registration-type-option" @checked(old('registration_type_id') == $registrationType->id)>
                                     <div class="border rounded-0 p-3 h-100 registration-type-card">
-
-                                        {{-- Header --}}
                                         <div class="d-flex justify-content-between align-items-start gap-3">
-
                                             <div>
-
                                                 <h5 class="fw-bold mb-0">
                                                     {{ $registrationType->name }}
                                                 </h5>
-
                                             </div>
-
                                             <div class="text-end">
-
                                                 <small class="text-muted d-block">
-
                                                     @if ($registrationType->category === 'presenter')
                                                         Fee After Acceptance
                                                     @else
                                                         Registration Fee
                                                     @endif
-
                                                 </small>
-
                                                 <strong class="text-success">
-
                                                     {{ $registrationType->currency }}
                                                     {{ number_format($registrationType->fee, 0, ',', '.') }}
-
                                                 </strong>
-
                                             </div>
-
                                         </div>
-
-                                        {{-- Presenter Pricing Information --}}
                                         @if ($registrationType->category === 'presenter')
                                             <div class="mt-3 pt-2 border-top">
-
                                                 <div class="small text-muted">
-
                                                     <i class="bi bi-file-earmark-check me-1"></i>
-
                                                     Includes
                                                     {{ $registrationType->included_papers }}
                                                     accepted
                                                     {{ $registrationType->included_papers === 1 ? 'paper' : 'papers' }}.
-
                                                 </div>
-
                                                 @if ($registrationType->additional_paper_fee > 0)
                                                     <div class="small text-muted mt-1">
 
@@ -203,15 +190,7 @@
                         @endforeach
 
                     </div>
-
-                    @error('registration_type_id')
-                        <div class="text-danger small mt-2">
-                            {{ $message }}
-                        </div>
-                    @enderror
-
                 </div>
-
             </div>
 
             {{-- =========================================================
@@ -350,49 +329,32 @@
                             <label for="city" class="form-label">
                                 City
                             </label>
-
                             <input type="text" id="city" name="city" value="{{ old('city') }}"
                                 class="form-control rounded-0 @error('city') is-invalid @enderror" placeholder="City">
-
                             @error('city')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
-
                         </div>
-
-                        {{-- =================================================
-                             ATTENDANCE
-                        ================================================== --}}
                         <div class="col-md-12 mb-2">
-
                             <label class="form-label">
                                 Attendance
                                 <span class="text-danger">*</span>
                             </label>
-
                             @if ($attendanceOptions->isEmpty())
-
                                 <div class="alert alert-warning rounded-0 mb-0">
-
                                     <i class="bi bi-exclamation-triangle me-2"></i>
-
                                     Attendance options have not been configured
                                     for this conference.
-
                                 </div>
                             @elseif ($attendanceOptions->count() === 1)
                                 @php
                                     $attendance = $attendanceOptions->first();
                                 @endphp
-
                                 <input type="hidden" name="attendance_type" value="{{ $attendance->type }}">
-
                                 <div class="border rounded-0 p-3 bg-light">
-
                                     <div class="d-flex align-items-center gap-3">
-
                                         @if ($attendance->type === 'online')
                                             <i class="bi bi-camera-video fs-4 text-success"></i>
                                         @elseif ($attendance->type === 'offline')
@@ -400,43 +362,44 @@
                                         @else
                                             <i class="bi bi-diagram-3 fs-4 text-warning"></i>
                                         @endif
-
                                         <div>
-
                                             <small class="text-muted d-block">
                                                 Conference Attendance
                                             </small>
-
                                             <strong>
                                                 {{ ucfirst($attendance->type) }}
                                             </strong>
-
                                             <div class="small text-muted mt-1">
-
                                                 This conference currently supports
                                                 {{ $attendance->type }} attendance.
-
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                 </div>
                             @else
+                                @error('attendance_type')
+                                    <div class="alert alert-danger rounded-0 mt-3 mb-0">
+                                        <div class="d-flex align-items-start gap-2">
+                                            <i class="bi bi-exclamation-circle fs-5"></i>
+                                            <div>
+                                                <strong>
+                                                    Attendance Required
+                                                </strong>
+                                                <div class="small mt-1">
+                                                    {{ $message }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @enderror
                                 <div class="row g-2">
-
                                     @foreach ($attendanceOptions as $attendance)
                                         <div class="col-md-4">
-
                                             <label class="d-block h-100">
-
                                                 <input type="radio" name="attendance_type"
                                                     value="{{ $attendance->type }}" class="btn-check"
-                                                    @checked($selectedAttendance === $attendance->type) required>
-
+                                                    @checked($selectedAttendance === $attendance->type)>
                                                 <span class="btn btn-outline-secondary w-100 h-100 rounded-0 p-3">
-
                                                     @if ($attendance->type === 'online')
                                                         <i class="bi bi-camera-video me-1"></i>
                                                     @elseif ($attendance->type === 'offline')
@@ -444,32 +407,16 @@
                                                     @else
                                                         <i class="bi bi-diagram-3 me-1"></i>
                                                     @endif
-
                                                     {{ ucfirst($attendance->type) }}
-
                                                 </span>
-
                                             </label>
-
                                         </div>
                                     @endforeach
-
                                 </div>
-
                             @endif
-
-                            @error('attendance_type')
-                                <div class="text-danger small mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
                         </div>
-
                     </div>
-
                 </div>
-
                 {{-- Footer --}}
                 <div class="card-footer">
 

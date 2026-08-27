@@ -73,7 +73,50 @@
         </div>
         <div class="col-md-6 mb-2">
             <label class="form-label">
-                Registration Fee
+                Payment Timing
+                <span class="text-danger">*</span>
+            </label>
+            <select name="payment_timing" class="form-select @error('payment_timing') is-invalid @enderror rounded-0">
+                <option value="">
+                    Select Payment Timing
+                </option>
+                <option value="immediate" @selected(old('payment_timing', $conferenceRegistrationType->payment_timing ?? '') === 'immediate')>
+                    Pay during registration
+                </option>
+                <option value="after_acceptance" @selected(old('payment_timing', $conferenceRegistrationType->payment_timing ?? '') === 'after_acceptance')>
+                    Pay after paper acceptance
+                </option>
+            </select>
+            @error('payment_timing')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+            <div class="form-text">
+                Determine when participants are required to make payment.
+            </div>
+        </div>
+        <div class="col-md-6 mb-2">
+            <div class="border border-info rounded-0 p-3 h-100 bg-info-subtle">
+                <div class="small">
+                    <strong>
+                        Presenter registration
+                    </strong>
+                    <div class="mt-1">
+                        If payment is set to
+                        <strong>Pay after paper acceptance</strong>,
+                        participants can submit papers before making payment.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label class="form-label">
+                @if (old('payment_timing', $conferenceRegistrationType->payment_timing ?? '') === 'after_acceptance')
+                    Base Registration Fee
+                @else
+                    Registration Fee
+                @endif
                 <span class="text-danger">*</span>
             </label>
             <input type="number" name="fee" min="0" step="0.01"

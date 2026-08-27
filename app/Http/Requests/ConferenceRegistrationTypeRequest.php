@@ -51,6 +51,13 @@ class ConferenceRegistrationTypeRequest extends FormRequest
                     'presenter',
                 ]),
             ],
+            'payment_timing' => [
+                'required',
+                Rule::in([
+                    'immediate',
+                    'after_acceptance',
+                ]),
+            ],
             'fee' => [
                 'required',
                 'numeric',
@@ -69,7 +76,8 @@ class ConferenceRegistrationTypeRequest extends FormRequest
             'currency' => [
                 'required',
                 'string',
-                'max:10',
+                'size:3',
+                'uppercase',
             ],
             'description' => [
                 'nullable',
@@ -97,6 +105,7 @@ class ConferenceRegistrationTypeRequest extends FormRequest
             'name' => 'name',
             'code' => 'code',
             'category' => 'category',
+            'payment_timing' => 'payment timing',
             'fee' => 'registration fee',
             'included_papers' => 'included papers',
             'additional_paper_fee' => 'additional paper fee',
@@ -105,6 +114,36 @@ class ConferenceRegistrationTypeRequest extends FormRequest
             'benefits' => 'benefits',
             'is_active' => 'status',
             'sort_order' => 'sort order',
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function ($validator) {
+                $category = $this->input('category');
+                $paymentTiming = $this->input('payment_timing');
+
+                if (
+                    $category === 'presenter'
+                    && $paymentTiming !== 'after_acceptance'
+                ) {
+                    $validator->errors()->add(
+                        'payment_timing',
+                        'Presenter registration must use payment after paper acceptance.'
+                    );
+                }
+
+                if (
+                    $category === 'participant'
+                    && $paymentTiming !== 'immediate'
+                ) {
+                    $validator->errors()->add(
+                        'payment_timing',
+                        'Participant registration must use immediate payment.'
+                    );
+                }
+            },
         ];
     }
 }

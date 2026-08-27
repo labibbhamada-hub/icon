@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code', 50);
             $table->string('category', 30);
+            $table->string('payment_timing', 30)->default('immediate');
             $table->decimal('fee', 15, 2)->default(0);
             $table->unsignedInteger('included_papers')->default(0);
             $table->decimal('additional_paper_fee', 15, 2)->default(0);

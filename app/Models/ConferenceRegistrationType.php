@@ -11,6 +11,7 @@ class ConferenceRegistrationType extends Model
         'name',
         'code',
         'category',
+        'payment_timing',
         'fee',
         'included_papers',
         'additional_paper_fee',
@@ -33,5 +34,14 @@ class ConferenceRegistrationType extends Model
     public function participants()
     {
         return $this->hasMany(Participant::class, 'registration_type_id');
+    }
+    public function presentationPrices()
+    {
+        return $this->hasMany(
+            ConferencePresentationPrice::class,
+            'registration_type_id'
+        )
+            ->orderBy('sort_order')
+            ->orderBy('presentation_type');
     }
 }
