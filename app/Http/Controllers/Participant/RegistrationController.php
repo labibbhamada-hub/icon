@@ -42,10 +42,15 @@ class RegistrationController extends Controller
             'attendanceOptions',
             'registrationTypes' => function ($query) {
                 $query
-                    ->where(
-                        'is_active',
-                        true
-                    )
+                    ->where('is_active', true)
+                    ->with([
+                        'presentationPrices' => function ($query) {
+                            $query
+                                ->where('is_active', true)
+                                ->orderBy('sort_order')
+                                ->orderBy('presentation_type');
+                        },
+                    ])
                     ->orderBy('category')
                     ->orderBy('sort_order')
                     ->orderBy('name');

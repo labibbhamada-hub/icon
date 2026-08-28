@@ -368,9 +368,9 @@
                             <strong class="d-block">Final Paper</strong>
                         </div>
                         @if ($submission->camera_ready_file)
-                            <a href="{{ asset('storage/' . $submission->camera_ready_file) }}" target="_blank"
-                                class="btn btn-outline-success btn-sm rounded-0">
-                                <i class="bi bi-file-earmark-check me-1"></i>
+                            <a href="{{ route('admin.submissions.camera-ready.download', $submission) }}"
+                                target="_blank" class="btn btn-outline-danger btn-sm rounded-0">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>
                                 Open File
                             </a>
                         @else
@@ -409,8 +409,8 @@
                                 </strong>
                             </div>
                             @if ($submission->camera_ready_file)
-                                <a href="{{ asset('storage/' . $submission->camera_ready_file) }}" target="_blank"
-                                    class="btn btn-outline-danger btn-sm rounded-0">
+                                <a href="{{ route('admin.submissions.camera-ready.download', $submission) }}"
+                                    target="_blank" class="btn btn-outline-danger btn-sm rounded-0">
                                     <i class="bi bi-file-earmark-pdf me-1"></i>
                                     Open Camera-Ready PDF
                                 </a>
@@ -496,7 +496,7 @@
                     });
                 });
             });
-            
+
         document.querySelectorAll('.correction-camera-ready-form')
             .forEach(function(form) {
                 form.addEventListener('submit', function(event) {

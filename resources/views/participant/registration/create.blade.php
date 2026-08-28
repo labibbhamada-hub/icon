@@ -106,17 +106,68 @@
                                                 </h5>
                                             </div>
                                             <div class="text-end">
-                                                <small class="text-muted d-block">
-                                                    @if ($registrationType->category === 'presenter')
-                                                        Fee After Acceptance
+                                                @if ($registrationType->category === 'presenter')
+                                                    <small class="text-muted d-block">
+                                                        Payment After Acceptance
+                                                    </small>
+                                                    @php
+                                                        $oralPrice = $registrationType->presentationPrices->firstWhere(
+                                                            'presentation_type',
+                                                            'oral',
+                                                        );
+                                                        $posterPrice = $registrationType->presentationPrices->firstWhere(
+                                                            'presentation_type',
+                                                            'poster',
+                                                        );
+                                                    @endphp
+                                                    @if ($oralPrice && $posterPrice)
+                                                        <div class="small text-muted">
+                                                            Oral
+                                                        </div>
+                                                        <strong class="text-success d-block">
+                                                            {{ $oralPrice->currency }}
+                                                            {{ number_format($oralPrice->fee, 0, ',', '.') }}
+                                                        </strong>
+                                                        <div class="small text-muted mt-1">
+                                                            Poster
+                                                        </div>
+                                                        <strong class="text-success d-block">
+                                                            {{ $posterPrice->currency }}
+                                                            {{ number_format($posterPrice->fee, 0, ',', '.') }}
+                                                        </strong>
+                                                    @elseif ($oralPrice)
+                                                        <small class="text-muted d-block">
+                                                            Oral Presentation
+                                                        </small>
+                                                        <strong class="text-success">
+                                                            {{ $oralPrice->currency }}
+                                                            {{ number_format($oralPrice->fee, 0, ',', '.') }}
+                                                        </strong>
+                                                    @elseif ($posterPrice)
+                                                        <small class="text-muted d-block">
+                                                            Poster Presentation
+                                                        </small>
+                                                        <strong class="text-success">
+                                                            {{ $posterPrice->currency }}
+                                                            {{ number_format($posterPrice->fee, 0, ',', '.') }}
+                                                        </strong>
                                                     @else
-                                                        Registration Fee
+                                                        <small class="text-muted d-block">
+                                                            Payment After Acceptance
+                                                        </small>
+                                                        <span class="text-muted">
+                                                            Presentation fee will be determined after acceptance.
+                                                        </span>
                                                     @endif
-                                                </small>
-                                                <strong class="text-success">
-                                                    {{ $registrationType->currency }}
-                                                    {{ number_format($registrationType->fee, 0, ',', '.') }}
-                                                </strong>
+                                                @else
+                                                    <small class="text-muted d-block">
+                                                        Registration Fee
+                                                    </small>
+                                                    <strong class="text-success">
+                                                        {{ $registrationType->currency }}
+                                                        {{ number_format($registrationType->fee, 0, ',', '.') }}
+                                                    </strong>
+                                                @endif
                                             </div>
                                         </div>
                                         @if ($registrationType->category === 'presenter')
@@ -130,25 +181,22 @@
                                                 </div>
                                                 @if ($registrationType->additional_paper_fee > 0)
                                                     <div class="small text-muted mt-1">
-
                                                         <i class="bi bi-plus-circle me-1"></i>
-
                                                         Additional accepted paper:
                                                         {{ $registrationType->currency }}
                                                         {{ number_format($registrationType->additional_paper_fee, 0, ',', '.') }}
                                                         / paper.
-
                                                     </div>
                                                 @endif
-
                                                 <div class="small text-muted mt-1">
-
                                                     <i class="bi bi-info-circle me-1"></i>
-
                                                     Payment is required only after your paper is accepted.
-
                                                 </div>
-
+                                                <div class="small text-muted mt-1">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Your presentation type will determine the applicable fee after
+                                                    acceptance.
+                                                </div>
                                             </div>
                                         @endif
 

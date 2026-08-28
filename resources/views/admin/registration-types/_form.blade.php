@@ -110,23 +110,134 @@
                 </div>
             </div>
         </div>
+        {{-- Registration Fee / Presenter Pricing --}}
         <div class="col-md-6 mb-2">
-            <label class="form-label">
-                @if (old('payment_timing', $conferenceRegistrationType->payment_timing ?? '') === 'after_acceptance')
-                    Base Registration Fee
-                @else
+
+            <div id="participant-fee-section" @class([
+                'd-none' =>
+                    old(
+                        'category',
+                        $conferenceRegistrationType->category ?? 'participant') === 'presenter',
+            ])>
+                <label class="form-label">
                     Registration Fee
-                @endif
-                <span class="text-danger">*</span>
-            </label>
-            <input type="number" name="fee" min="0" step="0.01"
-                value="{{ old('fee', $conferenceRegistrationType->fee ?? 0) }}"
-                class="form-control @error('fee') is-invalid @enderror rounded-0" placeholder="0">
-            @error('fee')
-                <div class="invalid-feedback">
-                    {{ $message }}
+                    <span class="text-danger">*</span>
+                </label>
+
+                <input type="number" name="fee" min="0" step="0.01"
+                    value="{{ old('fee', $conferenceRegistrationType->fee ?? 0) }}"
+                    class="form-control @error('fee') is-invalid @enderror rounded-0" placeholder="0">
+
+                @error('fee')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+
+                <div class="form-text">
+                    Registration fee for non-presenter participants.
                 </div>
-            @enderror
+            </div>
+
+            <div id="presenter-pricing-section" @class([
+                'd-none' =>
+                    old(
+                        'category',
+                        $conferenceRegistrationType->category ?? 'participant') !== 'presenter',
+            ])>
+                <label class="form-label">
+                    Presentation Pricing
+                    <span class="text-danger">*</span>
+                </label>
+
+                @php
+                    $presentationPrices = $conferenceRegistrationType?->presentationPrices ?? collect();
+
+                    $oralPrice = $presentationPrices->firstWhere('presentation_type', 'oral');
+
+                    $posterPrice = $presentationPrices->firstWhere('presentation_type', 'poster');
+
+                    $oralFee = old('oral_fee', $oralPrice?->fee ?? 0);
+
+                    $posterFee = old('poster_fee', $posterPrice?->fee ?? 0);
+
+                    $pricingCurrency =
+                        $oralPrice?->currency ??
+                        ($posterPrice?->currency ?? ($conferenceRegistrationType?->currency ?? 'IDR'));
+                @endphp
+
+                <div class="row g-2">
+
+                    {{-- Oral --}}
+                    <div class="col-md-6">
+                        <div class="border rounded-0 p-3 h-100">
+
+                            <label for="oral_fee" class="form-label">
+                                <i class="bi bi-mic me-1"></i>
+                                Oral Presentation
+                            </label>
+
+                            <div class="input-group">
+
+                                <input type="number" id="oral_fee" name="oral_fee" min="0" step="0.01"
+                                    value="{{ $oralFee }}"
+                                    class="form-control @error('oral_fee') is-invalid @enderror rounded-0"
+                                    placeholder="350000">
+
+                                <span class="input-group-text rounded-0">
+                                    {{ $pricingCurrency }}
+                                </span>
+
+                            </div>
+
+                            @error('oral_fee')
+                                <div class="invalid-feedback d-block">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+                    </div>
+
+                    {{-- Poster --}}
+                    <div class="col-md-6">
+                        <div class="border rounded-0 p-3 h-100">
+
+                            <label for="poster_fee" class="form-label">
+                                <i class="bi bi-image me-1"></i>
+                                Poster Presentation
+                            </label>
+
+                            <div class="input-group">
+
+                                <input type="number" id="poster_fee" name="poster_fee" min="0" step="0.01"
+                                    value="{{ $posterFee }}"
+                                    class="form-control @error('poster_fee') is-invalid @enderror rounded-0"
+                                    placeholder="250000">
+
+                                <span class="input-group-text rounded-0">
+                                    {{ $pricingCurrency }}
+                                </span>
+
+                            </div>
+
+                            @error('poster_fee')
+                                <div class="invalid-feedback d-block">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-text">
+                    These fees are used when participants select Oral or Poster
+                    Presentation after their paper is accepted.
+                </div>
+
+            </div>
         </div>
         <div class="col-md-3 mb-2">
             <label class="form-label">
@@ -180,7 +291,8 @@
             <label class="form-label">
                 Description
             </label>
-            <textarea name="description" rows="3" class="form-control @error('description') is-invalid @enderror rounded-0"
+            <textarea name="description" rows="3"
+                class="form-control @error('description') is-invalid @enderror rounded-0"
                 placeholder="Explain who this registration type is for...">{{ old('description', $conferenceRegistrationType->description ?? '') }}</textarea>
             @error('description')
                 <div class="invalid-feedback">
@@ -231,3 +343,47 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categorySelect = document.querySelector(
+                'select[name="category"]'
+            );
+
+            const participantFeeSection =
+                document.getElementById(
+                    'participant-fee-section'
+                );
+
+            const presenterPricingSection =
+                document.getElementById(
+                    'presenter-pricing-section'
+                );
+
+            function togglePricingSections() {
+                const isPresenter =
+                    categorySelect.value === 'presenter';
+
+                participantFeeSection.classList.toggle(
+                    'd-none',
+                    isPresenter
+                );
+
+                presenterPricingSection.classList.toggle(
+                    'd-none',
+                    !isPresenter
+                );
+            }
+
+            if (categorySelect) {
+                categorySelect.addEventListener(
+                    'change',
+                    togglePricingSections
+                );
+
+                togglePricingSections();
+            }
+        });
+    </script>
+@endpush

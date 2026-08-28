@@ -7,22 +7,24 @@ use App\Http\Requests\Participant\CameraReadyRequest;
 use App\Http\Requests\Participant\RevisionRequest;
 use App\Http\Requests\Participant\SubmissionRequest;
 use App\Mail\SubmissionStatusMail;
+use App\Models\ImportantDate;
 use App\Models\Participant;
 use App\Models\Review;
 use App\Models\Submission;
 use App\Models\Topic;
-use App\Models\ImportantDate;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
+use App\Services\PaymentCalculationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SubmissionController extends Controller
 {
@@ -59,10 +61,16 @@ class SubmissionController extends Controller
             'conference.configuration',
             'registrationType',
         ])
-            ->where('user_id', Auth::id())
+            ->where(
+                'user_id',
+                Auth::id()
+            )
             ->where(function ($query) {
                 $query
-                    ->where('registration_status', 'confirmed')
+                    ->where(
+                        'registration_status',
+                        'confirmed'
+                    )
                     ->orWhere(function ($query) {
                         $query
                             ->where(
@@ -80,38 +88,62 @@ class SubmissionController extends Controller
                             );
                     });
             })
-            ->whereHas('conference.setting', function ($query) {
-                $query
-                    ->where('is_active', true)
-                    ->where('published', true)
-                    ->where('submission_enabled', true)
-                    ->where('maintenance_mode', false);
-            })
+            ->whereHas(
+                'conference.setting',
+                function ($query) {
+                    $query
+                        ->where(
+                            'is_active',
+                            true
+                        )
+                        ->where(
+                            'published',
+                            true
+                        )
+                        ->where(
+                            'submission_enabled',
+                            true
+                        )
+                        ->where(
+                            'maintenance_mode',
+                            false
+                        );
+                }
+            )
             ->latest()
             ->first();
 
         if (!$participant) {
             return redirect()
-                ->route('participant.submissions.index')
+                ->route(
+                    'participant.submissions.index'
+                )
                 ->with(
                     'error',
                     'You do not have a conference registration currently open for paper submission.'
                 );
         }
 
-        if (!$this->isSubmissionOpen($participant->conference_id)) {
+        if (
+            !$this->isSubmissionOpen(
+                $participant->conference_id
+            )
+        ) {
             return redirect()
-                ->route('participant.submissions.index')
+                ->route(
+                    'participant.submissions.index'
+                )
                 ->with(
                     'error',
                     'The paper submission deadline has passed for this conference.'
                 );
         }
 
-        $submissionDeadline = ImportantDate::where(
-            'conference_id',
-            $participant->conference_id
-        )
+        $submissionDeadline =
+            ImportantDate::where(
+                'conference_id',
+                $participant->conference_id
+            )
             ->where(
                 'type',
                 'full_paper_submission'
@@ -145,8 +177,9 @@ class SubmissionController extends Controller
         );
     }
 
-    public function store(SubmissionRequest $request)
-    {
+    public function store(
+        SubmissionRequest $request
+    ) {
         $data = $request->validated();
 
         $participant = Participant::with([
@@ -211,7 +244,11 @@ class SubmissionController extends Controller
                 );
         }
 
-        if (!$this->isSubmissionOpen($participant->conference_id)) {
+        if (
+            !$this->isSubmissionOpen(
+                $participant->conference_id
+            )
+        ) {
             return back()
                 ->withInput()
                 ->with(
@@ -234,87 +271,94 @@ class SubmissionController extends Controller
             )
             ->firstOrFail();
 
-        $submission = DB::transaction(function () use (
-            $request,
-            $data,
-            $participant,
-            $topic
-        ) {
-            $paperFile = $request
-                ->file('paper_file')
-                ->store(
-                    'submissions/papers',
-                    'local'
-                );
-
-            $submission = Submission::create([
-                'conference_id' =>
-                $participant->conference_id,
-
-                'participant_id' =>
-                $participant->id,
-
-                'topic_id' =>
-                $topic->id,
-
-                'submission_code' =>
-                $this->generateSubmissionCode(
-                    $participant->conference
-                ),
-
-                'title' =>
-                $data['title'],
-
-                'abstract' =>
-                $data['abstract'],
-
-                'keywords' =>
-                $data['keywords'],
-
-                'paper_file' =>
-                $paperFile,
-
-                'status' =>
-                'submitted',
-
-                'submitted_at' =>
-                now(),
-            ]);
-
-            foreach (
-                $data['authors'] as $index => $author
+        $submission = DB::transaction(
+            function () use (
+                $request,
+                $data,
+                $participant,
+                $topic
             ) {
-                $submission->authors()->create([
-                    'name' =>
-                    $author['name'],
+                $paperFile =
+                    $request
+                    ->file('paper_file')
+                    ->store(
+                        'submissions/papers',
+                        'local'
+                    );
 
-                    'email' =>
-                    $author['email'] ?? null,
+                $submission = Submission::create([
+                    'conference_id' =>
+                    $participant->conference_id,
 
-                    'institution' =>
-                    $author['institution'] ?? null,
+                    'participant_id' =>
+                    $participant->id,
 
-                    'department' =>
-                    $author['department'] ?? null,
+                    'topic_id' =>
+                    $topic->id,
 
-                    'is_corresponding' =>
-                    !empty($author['is_corresponding']),
+                    'submission_code' =>
+                    $this->generateSubmissionCode(
+                        $participant->conference
+                    ),
 
-                    'sort_order' =>
-                    $author['sort_order'] ??
-                        ($index + 1),
+                    'title' =>
+                    $data['title'],
+
+                    'abstract' =>
+                    $data['abstract'],
+
+                    'keywords' =>
+                    $data['keywords'],
+
+                    'paper_file' =>
+                    $paperFile,
+
+                    'status' =>
+                    'submitted',
+
+                    'submitted_at' =>
+                    now(),
                 ]);
-            }
 
-            return $submission;
-        });
+                foreach (
+                    $data['authors']
+                    as $index => $author
+                ) {
+                    $submission
+                        ->authors()
+                        ->create([
+                            'name' =>
+                            $author['name'],
+
+                            'email' =>
+                            $author['email'] ?? null,
+
+                            'institution' =>
+                            $author['institution'] ?? null,
+
+                            'department' =>
+                            $author['department'] ?? null,
+
+                            'is_corresponding' =>
+                            !empty($author['is_corresponding']),
+
+                            'sort_order' =>
+                            $author['sort_order']
+                                ?? ($index + 1),
+                        ]);
+                }
+
+                return $submission;
+            }
+        );
 
         $submission->load([
             'participant',
         ]);
 
-        if ($submission->participant?->email) {
-
+        if (
+            $submission->participant?->email
+        ) {
             Mail::to(
                 $submission->participant->email
             )->queue(
@@ -336,8 +380,9 @@ class SubmissionController extends Controller
             );
     }
 
-    public function show(Submission $submission)
-    {
+    public function show(
+        Submission $submission
+    ) {
         $participant = Participant::where(
             'user_id',
             Auth::id()
@@ -365,96 +410,190 @@ class SubmissionController extends Controller
         );
     }
 
-    public function loa(Submission $submission)
-    {
-        $participant = $this->getOwnedSubmissionParticipant($submission);
+    public function loa(
+        Submission $submission
+    ) {
+        $participant =
+            $this->getOwnedSubmissionParticipant(
+                $submission
+            );
+
         $submission->load([
             'conference.configuration',
             'topic',
             'authors',
         ]);
-        if (!in_array($submission->status, ['accepted', 'camera_ready', 'published'], true)) {
+
+        if (
+            !in_array(
+                $submission->status,
+                [
+                    'accepted',
+                    'camera_ready',
+                    'published',
+                ],
+                true
+            )
+        ) {
             return redirect()
-                ->route('participant.submissions.show', $submission)
-                ->with('error', 'The Letter of Acceptance is only available for accepted papers.');
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'The Letter of Acceptance is only available for accepted papers.'
+                );
         }
-        $importantDates = ImportantDate::where('conference_id', $submission->conference_id)
-            ->where('is_active', true)
-            ->whereIn('type', [
-                'registration',
-                'abstract_submission',
-                'full_paper_submission',
-                'conference',
-            ])
+
+        $importantDates =
+            ImportantDate::where(
+                'conference_id',
+                $submission->conference_id
+            )
+            ->where(
+                'is_active',
+                true
+            )
+            ->whereIn(
+                'type',
+                [
+                    'registration',
+                    'abstract_submission',
+                    'full_paper_submission',
+                    'conference',
+                ]
+            )
             ->orderBy('date')
             ->orderBy('sort_order')
             ->get();
-        return view('participant.submissions.loa', compact(
-            'submission',
-            'participant',
-            'importantDates'
-        ));
+
+        return view(
+            'participant.submissions.loa',
+            compact(
+                'submission',
+                'participant',
+                'importantDates'
+            )
+        );
     }
 
-    public function downloadLoa(Submission $submission)
-    {
-        $participant = $this->getOwnedSubmissionParticipant($submission);
+    public function downloadLoa(
+        Submission $submission
+    ) {
+        $participant =
+            $this->getOwnedSubmissionParticipant(
+                $submission
+            );
+
         $submission->load([
             'conference.configuration',
             'topic',
             'authors',
         ]);
-        if (!in_array($submission->status, ['accepted', 'camera_ready', 'published'], true)) {
+
+        if (
+            !in_array(
+                $submission->status,
+                [
+                    'accepted',
+                    'camera_ready',
+                    'published',
+                ],
+                true
+            )
+        ) {
             return redirect()
-                ->route('participant.submissions.show', $submission)
-                ->with('error', 'The Letter of Acceptance is only available for accepted papers.');
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'The Letter of Acceptance is only available for accepted papers.'
+                );
         }
-        $importantDates = ImportantDate::where('conference_id', $submission->conference_id)
-            ->where('is_active', true)
-            ->whereIn('type', [
-                'registration',
-                'abstract_submission',
-                'full_paper_submission',
-                'conference',
-            ])
+
+        $importantDates =
+            ImportantDate::where(
+                'conference_id',
+                $submission->conference_id
+            )
+            ->where(
+                'is_active',
+                true
+            )
+            ->whereIn(
+                'type',
+                [
+                    'registration',
+                    'abstract_submission',
+                    'full_paper_submission',
+                    'conference',
+                ]
+            )
             ->orderBy('date')
             ->orderBy('sort_order')
             ->get();
-        $loaNumber = $this->getLoaNumber($submission);
-        $verificationUrl = route(
-            'loa.verify',
-            $submission->submission_code
-        );
-        $qrCode = Builder::create()
+
+        $loaNumber =
+            $this->getLoaNumber(
+                $submission
+            );
+
+        $verificationUrl =
+            route(
+                'loa.verify',
+                $submission->submission_code
+            );
+
+        $qrCode =
+            Builder::create()
             ->writer(new PngWriter())
             ->writerOptions([])
             ->data($verificationUrl)
             ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+            ->errorCorrectionLevel(
+                ErrorCorrectionLevel::High
+            )
             ->size(180)
             ->margin(8)
-            ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+            ->roundBlockSizeMode(
+                RoundBlockSizeMode::Margin
+            )
             ->validateResult(false)
             ->build();
-        $qrCodeDataUri = $qrCode->getDataUri();
-        $pdf = Pdf::loadView(
-            'participant.submissions.loa-pdf',
-            compact(
-                'submission',
-                'participant',
-                'importantDates',
-                'loaNumber',
-                'verificationUrl',
-                'qrCodeDataUri'
+
+        $qrCodeDataUri =
+            $qrCode->getDataUri();
+
+        $pdf =
+            Pdf::loadView(
+                'participant.submissions.loa-pdf',
+                compact(
+                    'submission',
+                    'participant',
+                    'importantDates',
+                    'loaNumber',
+                    'verificationUrl',
+                    'qrCodeDataUri'
+                )
             )
-        )->setPaper('a4', 'portrait');
+            ->setPaper(
+                'a4',
+                'portrait'
+            );
+
         return $pdf->download(
-            'LOA-' . $submission->submission_code . '.pdf'
+            'LOA-' .
+                $submission->submission_code .
+                '.pdf'
         );
     }
 
-    public function revision(Submission $submission)
-    {
+    public function revision(
+        Submission $submission
+    ) {
         $participant =
             $this->getOwnedSubmissionParticipant(
                 $submission
@@ -464,9 +603,10 @@ class SubmissionController extends Controller
             'conference.setting',
         ]);
 
-        $revisionDeadline = $this->getRevisionDeadline(
-            $submission->conference_id
-        );
+        $revisionDeadline =
+            $this->getRevisionDeadline(
+                $submission->conference_id
+            );
 
         if (
             !$submission->conference?->setting?->review_enabled
@@ -482,7 +622,11 @@ class SubmissionController extends Controller
                 );
         }
 
-        if (!$this->isRevisionOpen($submission->conference_id)) {
+        if (
+            !$this->isRevisionOpen(
+                $submission->conference_id
+            )
+        ) {
             return redirect()
                 ->route(
                     'participant.submissions.show',
@@ -544,7 +688,11 @@ class SubmissionController extends Controller
                 );
         }
 
-        if (!$this->isRevisionOpen($submission->conference_id)) {
+        if (
+            !$this->isRevisionOpen(
+                $submission->conference_id
+            )
+        ) {
             return redirect()
                 ->route(
                     'participant.submissions.show',
@@ -573,80 +721,87 @@ class SubmissionController extends Controller
         $oldFile =
             $submission->revised_file;
 
-        $newFile = $request
+        $newFile =
+            $request
             ->file('revised_file')
             ->store(
                 'submissions/revisions',
                 'local'
             );
 
-        DB::transaction(function () use (
-            $submission,
-            $oldFile,
-            $newFile
-        ) {
-            $currentRound = Review::where(
-                'submission_id',
-                $submission->id
-            )
-                ->max('review_round');
-
-            $nextRound = $currentRound
-                ? $currentRound + 1
-                : 1;
-
-            $submission->update([
-                'revised_file' =>
-                $newFile,
-
-                'status' =>
-                'under_review',
-            ]);
-
-            $oldReviews = Review::where(
-                'submission_id',
-                $submission->id
-            )
-                ->where(
-                    'review_round',
-                    $currentRound
-                )
-                ->get();
-
-            foreach (
-                $oldReviews as $oldReview
+        DB::transaction(
+            function () use (
+                $submission,
+                $oldFile,
+                $newFile
             ) {
-                Review::create([
-                    'submission_id' =>
-                    $submission->id,
+                $currentRound =
+                    Review::where(
+                        'submission_id',
+                        $submission->id
+                    )
+                    ->max('review_round');
 
-                    'reviewer_id' =>
-                    $oldReview->reviewer_id,
+                $nextRound =
+                    $currentRound
+                    ? $currentRound + 1
+                    : 1;
 
-                    'review_round' =>
-                    $nextRound,
+                $submission->update([
+                    'revised_file' =>
+                    $newFile,
 
-                    'score' =>
-                    null,
-
-                    'comment' =>
-                    null,
-
-                    'recommendation' =>
-                    null,
-
-                    'reviewed_at' =>
-                    null,
+                    'status' =>
+                    'under_review',
                 ]);
-            }
 
-            if ($oldFile) {
-                Storage::disk('local')
-                    ->delete(
-                        $oldFile
-                    );
+                $oldReviews =
+                    Review::where(
+                        'submission_id',
+                        $submission->id
+                    )
+                    ->where(
+                        'review_round',
+                        $currentRound
+                    )
+                    ->get();
+
+                foreach (
+                    $oldReviews
+                    as $oldReview
+                ) {
+                    Review::create([
+                        'submission_id' =>
+                        $submission->id,
+
+                        'reviewer_id' =>
+                        $oldReview->reviewer_id,
+
+                        'review_round' =>
+                        $nextRound,
+
+                        'score' =>
+                        null,
+
+                        'comment' =>
+                        null,
+
+                        'recommendation' =>
+                        null,
+
+                        'reviewed_at' =>
+                        null,
+                    ]);
+                }
+
+                if ($oldFile) {
+                    Storage::disk('local')
+                        ->delete(
+                            $oldFile
+                        );
+                }
             }
-        });
+        );
 
         return redirect()
             ->route(
@@ -659,17 +814,30 @@ class SubmissionController extends Controller
             );
     }
 
-    public function cameraReady(Submission $submission)
-    {
-        $participant = $this->getOwnedSubmissionParticipant(
-            $submission
-        );
+    public function cameraReady(
+        Submission $submission,
+        PaymentCalculationService $paymentCalculationService
+    ) {
+        $participant =
+            $this->getOwnedSubmissionParticipant(
+                $submission
+            );
+
+        $participant->load([
+            'registrationType.presentationPrices',
+            'submissions',
+            'payments',
+        ]);
+
         $submission->load([
             'conference.setting',
         ]);
-        $cameraReadyDeadline = $this->getCameraReadyDeadline(
-            $submission->conference_id
-        );
+
+        $cameraReadyDeadline =
+            $this->getCameraReadyDeadline(
+                $submission->conference_id
+            );
+
         if (
             !$submission->conference?->setting?->submission_enabled
             || $submission->conference?->setting?->maintenance_mode
@@ -684,7 +852,12 @@ class SubmissionController extends Controller
                     'Submission workflow is currently unavailable.'
                 );
         }
-        if (!$this->isCameraReadyOpen($submission->conference_id)) {
+
+        if (
+            !$this->isCameraReadyOpen(
+                $submission->conference_id
+            )
+        ) {
             return redirect()
                 ->route(
                     'participant.submissions.show',
@@ -695,6 +868,7 @@ class SubmissionController extends Controller
                     'The camera-ready submission deadline has passed for this conference.'
                 );
         }
+
         if (
             $submission->status !== 'accepted'
         ) {
@@ -708,6 +882,55 @@ class SubmissionController extends Controller
                     'Camera-ready submission is only available for accepted papers.'
                 );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Presentation Details Check
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            empty($submission->presentation_type)
+            || empty($submission->presentation_mode)
+            || empty($submission->presenter_author_id)
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Please complete the presentation details before submitting the camera-ready paper.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Check
+        |--------------------------------------------------------------------------
+        */
+
+        $paymentCalculation =
+            $paymentCalculationService
+            ->calculate(
+                $participant
+            );
+
+        if (
+            $paymentCalculation['outstanding_amount'] > 0
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Camera-ready submission is only available after your payment has been completed.'
+                );
+        }
+
         return view(
             'participant.submissions.camera-ready',
             compact(
@@ -720,11 +943,19 @@ class SubmissionController extends Controller
 
     public function uploadCameraReady(
         CameraReadyRequest $request,
-        Submission $submission
+        Submission $submission,
+        PaymentCalculationService $paymentCalculationService
     ) {
-        $this->getOwnedSubmissionParticipant(
-            $submission
-        );
+        $participant =
+            $this->getOwnedSubmissionParticipant(
+                $submission
+            );
+
+        $participant->load([
+            'registrationType.presentationPrices',
+            'submissions',
+            'payments',
+        ]);
 
         $submission->load([
             'conference.setting',
@@ -745,7 +976,11 @@ class SubmissionController extends Controller
                 );
         }
 
-        if (!$this->isCameraReadyOpen($submission->conference_id)) {
+        if (
+            !$this->isCameraReadyOpen(
+                $submission->conference_id
+            )
+        ) {
             return redirect()
                 ->route(
                     'participant.submissions.show',
@@ -771,34 +1006,90 @@ class SubmissionController extends Controller
                 );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Presentation Details Check
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            empty($submission->presentation_type)
+            || empty($submission->presentation_mode)
+            || empty($submission->presenter_author_id)
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Please complete the presentation details before submitting the camera-ready paper.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Check
+        |--------------------------------------------------------------------------
+        */
+
+        $paymentCalculation =
+            $paymentCalculationService
+            ->calculate(
+                $participant
+            );
+
+        if (
+            $paymentCalculation['outstanding_amount'] > 0
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Camera-ready submission is only available after your payment has been completed.'
+                );
+        }
+
         $oldFile =
             $submission->camera_ready_file;
 
-        $newFile = $request
+        $newFile =
+            $request
             ->file('camera_ready_file')
             ->store(
                 'submissions/camera-ready',
                 'local'
             );
 
-        DB::transaction(function () use (
-            $submission,
-            $oldFile,
-            $newFile
-        ) {
-            $submission->update([
-                'camera_ready_file' => $newFile,
-                'camera_ready_correction_reason' => null,
-                'status' => 'camera_ready',
-            ]);
+        DB::transaction(
+            function () use (
+                $submission,
+                $oldFile,
+                $newFile
+            ) {
+                $submission->update([
+                    'camera_ready_file' =>
+                    $newFile,
 
-            if ($oldFile) {
-                Storage::disk('local')
-                    ->delete(
-                        $oldFile
-                    );
+                    'camera_ready_correction_reason' =>
+                    null,
+
+                    'status' =>
+                    'camera_ready',
+                ]);
+
+                if ($oldFile) {
+                    Storage::disk('local')
+                        ->delete(
+                            $oldFile
+                        );
+                }
             }
-        });
+        );
 
         return redirect()
             ->route(
@@ -811,9 +1102,12 @@ class SubmissionController extends Controller
             );
     }
 
-    public function downloadPaper(Submission $submission)
-    {
-        $this->getOwnedSubmissionParticipant($submission);
+    public function downloadPaper(
+        Submission $submission
+    ) {
+        $this->getOwnedSubmissionParticipant(
+            $submission
+        );
 
         abort_unless(
             $submission->paper_file
@@ -825,13 +1119,18 @@ class SubmissionController extends Controller
 
         return Storage::disk('local')->download(
             $submission->paper_file,
-            basename($submission->paper_file)
+            basename(
+                $submission->paper_file
+            )
         );
     }
 
-    public function downloadRevision(Submission $submission)
-    {
-        $this->getOwnedSubmissionParticipant($submission);
+    public function downloadRevision(
+        Submission $submission
+    ) {
+        $this->getOwnedSubmissionParticipant(
+            $submission
+        );
 
         abort_unless(
             $submission->revised_file
@@ -843,13 +1142,18 @@ class SubmissionController extends Controller
 
         return Storage::disk('local')->download(
             $submission->revised_file,
-            basename($submission->revised_file)
+            basename(
+                $submission->revised_file
+            )
         );
     }
 
-    public function downloadCameraReady(Submission $submission)
-    {
-        $this->getOwnedSubmissionParticipant($submission);
+    public function downloadCameraReady(
+        Submission $submission
+    ) {
+        $this->getOwnedSubmissionParticipant(
+            $submission
+        );
 
         abort_unless(
             $submission->camera_ready_file
@@ -861,7 +1165,9 @@ class SubmissionController extends Controller
 
         return Storage::disk('local')->download(
             $submission->camera_ready_file,
-            basename($submission->camera_ready_file)
+            basename(
+                $submission->camera_ready_file
+            )
         );
     }
 
@@ -879,93 +1185,181 @@ class SubmissionController extends Controller
             ->firstOrFail();
     }
 
-    private function getSubmissionDeadline($conferenceId): ?ImportantDate
-    {
-        return ImportantDate::where('conference_id', $conferenceId)
-            ->where('type', 'full_paper_submission')
-            ->where('is_active', true)
+    private function getSubmissionDeadline(
+        $conferenceId
+    ): ?ImportantDate {
+        return ImportantDate::where(
+            'conference_id',
+            $conferenceId
+        )
+            ->where(
+                'type',
+                'full_paper_submission'
+            )
+            ->where(
+                'is_active',
+                true
+            )
             ->orderByDesc('date')
             ->first();
     }
 
-    private function isSubmissionOpen($conferenceId): bool
-    {
-        $deadline = $this->getSubmissionDeadline($conferenceId);
+    private function isSubmissionOpen(
+        $conferenceId
+    ): bool {
+        $deadline =
+            $this->getSubmissionDeadline(
+                $conferenceId
+            );
+
         if (!$deadline) {
             return true;
         }
-        $today = now()->startOfDay();
-        $startDate = $deadline->date->copy()->startOfDay();
+
+        $today =
+            now()->startOfDay();
+
+        $startDate =
+            $deadline->date
+            ->copy()
+            ->startOfDay();
+
         if ($deadline->end_date) {
             return $today->between(
                 $startDate,
-                $deadline->end_date->copy()->endOfDay()
+                $deadline->end_date
+                    ->copy()
+                    ->endOfDay()
             );
         }
-        return $today->lte($startDate);
-    }
 
-    private function getRevisionDeadline($conferenceId): ?ImportantDate
-    {
-        return ImportantDate::where('conference_id', $conferenceId)
-            ->where('type', 'revision')
-            ->where('is_active', true)
-            ->orderByDesc('date')
-            ->first();
-    }
-
-    private function isRevisionOpen($conferenceId): bool
-    {
-        $deadline = $this->getRevisionDeadline($conferenceId);
-        if (!$deadline) {
-            return true;
-        }
-        $today = now()->startOfDay();
-        $startDate = $deadline->date->copy()->startOfDay();
-        if ($deadline->end_date) {
-            return $today->between(
-                $startDate,
-                $deadline->end_date->copy()->endOfDay()
-            );
-        }
-        return $today->lte($startDate);
-    }
-
-    private function getCameraReadyDeadline($conferenceId): ?ImportantDate
-    {
-        return ImportantDate::where('conference_id', $conferenceId)
-            ->where('type', 'camera_ready')
-            ->where('is_active', true)
-            ->orderByDesc('date')
-            ->first();
-    }
-
-    private function isCameraReadyOpen($conferenceId): bool
-    {
-        $deadline = $this->getCameraReadyDeadline($conferenceId);
-        if (!$deadline) {
-            return true;
-        }
-        $today = now()->startOfDay();
-        $startDate = $deadline->date->copy()->startOfDay();
-        if ($deadline->end_date) {
-            return $today->between(
-                $startDate,
-                $deadline->end_date->copy()->endOfDay()
-            );
-        }
-        return $today->lte($startDate);
-    }
-
-    private function getLoaNumber(Submission $submission): string
-    {
-        $year = $submission->conference?->year ?? now()->year;
-        return 'LOA/ICON/' . $year . '/' . str_pad(
-            $submission->id,
-            4,
-            '0',
-            STR_PAD_LEFT
+        return $today->lte(
+            $startDate
         );
+    }
+
+    private function getRevisionDeadline(
+        $conferenceId
+    ): ?ImportantDate {
+        return ImportantDate::where(
+            'conference_id',
+            $conferenceId
+        )
+            ->where(
+                'type',
+                'revision'
+            )
+            ->where(
+                'is_active',
+                true
+            )
+            ->orderByDesc('date')
+            ->first();
+    }
+
+    private function isRevisionOpen(
+        $conferenceId
+    ): bool {
+        $deadline =
+            $this->getRevisionDeadline(
+                $conferenceId
+            );
+
+        if (!$deadline) {
+            return true;
+        }
+
+        $today =
+            now()->startOfDay();
+
+        $startDate =
+            $deadline->date
+            ->copy()
+            ->startOfDay();
+
+        if ($deadline->end_date) {
+            return $today->between(
+                $startDate,
+                $deadline->end_date
+                    ->copy()
+                    ->endOfDay()
+            );
+        }
+
+        return $today->lte(
+            $startDate
+        );
+    }
+
+    private function getCameraReadyDeadline(
+        $conferenceId
+    ): ?ImportantDate {
+        return ImportantDate::where(
+            'conference_id',
+            $conferenceId
+        )
+            ->where(
+                'type',
+                'camera_ready'
+            )
+            ->where(
+                'is_active',
+                true
+            )
+            ->orderByDesc('date')
+            ->first();
+    }
+
+    private function isCameraReadyOpen(
+        $conferenceId
+    ): bool {
+        $deadline =
+            $this->getCameraReadyDeadline(
+                $conferenceId
+            );
+
+        if (!$deadline) {
+            return true;
+        }
+
+        $today =
+            now()->startOfDay();
+
+        $startDate =
+            $deadline->date
+            ->copy()
+            ->startOfDay();
+
+        if ($deadline->end_date) {
+            return $today->between(
+                $startDate,
+                $deadline->end_date
+                    ->copy()
+                    ->endOfDay()
+            );
+        }
+
+        return $today->lte(
+            $startDate
+        );
+    }
+
+    private function getLoaNumber(
+        Submission $submission
+    ): string {
+        $year =
+            $submission->conference?->year
+            ?? now()->year;
+
+        return 'LOA/ICON/' .
+            $year .
+            '/' .
+            str_pad(
+                $submission->id,
+                4,
+                '0',
+                STR_PAD_LEFT
+            );
     }
 
     private function generateSubmissionCode(

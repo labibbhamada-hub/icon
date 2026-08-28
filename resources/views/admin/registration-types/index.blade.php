@@ -46,7 +46,7 @@
                             <th>Conference</th>
                             <th>Name</th>
                             <th>Category</th>
-                            <th>Fee</th>
+                            <th>Pricing</th>
                             <th>Currency</th>
                             <th>Status</th>
                             <th width="180">Action</th>
@@ -86,9 +86,49 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <strong>
-                                        {{ number_format($registrationType->fee, 2, ',', '.') }}
-                                    </strong>
+                                    @if ($registrationType->category === 'presenter')
+                                        @php
+                                            $oralPrice = $registrationType->presentationPrices->firstWhere(
+                                                'presentation_type',
+                                                'oral',
+                                            );
+                                            $posterPrice = $registrationType->presentationPrices->firstWhere(
+                                                'presentation_type',
+                                                'poster',
+                                            );
+                                        @endphp
+                                        @if ($oralPrice || $posterPrice)
+                                            <div class="small">
+                                                @if ($oralPrice)
+                                                    <div>
+                                                        <span class="text-muted">Oral:</span>
+                                                        <strong>
+                                                            {{ $oralPrice->currency }}
+                                                            {{ number_format($oralPrice->fee, 0, ',', '.') }}
+                                                        </strong>
+                                                    </div>
+                                                @endif
+                                                @if ($posterPrice)
+                                                    <div class="mt-1">
+                                                        <span class="text-muted">Poster:</span>
+                                                        <strong>
+                                                            {{ $posterPrice->currency }}
+                                                            {{ number_format($posterPrice->fee, 0, ',', '.') }}
+                                                        </strong>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-muted">
+                                                Not configured
+                                            </span>
+                                        @endif
+                                    @else
+                                        <strong>
+                                            {{ $registrationType->currency }}
+                                            {{ number_format($registrationType->fee, 0, ',', '.') }}
+                                        </strong>
+                                    @endif
                                 </td>
                                 <td>
                                     {{ $registrationType->currency }}

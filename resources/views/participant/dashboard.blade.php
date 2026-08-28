@@ -136,6 +136,120 @@
                 </div>
             </div>
         @endif
+        @php
+            $eligibleMeetings = collect();
+
+            foreach ($participants as $participant) {
+                $meeting = $participantMeetings[$participant->id] ?? null;
+
+                if ($meeting) {
+                    $eligibleMeetings->put($participant->conference_id, [
+                        'participant' => $participant,
+                        'meeting' => $meeting,
+                    ]);
+                }
+            }
+        @endphp
+
+        @if ($eligibleMeetings->isNotEmpty())
+            <div class="card rounded-0 mb-3">
+
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-camera-video me-2"></i>
+                        Online Meeting
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    @foreach ($eligibleMeetings as $item)
+                        @php
+                            $participant = $item['participant'];
+                            $meeting = $item['meeting'];
+                        @endphp
+
+                        <div class="border rounded-0 p-3 mb-3">
+
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+
+                                <div>
+                                    <h5 class="fw-bold mb-1">
+                                        {{ $meeting->title }}
+                                    </h5>
+
+                                    <small class="text-muted">
+                                        {{ $participant->conference?->name ?? 'Conference' }}
+
+                                        @if ($participant->conference?->year)
+                                            ({{ $participant->conference->year }})
+                                        @endif
+                                    </small>
+                                </div>
+
+                                <span class="badge text-bg-success rounded-0">
+                                    Active
+                                </span>
+
+                            </div>
+
+                            <hr>
+
+                            <div class="row g-3">
+
+                                @if ($meeting->meeting_id)
+                                    <div class="col-md-6">
+                                        <small class="text-muted d-block">
+                                            Meeting ID
+                                        </small>
+
+                                        <strong>
+                                            {{ $meeting->meeting_id }}
+                                        </strong>
+                                    </div>
+                                @endif
+
+                                @if ($meeting->passcode)
+                                    <div class="col-md-6">
+                                        <small class="text-muted d-block">
+                                            Passcode
+                                        </small>
+
+                                        <strong>
+                                            {{ $meeting->passcode }}
+                                        </strong>
+                                    </div>
+                                @endif
+
+                                @if ($meeting->instructions)
+                                    <div class="col-12">
+                                        <small class="text-muted d-block mb-1">
+                                            Instructions
+                                        </small>
+
+                                        <div>
+                                            {!! nl2br(e($meeting->instructions)) !!}
+                                        </div>
+                                    </div>
+                                @endif
+
+                            </div>
+
+                            <div class="mt-3">
+                                <a href="{{ $meeting->meeting_url }}" target="_blank" rel="noopener noreferrer"
+                                    class="btn btn-primary rounded-0">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                    Join Zoom Meeting
+                                </a>
+                            </div>
+
+                        </div>
+                    @endforeach
+
+                </div>
+
+            </div>
+        @endif
         @if ($importantDates->isNotEmpty())
             <div class="card rounded-0 mb-3">
                 <div class="card-header">

@@ -305,9 +305,164 @@
 
         </div>
 
+        <div class="card rounded-0 mb-3">
+
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    <i class="bi bi-camera-video me-2"></i>
+                    Online Meeting
+                </h3>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-info rounded-0">
+
+                    <i class="bi bi-info-circle me-2"></i>
+
+                    Configure the main online meeting for this conference.
+                    Participants will only see the meeting information when
+                    access to the meeting is allowed.
+
+                </div>
+
+                <div class="row g-4">
+
+                    {{-- Title --}}
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Meeting Title
+                        </label>
+
+                        <input type="text" name="meeting_title"
+                            value="{{ old('meeting_title', $conference->onlineMeeting?->title) }}"
+                            class="form-control @error('meeting_title') is-invalid @enderror rounded-0"
+                            placeholder="ICON 2026 Main Zoom Meeting">
+
+                        @error('meeting_title')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+                    {{-- Meeting URL --}}
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Meeting URL
+                        </label>
+
+                        <input type="url" name="meeting_url"
+                            value="{{ old('meeting_url', $conference->onlineMeeting?->meeting_url) }}"
+                            class="form-control @error('meeting_url') is-invalid @enderror rounded-0"
+                            placeholder="https://zoom.us/j/123456789">
+
+                        @error('meeting_url')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+                    {{-- Meeting ID --}}
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Meeting ID
+                        </label>
+
+                        <input type="text" name="meeting_id"
+                            value="{{ old('meeting_id', $conference->onlineMeeting?->meeting_id) }}"
+                            class="form-control @error('meeting_id') is-invalid @enderror rounded-0"
+                            placeholder="123 456 789">
+
+                        @error('meeting_id')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+                    {{-- Passcode --}}
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Passcode
+                        </label>
+
+                        <input type="text" name="passcode"
+                            value="{{ old('passcode', $conference->onlineMeeting?->passcode) }}"
+                            class="form-control @error('passcode') is-invalid @enderror rounded-0" placeholder="ICON2026">
+
+                        @error('passcode')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+                    {{-- Instructions --}}
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Meeting Instructions
+                        </label>
+
+                        <textarea name="meeting_instructions" rows="4"
+                            class="form-control @error('meeting_instructions') is-invalid @enderror rounded-0"
+                            placeholder="Please join 15 minutes before the conference starts.">{{ old('meeting_instructions', $conference->onlineMeeting?->instructions) }}</textarea>
+
+                        @error('meeting_instructions')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        <div class="form-text">
+                            These instructions will be shown to eligible participants.
+                        </div>
+
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="col-md-6">
+
+                        <label class="form-label d-block">
+                            Meeting Status
+                        </label>
+
+                        <div class="form-check form-switch mt-2">
+
+                            <input type="hidden" name="meeting_is_active" value="0">
+
+                            <input class="form-check-input" type="checkbox" name="meeting_is_active" value="1"
+                                @checked(old('meeting_is_active', $conference->onlineMeeting?->is_active ?? true))>
+
+                            <label class="form-check-label">
+                                Active
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
         <div class="text-end mb-3">
 
-            <button type="submit" class="btn btn-success btn-sm rounded-0">
+            <button type="submit" class="btn btn-success rounded-0">
 
                 <i class="bi bi-check-circle me-1"></i>
                 Save Configuration

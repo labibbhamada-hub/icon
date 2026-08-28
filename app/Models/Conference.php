@@ -82,4 +82,11 @@ class Conference extends Model
     {
         return $this->hasMany(Certificate::class);
     }
+
+    public function onlineMeeting()
+    {
+        return $this->hasOne(
+            ConferenceOnlineMeeting::class
+        );
+    }
 }

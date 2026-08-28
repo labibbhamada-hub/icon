@@ -70,76 +70,187 @@
                     Presentation Type
                 </h3>
             </div>
+
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="d-block h-100">
-                            <input type="radio" name="presentation_type" value="oral" class="btn-check"
-                                @checked(old('presentation_type', $submission->presentation_type) === 'oral')>
-                            <div class="border rounded-0 p-3 h-100 presentation-option">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-mic-fill fs-4 text-primary"></i>
-                                    <div>
-                                        <h5 class="mb-1">
-                                            Oral Presentation
-                                        </h5>
-                                        <small class="text-muted">
-                                            Present your paper as an oral presentation.
-                                        </small>
+
+                @if ($presentationTypeLocked && $registrationPresentationType)
+
+                    <input type="hidden" name="presentation_type" value="{{ $registrationPresentationType }}">
+
+                    <div class="border rounded-0 p-3">
+
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                @if ($registrationPresentationType === 'oral')
+                                    <i class="bi bi-mic-fill fs-3 text-primary"></i>
+                                @else
+                                    <i class="bi bi-image fs-3 text-success"></i>
+                                @endif
+
+                                <div>
+
+                                    <div class="fw-bold fs-5">
+                                        {{ ucfirst($registrationPresentationType) }}
+                                        Presentation
                                     </div>
+
+                                    <small class="text-muted d-block mt-1">
+                                        {{ $registrationPresentationType === 'oral'
+                                            ? 'Present your paper as an oral presentation.'
+                                            : 'Present your paper as a poster.' }}
+                                    </small>
+
                                 </div>
+
                             </div>
-                        </label>
+
+                            <span class="badge text-bg-secondary rounded-0">
+                                <i class="bi bi-lock-fill me-1"></i>
+                                Locked
+                            </span>
+
+                        </div>
+
                     </div>
-                    <div class="col-md-6">
-                        <label class="d-block h-100">
-                            <input type="radio" name="presentation_type" value="poster" class="btn-check"
-                                @checked(old('presentation_type', $submission->presentation_type) === 'poster')>
-                            <div class="border rounded-0 p-3 h-100 presentation-option">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-image fs-4 text-success"></i>
-                                    <div>
-                                        <h5 class="mb-1">
-                                            Poster Presentation
-                                        </h5>
-                                        <small class="text-muted">
-                                            Present your paper as a poster.
-                                        </small>
+
+                    <div class="alert alert-info rounded-0 mt-3 mb-0">
+
+                        <i class="bi bi-info-circle me-2"></i>
+
+                        Your presentation type is locked because your payment
+                        has already been verified.
+
+                    </div>
+                @else
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <label class="d-block h-100">
+
+                                <input type="radio" name="presentation_type" value="oral" class="btn-check"
+                                    @checked(old('presentation_type', $submission->presentation_type ?? $registrationPresentationType) === 'oral')>
+
+                                <div class="border rounded-0 p-3 h-100 presentation-option">
+
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <i class="bi bi-mic-fill fs-4 text-primary"></i>
+
+                                            <div>
+
+                                                <h5 class="mb-1">
+                                                    Oral Presentation
+                                                </h5>
+
+                                                <small class="text-muted">
+                                                    Present your paper as an oral presentation.
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                        <strong class="text-success text-nowrap">
+                                            IDR 350.000
+                                        </strong>
+
                                     </div>
+
                                 </div>
-                            </div>
-                        </label>
+
+                            </label>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="d-block h-100">
+
+                                <input type="radio" name="presentation_type" value="poster" class="btn-check"
+                                    @checked(old('presentation_type', $submission->presentation_type ?? $registrationPresentationType) === 'poster')>
+
+                                <div class="border rounded-0 p-3 h-100 presentation-option">
+
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <i class="bi bi-image fs-4 text-success"></i>
+
+                                            <div>
+
+                                                <h5 class="mb-1">
+                                                    Poster Presentation
+                                                </h5>
+
+                                                <small class="text-muted">
+                                                    Present your paper as a poster.
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                        <strong class="text-success text-nowrap">
+                                            IDR 250.000
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </label>
+
+                        </div>
+
                     </div>
-                </div>
+
+                    @if ($registrationPresentationType)
+                        <div class="alert alert-info rounded-0 mt-3 mb-0">
+
+                            <i class="bi bi-info-circle me-2"></i>
+
+                            Your registration uses
+                            <strong>
+                                {{ ucfirst($registrationPresentationType) }}
+                                Presentation
+                            </strong>.
+                            All papers under this registration must use the same presentation type.
+
+                        </div>
+                    @endif
+
+                @endif
+
                 @error('presentation_type')
                     <div class="text-danger small mt-2">
                         {{ $message }}
                     </div>
                 @enderror
+
             </div>
         </div>
         <div class="card rounded-0 mb-3">
-
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="bi bi-broadcast-pin me-2"></i>
                     Presentation Mode
                 </h3>
             </div>
-
             <div class="card-body">
-
                 @if ($participant->attendance_type === 'hybrid')
-
                     <div class="alert alert-info rounded-0 mb-3">
                         <div class="d-flex align-items-start gap-2">
                             <i class="bi bi-info-circle fs-5"></i>
-
                             <div>
                                 <strong>
                                     Flexible Attendance
                                 </strong>
-
                                 <div class="small mt-1">
                                     Your registration uses hybrid attendance.
                                     Please choose how this paper will be presented.
@@ -147,66 +258,46 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row g-3">
-
                         <div class="col-md-6">
                             <label class="d-block h-100">
                                 <input type="radio" name="presentation_mode" value="offline" class="btn-check"
                                     @checked(old('presentation_mode', $submission->presentation_mode) === 'offline')>
-
                                 <div class="border rounded-0 p-3 h-100 presentation-option">
-
                                     <div class="d-flex align-items-center gap-2">
-
                                         <i class="bi bi-building fs-4 text-primary"></i>
-
                                         <div>
                                             <h5 class="mb-1">
                                                 Offline
                                             </h5>
-
                                             <small class="text-muted">
                                                 Present at the conference venue.
                                             </small>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </label>
                         </div>
-
                         <div class="col-md-6">
                             <label class="d-block h-100">
-
                                 <input type="radio" name="presentation_mode" value="online" class="btn-check"
                                     @checked(old('presentation_mode', $submission->presentation_mode) === 'online')>
-
                                 <div class="border rounded-0 p-3 h-100 presentation-option">
-
                                     <div class="d-flex align-items-center gap-2">
-
                                         <i class="bi bi-camera-video-fill fs-4 text-success"></i>
-
                                         <div>
                                             <h5 class="mb-1">
                                                 Online
                                             </h5>
-
                                             <small class="text-muted">
                                                 Present remotely through the conference online session.
                                             </small>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </label>
                         </div>
-
                     </div>
-
                     @error('presentation_mode')
                         <div class="text-danger small mt-2">
                             {{ $message }}
@@ -303,17 +394,14 @@
                 @enderror
             </div>
         </div>
-        <div class="card rounded-0">
-            <div class="card-footer text-end">
-                <a href="{{ route('participant.submissions.show', $submission) }}"
-                    class="btn btn-secondary btn-sm rounded-0 me-1">
-                    Cancel
-                </a>
-                <button type="submit" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Save Presentation Details
-                </button>
-            </div>
+        <div class="text-end">
+            <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-0 me-1">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-success rounded-0">
+                <i class="bi bi-check-circle me-1"></i>
+                Save Presentation Details
+            </button>
         </div>
     </form>
 @endsection

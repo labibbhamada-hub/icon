@@ -10,7 +10,6 @@ class Participant extends Model
         'user_id',
         'conference_id',
         'registration_type_id',
-        'presentation_type',
         'registration_number',
         'full_name',
         'email',

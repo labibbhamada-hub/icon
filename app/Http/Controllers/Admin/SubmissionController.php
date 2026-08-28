@@ -172,7 +172,7 @@ class SubmissionController extends Controller
             if ($request->hasFile('paper_file')) {
 
                 if ($submission->paper_file) {
-                    Storage::disk('public')
+                    Storage::disk('local')
                         ->delete($submission->paper_file);
                 }
 
@@ -219,17 +219,17 @@ class SubmissionController extends Controller
         DB::transaction(function () use ($submission) {
 
             if ($submission->paper_file) {
-                Storage::disk('public')
+                Storage::disk('local')
                     ->delete($submission->paper_file);
             }
 
             if ($submission->revised_file) {
-                Storage::disk('public')
+                Storage::disk('local')
                     ->delete($submission->revised_file);
             }
 
             if ($submission->camera_ready_file) {
-                Storage::disk('public')
+                Storage::disk('local')
                     ->delete($submission->camera_ready_file);
             }
 
@@ -244,29 +244,56 @@ class SubmissionController extends Controller
             );
     }
 
-    public function approveCameraReady(Submission $submission)
-    {
-        if ($submission->status !== 'camera_ready') {
+    public function approveCameraReady(
+        Submission $submission
+    ) {
+        if (
+            $submission->status !== 'camera_ready'
+        ) {
             return back()
                 ->with(
                     'error',
                     'This submission is not currently awaiting camera-ready approval.'
                 );
         }
-        if (!$submission->camera_ready_file) {
+
+        if (
+            !$submission->camera_ready_file
+        ) {
             return back()
                 ->with(
                     'error',
                     'Camera-ready file is not available.'
                 );
         }
-        $submission->update([
-            'status' => 'published',
-        ]);
+
+        if (
+            !Storage::disk('local')->exists(
+                $submission->camera_ready_file
+            )
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'The camera-ready file could not be found on the server.'
+                );
+        }
+
+        DB::transaction(function () use (
+            $submission
+        ) {
+            $submission->update([
+                'status' => 'published',
+            ]);
+        });
+
         $submission->load([
-            'participant',
+            'participant.user',
         ]);
-        if ($submission->participant?->email) {
+
+        if (
+            $submission->participant?->email
+        ) {
             Mail::to(
                 $submission->participant->email
             )->queue(
@@ -276,23 +303,36 @@ class SubmissionController extends Controller
                 )
             );
         }
-        if ($submission->participant?->phone) {
+
+        if (
+            $submission->participant?->phone
+        ) {
             SendCameraReadyApprovedWhatsApp::dispatch(
                 $submission->participant->id,
                 $submission->id
             );
         }
-        if ($submission->participant?->user) {
-            $submission->participant->user->notify(
-                new ConferenceNotification(
-                    'Camera Ready Approved',
-                    'Your camera-ready paper has been approved and your paper has been published successfully.',
-                    'View Submission',
-                    route('participant.submissions.show', $submission),
-                    'success'
-                )
-            );
+
+        if (
+            $submission->participant?->user
+        ) {
+            $submission
+                ->participant
+                ->user
+                ->notify(
+                    new ConferenceNotification(
+                        'Camera Ready Approved',
+                        'Your camera-ready paper has been approved and your paper has been published successfully.',
+                        'View Submission',
+                        route(
+                            'participant.submissions.show',
+                            $submission
+                        ),
+                        'success'
+                    )
+                );
         }
+
         return redirect()
             ->route(
                 'admin.submissions.show',
@@ -389,6 +429,29 @@ class SubmissionController extends Controller
         );
 
         return $code;
+    }
+
+    public function downloadCameraReady(
+        Submission $submission
+    ) {
+        abort_unless(
+            $submission->camera_ready_file
+                && Storage::disk('local')->exists(
+                    $submission->camera_ready_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->response(
+            $submission->camera_ready_file,
+            basename($submission->camera_ready_file),
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' .
+                    basename($submission->camera_ready_file) .
+                    '"',
+            ]
+        );
     }
 
     public function export(Request $request)

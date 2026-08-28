@@ -51,6 +51,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('participants', App\Http\Controllers\Admin\ParticipantController::class);
 
         Route::get('submissions/export', [App\Http\Controllers\Admin\SubmissionController::class, 'export'])->name('submissions.export');
+        Route::get('submissions/{submission}/camera-ready/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadCameraReady'])->name('submissions.camera-ready.download');
         Route::patch('submissions/{submission}/camera-ready/approve', [App\Http\Controllers\Admin\SubmissionController::class, 'approveCameraReady'])->name('submissions.camera-ready.approve');
         Route::patch('submissions/{submission}/camera-ready/correction', [App\Http\Controllers\Admin\SubmissionController::class, 'requestCameraReadyCorrection'])->name('submissions.camera-ready.correction');
         Route::resource('submissions', App\Http\Controllers\Admin\SubmissionController::class);
