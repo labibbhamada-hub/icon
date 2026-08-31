@@ -7,11 +7,12 @@ use App\Models\Certificate;
 use App\Models\Participant;
 use App\Models\Submission;
 use App\Exports\CertificatesExport;
-use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CertificateController extends Controller
 {
@@ -72,10 +73,12 @@ class CertificateController extends Controller
                 'required',
                 'exists:participants,id',
             ],
+
             'type' => [
                 'required',
                 'in:participant,presenter,speaker,committee,reviewer',
             ],
+
             'submission_id' => [
                 'nullable',
                 'exists:submissions,id',
@@ -95,6 +98,7 @@ class CertificateController extends Controller
             || $participant->conference?->setting?->maintenance_mode
         ) {
             return back()
+                ->withInput()
                 ->with(
                     'error',
                     'Certificate generation is currently disabled for this conference.'
@@ -104,7 +108,6 @@ class CertificateController extends Controller
         $submission = null;
 
         if (!empty($validated['submission_id'])) {
-
             $submission = Submission::where(
                 'id',
                 $validated['submission_id']
@@ -114,25 +117,82 @@ class CertificateController extends Controller
                     $participant->id
                 )
                 ->where(
+                    'conference_id',
+                    $participant->conference_id
+                )
+                ->where(
                     'status',
                     'published'
                 )
                 ->firstOrFail();
         }
 
-        $existingCertificate = Certificate::where(
-            'participant_id',
-            $participant->id
-        )
-            ->where(
-                'conference_id',
-                $participant->conference_id
+        /*
+        |--------------------------------------------------------------------------
+        | Presenter certificate
+        |--------------------------------------------------------------------------
+        |
+        | Presenter certificates are tied to a published submission.
+        | Therefore duplicate detection must use submission_id.
+        |
+        */
+
+        if (
+            $validated['type'] === 'presenter'
+            && !$submission
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'A presenter certificate requires a published submission.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Duplicate protection
+        |--------------------------------------------------------------------------
+        */
+
+        $existingCertificate = null;
+
+        if ($submission) {
+            $existingCertificate = Certificate::where(
+                'participant_id',
+                $participant->id
             )
-            ->where(
-                'type',
-                $validated['type']
+                ->where(
+                    'conference_id',
+                    $participant->conference_id
+                )
+                ->where(
+                    'submission_id',
+                    $submission->id
+                )
+                ->where(
+                    'type',
+                    $validated['type']
+                )
+                ->first();
+        } else {
+            $existingCertificate = Certificate::where(
+                'participant_id',
+                $participant->id
             )
-            ->first();
+                ->where(
+                    'conference_id',
+                    $participant->conference_id
+                )
+                ->whereNull(
+                    'submission_id'
+                )
+                ->where(
+                    'type',
+                    $validated['type']
+                )
+                ->first();
+        }
 
         if ($existingCertificate) {
             return redirect()
@@ -142,18 +202,51 @@ class CertificateController extends Controller
                 )
                 ->with(
                     'error',
-                    'A certificate of this type has already been generated for this participant.'
+                    'This certificate has already been generated.'
                 );
         }
 
-        $certificate = Certificate::create([
-            'participant_id' => $participant->id,
-            'conference_id' => $participant->conference_id,
-            'submission_id' => $submission?->id,
-            'certificate_number' => $this->generateCertificateNumber($participant->conference),
-            'type' => $validated['type'],
-            'issued_at' => now(),
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Create certificate
+        |--------------------------------------------------------------------------
+        */
+
+        $certificate = DB::transaction(
+            function () use (
+                $participant,
+                $submission,
+                $validated
+            ) {
+                return Certificate::create([
+                    'participant_id' =>
+                    $participant->id,
+
+                    'conference_id' =>
+                    $participant->conference_id,
+
+                    'submission_id' =>
+                    $submission?->id,
+
+                    'certificate_number' =>
+                    $this->generateCertificateNumber(
+                        $participant->conference
+                    ),
+
+                    'type' =>
+                    $validated['type'],
+
+                    'issued_at' =>
+                    now(),
+                ]);
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate PDF
+        |--------------------------------------------------------------------------
+        */
 
         $certificate->load([
             'participant',
@@ -161,26 +254,9 @@ class CertificateController extends Controller
             'submission',
         ]);
 
-        $pdf = Pdf::loadView(
-            'certificates.pdf',
-            compact('certificate')
+        $this->generatePdf(
+            $certificate
         );
-
-        $pdf->setPaper(
-            'A4',
-            'landscape'
-        );
-
-        $filePath = $this->generatePdf($certificate);
-
-        Storage::disk('public')->put(
-            $filePath,
-            $pdf->output()
-        );
-
-        $certificate->update([
-            'file_path' => $filePath,
-        ]);
 
         return redirect()
             ->route(
@@ -193,8 +269,9 @@ class CertificateController extends Controller
             );
     }
 
-    public function show(Certificate $certificate)
-    {
+    public function show(
+        Certificate $certificate
+    ) {
         $certificate->load([
             'participant.conference',
             'submission',
@@ -206,16 +283,18 @@ class CertificateController extends Controller
         );
     }
 
-    public function download(Certificate $certificate)
-    {
+    public function download(
+        Certificate $certificate
+    ) {
         abort_unless(
             $certificate->file_path,
             404
         );
 
         abort_unless(
-            Storage::disk('public')
-                ->exists($certificate->file_path),
+            Storage::disk('public')->exists(
+                $certificate->file_path
+            ),
             404
         );
 
@@ -226,10 +305,12 @@ class CertificateController extends Controller
             );
     }
 
-    public function destroy(Certificate $certificate)
-    {
-        if ($certificate->file_path) {
-
+    public function destroy(
+        Certificate $certificate
+    ) {
+        if (
+            $certificate->file_path
+        ) {
             Storage::disk('public')
                 ->delete(
                     $certificate->file_path
@@ -248,53 +329,34 @@ class CertificateController extends Controller
             );
     }
 
-    public function regenerate(Certificate $certificate)
-    {
+    public function regenerate(
+        Certificate $certificate
+    ) {
         $certificate->load([
             'participant',
             'conference.configuration',
             'submission',
         ]);
 
-        $pdf = Pdf::loadView(
-            'certificates.pdf',
-            compact('certificate')
+        $this->generatePdf(
+            $certificate
         );
-
-        $pdf->setPaper(
-            'A4',
-            'landscape'
-        );
-
-        $filePath = $this->generatePdf($certificate);
-
-        if ($certificate->file_path) {
-            Storage::disk('public')->delete(
-                $certificate->file_path
-            );
-        }
-
-        Storage::disk('public')->put(
-            $filePath,
-            $pdf->output()
-        );
-
-        $certificate->update([
-            'file_path' => $filePath,
-        ]);
 
         return redirect()
-            ->route('admin.certificates.show', $certificate)
+            ->route(
+                'admin.certificates.show',
+                $certificate
+            )
             ->with(
                 'success',
                 'Certificate PDF regenerated successfully.'
             );
     }
 
-    private function generateCertificateNumber($conference): string
-    {
+    private function generateCertificateNumber(
+        $conference
+    ): string {
         do {
-
             $code =
                 'CERT-' .
                 strtoupper(
@@ -316,8 +378,9 @@ class CertificateController extends Controller
         return $code;
     }
 
-    private function generatePdf(Certificate $certificate): string
-    {
+    private function generatePdf(
+        Certificate $certificate
+    ): string {
         $certificate->load([
             'participant',
             'conference.configuration',
@@ -329,38 +392,71 @@ class CertificateController extends Controller
             compact('certificate')
         );
 
-        // Paksa A4 Landscape
-        $pdf->setPaper('a4', 'landscape');
+        $pdf->setPaper(
+            'a4',
+            'landscape'
+        );
 
-        $fileName = $certificate->certificate_number . '.pdf';
+        $fileName =
+            $certificate->certificate_number .
+            '.pdf';
 
-        $filePath = 'certificates/' . $fileName;
+        $filePath =
+            'certificates/' .
+            $fileName;
 
-        // Hapus file lama
-        if ($certificate->file_path) {
-            Storage::disk('public')->delete(
-                $certificate->file_path
-            );
+        /*
+        |--------------------------------------------------------------------------
+        | Delete old PDF if regenerating
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $certificate->file_path
+        ) {
+            Storage::disk('public')
+                ->delete(
+                    $certificate->file_path
+                );
         }
 
-        Storage::disk('public')->put(
+        /*
+        |--------------------------------------------------------------------------
+        | Save PDF
+        |--------------------------------------------------------------------------
+        */
+
+        Storage::disk('public')
+            ->put(
+                $filePath,
+                $pdf->output()
+            );
+
+        $certificate->update([
+            'file_path' =>
             $filePath,
-            $pdf->output()
-        );
+        ]);
 
         return $filePath;
     }
 
-    public function export(Request $request)
-    {
-        $conferenceId = $request->integer('conference_id');
+    public function export(
+        Request $request
+    ) {
+        $conferenceId =
+            $request->integer(
+                'conference_id'
+            );
 
-        $suffix = $conferenceId
+        $suffix =
+            $conferenceId
             ? '-conference-' . $conferenceId
             : '-all';
 
         return Excel::download(
-            new CertificatesExport($conferenceId),
+            new CertificatesExport(
+                $conferenceId
+            ),
             'certificates' .
                 $suffix .
                 '-' .

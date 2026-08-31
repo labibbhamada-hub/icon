@@ -135,7 +135,7 @@
                         </div>
                     @else
                         <div class="card rounded-0 shadow-sm mt-4 border-danger">
-                            <div class="card-header bg-danger text-white">
+                            <div class="card-header bg-danger text-white rounded-0">
                                 <h5 class="mb-0">
                                     <i class="bi bi-x-circle me-2"></i>
                                     Certificate Not Found

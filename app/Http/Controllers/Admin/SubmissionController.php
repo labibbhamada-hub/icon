@@ -14,6 +14,7 @@ use App\Exports\SubmissionsExport;
 use App\Jobs\SendCameraReadyApprovedWhatsApp;
 use App\Jobs\SendCameraReadyCorrectionWhatsApp;
 use App\Notifications\ConferenceNotification;
+use App\Services\CertificateGenerationService;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -81,7 +82,10 @@ class SubmissionController extends Controller
             if ($request->hasFile('paper_file')) {
                 $data['paper_file'] = $request
                     ->file('paper_file')
-                    ->store('submissions/papers', 'public');
+                    ->store(
+                        'submissions/papers',
+                        'local'
+                    );
             }
 
             unset($data['authors']);
@@ -178,7 +182,10 @@ class SubmissionController extends Controller
 
                 $data['paper_file'] = $request
                     ->file('paper_file')
-                    ->store('submissions/papers', 'public');
+                    ->store(
+                        'submissions/papers',
+                        'local'
+                    );
             }
 
             unset($data['authors']);
@@ -214,30 +221,41 @@ class SubmissionController extends Controller
             );
     }
 
-    public function destroy(Submission $submission)
-    {
-        DB::transaction(function () use ($submission) {
+    public function destroy(
+        Submission $submission
+    ) {
+        DB::transaction(
+            function () use ($submission) {
 
-            if ($submission->paper_file) {
-                Storage::disk('local')
-                    ->delete($submission->paper_file);
+                if ($submission->paper_file) {
+                    Storage::disk('local')
+                        ->delete(
+                            $submission->paper_file
+                        );
+                }
+
+                if ($submission->revised_file) {
+                    Storage::disk('local')
+                        ->delete(
+                            $submission->revised_file
+                        );
+                }
+
+                if ($submission->camera_ready_file) {
+                    Storage::disk('local')
+                        ->delete(
+                            $submission->camera_ready_file
+                        );
+                }
+
+                $submission->delete();
             }
-
-            if ($submission->revised_file) {
-                Storage::disk('local')
-                    ->delete($submission->revised_file);
-            }
-
-            if ($submission->camera_ready_file) {
-                Storage::disk('local')
-                    ->delete($submission->camera_ready_file);
-            }
-
-            $submission->delete();
-        });
+        );
 
         return redirect()
-            ->route('admin.submissions.index')
+            ->route(
+                'admin.submissions.index'
+            )
             ->with(
                 'success',
                 'Submission deleted successfully.'
@@ -245,7 +263,8 @@ class SubmissionController extends Controller
     }
 
     public function approveCameraReady(
-        Submission $submission
+        Submission $submission,
+        \App\Services\CertificateGenerationService $certificateGenerationService
     ) {
         if (
             $submission->status !== 'camera_ready'
@@ -286,6 +305,35 @@ class SubmissionController extends Controller
                 'status' => 'published',
             ]);
         });
+
+        /*
+    |--------------------------------------------------------------------------
+    | Generate presenter certificate
+    |--------------------------------------------------------------------------
+    */
+
+        try {
+            $certificate =
+                $certificateGenerationService
+                ->createForSubmission(
+                    $submission->fresh()
+                );
+        } catch (\Throwable $e) {
+            /*
+        |--------------------------------------------------------------------------
+        | Certificate failure should not undo publication
+        |--------------------------------------------------------------------------
+        |
+        | The paper has already been approved and published.
+        | Certificate can be generated again from the Admin certificate
+        | management page.
+        |
+        */
+
+            report($e);
+
+            $certificate = null;
+        }
 
         $submission->load([
             'participant.user',
@@ -333,6 +381,11 @@ class SubmissionController extends Controller
                 );
         }
 
+        $message =
+            $certificate
+            ? 'Camera-ready paper approved, published, and presenter certificate generated successfully.'
+            : 'Camera-ready paper approved and published successfully. Certificate generation will need to be completed from Certificate Management.';
+
         return redirect()
             ->route(
                 'admin.submissions.show',
@@ -340,7 +393,7 @@ class SubmissionController extends Controller
             )
             ->with(
                 'success',
-                'Camera-ready paper approved and marked as published.'
+                $message
             );
     }
 

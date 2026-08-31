@@ -32,7 +32,13 @@ return new class extends Migration
             $table->string('file_path')->nullable();
             $table->timestamp('issued_at')->nullable();
             $table->timestamps();
-            $table->unique(['participant_id', 'conference_id', 'type']);
+            $table->unique(
+                [
+                    'submission_id',
+                    'type',
+                ],
+                'certificates_submission_type_unique'
+            );
         });
     }
 

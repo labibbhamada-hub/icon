@@ -46,17 +46,17 @@
                         <i class="bi bi-award me-2"></i>
                         Certificate Information
                     </h3>
-                    <div class="card-tools">
+                    <div class="float-end">
                         <a href="{{ route('certificates.verify', [
                             'certificate_number' => $certificate->certificate_number,
                         ]) }}"
-                            target="_blank" class="btn btn-outline-primary btn-sm">
+                            target="_blank" class="btn btn-outline-primary btn-sm rounded-0">
                             <i class="bi bi-patch-check me-1"></i>
                             Verify
                         </a>
                         @if ($certificate->file_path)
                             <a href="{{ route('participant.certificates.download', $certificate) }}"
-                                class="btn btn-success btn-sm">
+                                class="btn btn-success btn-sm rounded-0">
                                 <i class="bi bi-download me-1"></i>
                                 Download PDF
                             </a>
@@ -142,11 +142,11 @@
                     @endif
                 </div>
                 <div class="card-footer text-end">
-                    <a href="{{ route('participant.certificates.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('participant.certificates.index') }}" class="btn btn-secondary rounded-0">
                         Back
                     </a>
                     @if ($certificate->file_path)
-                        <a href="{{ route('participant.certificates.download', $certificate) }}" class="btn btn-success">
+                        <a href="{{ route('participant.certificates.download', $certificate) }}" class="btn btn-success rounded-0">
                             <i class="bi bi-download me-1"></i>
                             Download Certificate
                         </a>

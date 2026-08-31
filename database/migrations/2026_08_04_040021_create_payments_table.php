@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('participant_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('payment_method_id')->after('participant_id')->constrained('conference_payment_methods')->restrictOnDelete();
+            $table->unsignedBigInteger('payment_method_id');
             $table->string('payment_code')->unique();
             $table->decimal('amount', 15, 2);
             $table->string('proof_file')->nullable();

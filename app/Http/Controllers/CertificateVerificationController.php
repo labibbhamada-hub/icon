@@ -13,7 +13,6 @@ class CertificateVerificationController extends Controller
         $searched = false;
 
         if ($request->filled('certificate_number')) {
-
             $searched = true;
 
             $certificate = Certificate::with([

@@ -31,17 +31,23 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique([
+            $table->unique(
+                [
+                    'registration_type_id',
+                    'presentation_type',
+                ],
+                'cpp_reg_type_pres_unique'
+            );
+
+            $table->index(
                 'registration_type_id',
-                'presentation_type',
-            ]);
+                'cpp_registration_type_idx'
+            );
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists(
-            'conference_presentation_prices'
-        );
+        Schema::dropIfExists('conference_presentation_prices');
     }
 };
