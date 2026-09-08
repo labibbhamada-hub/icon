@@ -83,9 +83,13 @@
                                         <span class="badge text-bg-danger rounded-0">
                                             Cancelled
                                         </span>
-                                    @else
+                                    @elseif ($registration->registration_status === 'pending')
                                         <span class="badge text-bg-warning rounded-0">
                                             Pending
+                                        </span>
+                                    @else
+                                        <span class="badge text-bg-secondary rounded-0">
+                                            {{ ucwords(str_replace('_', ' ', $registration->registration_status)) }}
                                         </span>
                                     @endif
                                 </td>
