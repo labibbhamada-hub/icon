@@ -33,3 +33,4 @@ icon_backup.sql
 /database/*.sqlite
 /database/*.db
 /icon
+icon.zip
