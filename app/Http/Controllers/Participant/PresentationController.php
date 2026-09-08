@@ -21,7 +21,8 @@ class PresentationController extends Controller
             ->firstOrFail();
 
         abort_unless(
-            $submission->status === 'accepted',
+            $submission->submission_stage === 'full_paper'
+                && $submission->status === 'accepted',
             403
         );
 
@@ -41,6 +42,10 @@ class PresentationController extends Controller
             Submission::where(
                 'participant_id',
                 $participant->id
+            )
+            ->where(
+                'submission_stage',
+                'full_paper'
             )
             ->where(
                 'status',
@@ -90,7 +95,8 @@ class PresentationController extends Controller
             ->firstOrFail();
 
         abort_unless(
-            $submission->status === 'accepted',
+            $submission->submission_stage === 'full_paper'
+                && $submission->status === 'accepted',
             403
         );
 
@@ -115,6 +121,10 @@ class PresentationController extends Controller
             Submission::where(
                 'participant_id',
                 $participant->id
+            )
+            ->where(
+                'submission_stage',
+                'full_paper'
             )
             ->where(
                 'status',

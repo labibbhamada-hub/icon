@@ -47,6 +47,10 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::resource('important-dates', App\Http\Controllers\Admin\ImportantDateController::class);
 
+        Route::resource('conference-online-meetings', App\Http\Controllers\Admin\ConferenceOnlineMeetingController::class);
+
+        Route::resource('conference-whatsapp-groups', App\Http\Controllers\Admin\ConferenceWhatsappGroupController::class);
+
         Route::get('participants/export', [App\Http\Controllers\Admin\ParticipantController::class, 'export'])->name('participants.export');
         Route::resource('participants', App\Http\Controllers\Admin\ParticipantController::class);
 
@@ -54,6 +58,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('submissions/{submission}/camera-ready/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadCameraReady'])->name('submissions.camera-ready.download');
         Route::patch('submissions/{submission}/camera-ready/approve', [App\Http\Controllers\Admin\SubmissionController::class, 'approveCameraReady'])->name('submissions.camera-ready.approve');
         Route::patch('submissions/{submission}/camera-ready/correction', [App\Http\Controllers\Admin\SubmissionController::class, 'requestCameraReadyCorrection'])->name('submissions.camera-ready.correction');
+        Route::get('/submissions/{submission}/paper/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadPaper'])->name('submissions.paper.download');
+        Route::get('/submissions/{submission}/revised-paper/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadRevisedPaper'])->name('submissions.revised-paper.download');
         Route::resource('submissions', App\Http\Controllers\Admin\SubmissionController::class);
 
         Route::get('submissions/{submission}/reviews/create', [App\Http\Controllers\Admin\ReviewController::class, 'createForSubmission'])->name('submissions.reviews.create');
@@ -118,6 +124,10 @@ Route::middleware(['auth', 'role:participant', 'verified'])
         Route::get('/submissions/create', [App\Http\Controllers\Participant\SubmissionController::class, 'create'])->name('submissions.create');
         Route::post('/submissions', [App\Http\Controllers\Participant\SubmissionController::class, 'store'])->name('submissions.store');
         Route::get('/submissions/{submission}', [App\Http\Controllers\Participant\SubmissionController::class, 'show'])->name('submissions.show');
+
+        Route::get('/submissions/{submission}/full-paper', [App\Http\Controllers\Participant\SubmissionController::class, 'fullPaper'])->name('submissions.full-paper');
+        Route::post('/submissions/{submission}/full-paper', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadFullPaper'])->name('submissions.full-paper.upload');
+
         Route::get('/submissions/{submission}/loa', [App\Http\Controllers\Participant\SubmissionController::class, 'loa'])->name('submissions.loa');
         Route::get('/submissions/{submission}/loa/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadLoa'])->name('submissions.loa.download');
         Route::get('/submissions/{submission}/presentation', [App\Http\Controllers\Participant\PresentationController::class, 'edit'])->name('submissions.presentation.edit');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Participant;
 
 use App\Http\Controllers\Controller;
 use App\Models\ConferenceOnlineMeeting;
+use App\Models\ConferenceWhatsappGroup;
 use App\Models\ImportantDate;
 use App\Models\Participant;
 use App\Models\Payment;
@@ -66,6 +67,7 @@ class DashboardController extends Controller
                 'type',
                 [
                     'registration',
+                    'abstract_submission',
                     'full_paper_submission',
                     'revision',
                     'camera_ready',
@@ -84,6 +86,25 @@ class DashboardController extends Controller
         */
 
         $onlineMeetings = ConferenceOnlineMeeting::whereIn(
+            'conference_id',
+            $participants
+                ->pluck('conference_id')
+                ->unique()
+        )
+            ->where(
+                'is_active',
+                true
+            )
+            ->get()
+            ->keyBy('conference_id');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Active WhatsApp Groups
+        |--------------------------------------------------------------------------
+        */
+
+        $whatsappGroups = ConferenceWhatsappGroup::whereIn(
             'conference_id',
             $participants
                 ->pluck('conference_id')
@@ -143,7 +164,12 @@ class DashboardController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            if ($isPresenter) {
+            if (
+                $isPresenter
+                && $participant->submissions
+                ->whereNotNull('presentation_type')
+                ->isNotEmpty()
+            ) {
                 $paymentCalculation =
                     $paymentCalculationService
                     ->calculate(
@@ -411,6 +437,40 @@ class DashboardController extends Controller
                         break;
 
                     case 'accepted':
+
+                        /*
+    |--------------------------------------------------------------------------
+    | Abstract Accepted
+    |--------------------------------------------------------------------------
+    */
+
+                        if ($submission->submission_stage === 'abstract') {
+                            $candidate = [
+                                'priority' => 3,
+                                'type' => 'success',
+                                'icon' => 'bi-file-earmark-arrow-up',
+                                'title' => 'Submit Full Paper',
+                                'description' => 'Your abstract has been accepted. Please submit the full paper for the next review stage.',
+                                'button' => 'Submit Full Paper',
+                                'route' => route(
+                                    'participant.submissions.full-paper',
+                                    $submission
+                                ),
+                            ];
+
+                            break;
+                        }
+
+                        /*
+    |--------------------------------------------------------------------------
+    | Full Paper Accepted
+    |--------------------------------------------------------------------------
+    */
+
+                        if ($submission->submission_stage !== 'full_paper') {
+                            break;
+                        }
+
                         $presentationComplete =
                             !empty($submission->presentation_type)
                             && !empty($submission->presentation_mode)
@@ -422,7 +482,7 @@ class DashboardController extends Controller
                                 'type' => 'success',
                                 'icon' => 'bi-easel',
                                 'title' => 'Complete Presentation Details',
-                                'description' => 'Your paper has been accepted. Please complete your presentation details before proceeding to payment.',
+                                'description' => 'Your full paper has been accepted. Please complete your presentation details before proceeding to payment.',
                                 'button' => 'Presentation Details',
                                 'route' => route(
                                     'participant.submissions.presentation.edit',
@@ -430,23 +490,10 @@ class DashboardController extends Controller
                                 ),
                             ];
                         } elseif (
-                            $hasPendingPayment
-                        ) {
-                            $candidate = [
-                                'priority' => 4,
-                                'type' => 'warning',
-                                'icon' => 'bi-hourglass-split',
-                                'title' => 'Payment Verification',
-                                'description' => 'Your payment proof has been submitted and is waiting for administrator verification.',
-                                'button' => 'View Payment',
-                                'route' => route(
-                                    'participant.payments.index'
-                                ),
-                            ];
-                        } elseif (
-                            $paymentCalculation
+                            $hasRejectedPayment
+                            && !$hasPendingPayment
+                            && $paymentCalculation
                             && $paymentCalculation['outstanding_amount'] > 0
-                            && $hasRejectedPayment
                         ) {
                             $candidate = [
                                 'priority' => 1,
@@ -455,6 +502,18 @@ class DashboardController extends Controller
                                 'title' => 'Payment Rejected',
                                 'description' => 'Your latest payment requires attention. Please review the payment information and submit a new proof.',
                                 'button' => 'Review Payment',
+                                'route' => route(
+                                    'participant.payments.index'
+                                ),
+                            ];
+                        } elseif ($hasPendingPayment) {
+                            $candidate = [
+                                'priority' => 4,
+                                'type' => 'warning',
+                                'icon' => 'bi-hourglass-split',
+                                'title' => 'Payment Verification',
+                                'description' => 'Your payment proof has been submitted and is waiting for administrator verification.',
+                                'button' => 'View Payment',
                                 'route' => route(
                                     'participant.payments.index'
                                 ),
@@ -491,6 +550,7 @@ class DashboardController extends Controller
                                 ),
                             ];
                         }
+
                         break;
 
                     case 'under_review':
@@ -585,6 +645,39 @@ class DashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Participant WhatsApp Groups
+        |--------------------------------------------------------------------------
+        |
+        | Only confirmed participants with online/hybrid attendance can receive
+        | WhatsApp group data.
+        |
+        */
+
+        $participantWhatsappGroups = [];
+
+        foreach ($participants as $participant) {
+            if (
+                $participant->registration_status !== 'confirmed'
+                || !in_array(
+                    $participant->attendance_type,
+                    ['online', 'hybrid'],
+                    true
+                )
+            ) {
+                continue;
+            }
+
+            $group = $whatsappGroups->get(
+                $participant->conference_id
+            );
+
+            if ($group) {
+                $participantWhatsappGroups[$participant->id] = $group;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Fallback Action
         |--------------------------------------------------------------------------
         */
@@ -626,6 +719,7 @@ class DashboardController extends Controller
                 'importantDates',
                 'nextAction',
                 'participantMeetings',
+                'participantWhatsappGroups',
             )
         );
     }

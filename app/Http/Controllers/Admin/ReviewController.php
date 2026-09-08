@@ -36,38 +36,92 @@ class ReviewController extends Controller
             'authors',
         ]);
 
+        $reviewStage = $submission->submission_stage;
+
         $currentRound = Review::where(
             'submission_id',
             $submission->id
         )
+            ->where(
+                'review_stage',
+                $reviewStage
+            )
             ->max('review_round');
 
         $currentRound = $currentRound ?: 1;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Reviewer already assigned in the current stage + round
+    |--------------------------------------------------------------------------
+    */
 
         $assignedReviewerIds = Review::where(
             'submission_id',
             $submission->id
         )
             ->where(
+                'review_stage',
+                $reviewStage
+            )
+            ->where(
                 'review_round',
                 $currentRound
             )
             ->pluck('reviewer_id');
+
+        /*
+    |--------------------------------------------------------------------------
+    | Reviewer already used in another stage
+    |--------------------------------------------------------------------------
+    */
+
+        $previousStageReviewerIds = Review::where(
+            'submission_id',
+            $submission->id
+        )
+            ->where(
+                'review_stage',
+                '!=',
+                $reviewStage
+            )
+            ->pluck('reviewer_id');
+
+        /*
+    |--------------------------------------------------------------------------
+    | Available Reviewers
+    |--------------------------------------------------------------------------
+    */
+
+        $excludedReviewerIds = $assignedReviewerIds
+            ->merge($previousStageReviewerIds)
+            ->unique();
 
         $reviewers = Reviewer::with('user')
             ->where(
                 'conference_id',
                 $submission->conference_id
             )
-            ->where('is_active', true)
+            ->where(
+                'is_active',
+                true
+            )
             ->whereNotIn(
                 'id',
-                $assignedReviewerIds
+                $excludedReviewerIds
             )
             ->orderBy('id')
             ->get();
 
-        return view('admin.reviews.create', compact('submission', 'reviewers', 'currentRound'));
+        return view(
+            'admin.reviews.create',
+            compact(
+                'submission',
+                'reviewers',
+                'currentRound',
+                'reviewStage'
+            )
+        );
     }
 
     public function storeForSubmission(
@@ -89,13 +143,63 @@ class ReviewController extends Controller
                 );
         }
 
+        $reviewStage = $submission->submission_stage;
+
+        $reviewerId = $request->validated('reviewer_id');
+
+        /*
+    |--------------------------------------------------------------------------
+    | Prevent reviewer reuse across different submission stages
+    |--------------------------------------------------------------------------
+    */
+
+        $usedInPreviousStage = Review::where(
+            'submission_id',
+            $submission->id
+        )
+            ->where(
+                'reviewer_id',
+                $reviewerId
+            )
+            ->where(
+                'review_stage',
+                '!=',
+                $reviewStage
+            )
+            ->exists();
+
+        if ($usedInPreviousStage) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'This reviewer has already reviewed this submission in another stage and cannot be assigned again.'
+                );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Current review round
+    |--------------------------------------------------------------------------
+    */
+
         $currentRound = Review::where(
             'submission_id',
             $submission->id
         )
+            ->where(
+                'review_stage',
+                $reviewStage
+            )
             ->max('review_round');
 
         $currentRound = $currentRound ?: 1;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Prevent duplicate assignment in current stage + round
+    |--------------------------------------------------------------------------
+    */
 
         $alreadyAssigned = Review::where(
             'submission_id',
@@ -103,7 +207,11 @@ class ReviewController extends Controller
         )
             ->where(
                 'reviewer_id',
-                $request->validated('reviewer_id')
+                $reviewerId
+            )
+            ->where(
+                'review_stage',
+                $reviewStage
             )
             ->where(
                 'review_round',
@@ -113,15 +221,17 @@ class ReviewController extends Controller
 
         if ($alreadyAssigned) {
             return back()
+                ->withInput()
                 ->with(
                     'error',
-                    'This reviewer has already been assigned in the current review round.'
+                    'This reviewer has already been assigned in the current review stage and round.'
                 );
         }
 
         Review::create([
             'submission_id' => $submission->id,
-            'reviewer_id' => $request->validated('reviewer_id'),
+            'reviewer_id' => $reviewerId,
+            'review_stage' => $reviewStage,
             'review_round' => $currentRound,
             'score' => null,
             'comment' => null,
@@ -223,19 +333,25 @@ class ReviewController extends Controller
     {
         $submission->load('reviews');
 
-        $reviews = $submission->reviews;
+        $reviewStage = $submission->submission_stage;
+
+        $reviews = $submission->reviews
+            ->where('review_stage', $reviewStage);
 
         if ($reviews->isEmpty()) {
             return;
         }
 
-        $currentRound = $reviews
-            ->max('review_round');
+        $currentRound = $reviews->max('review_round');
 
         $currentReviews = $reviews->where(
             'review_round',
             $currentRound
         );
+
+        if ($currentReviews->isEmpty()) {
+            return;
+        }
 
         $hasPendingReview = $currentReviews->contains(
             function ($review) {
@@ -247,6 +363,7 @@ class ReviewController extends Controller
             $submission->update([
                 'status' => 'under_review',
             ]);
+
             return;
         }
 
@@ -282,8 +399,7 @@ class ReviewController extends Controller
         }
 
         if (
-            $currentReviews->isNotEmpty()
-            && $currentReviews->every(
+            $currentReviews->every(
                 function ($review) {
                     return $review->recommendation === 'accept';
                 }

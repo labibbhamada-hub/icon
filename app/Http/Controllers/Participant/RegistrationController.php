@@ -119,6 +119,18 @@ class RegistrationController extends Controller
                 $data['conference_id']
             );
 
+        if (
+            $conference->registration_deadline
+            && now()->startOfDay()->gt($conference->registration_deadline)
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Conference registration is closed.'
+                );
+        }
+
         $registrationType = $conference
             ->registrationTypes()
             ->where(

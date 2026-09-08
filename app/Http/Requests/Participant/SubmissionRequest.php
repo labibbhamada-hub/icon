@@ -69,13 +69,6 @@ class SubmissionRequest extends FormRequest
                 'string',
             ],
 
-            'paper_file' => [
-                'required',
-                'file',
-                'mimes:pdf',
-                'max:10240',
-            ],
-
             'authors' => [
                 'required',
                 'array',
@@ -181,15 +174,6 @@ class SubmissionRequest extends FormRequest
 
             'topic_id.exists' =>
             'The selected topic is not available for this conference.',
-
-            'paper_file.required' =>
-            'Paper file is required.',
-
-            'paper_file.mimes' =>
-            'Paper file must be a PDF.',
-
-            'paper_file.max' =>
-            'Paper file may not be larger than 10 MB.',
 
             'authors.required' =>
             'At least one author is required.',

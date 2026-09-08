@@ -21,20 +21,30 @@ class ConferenceRegistrationType extends Model
         'is_active',
         'sort_order',
     ];
+
     protected $casts = [
         'fee' => 'decimal:2',
         'included_papers' => 'integer',
         'additional_paper_fee' => 'decimal:2',
         'is_active' => 'boolean',
+        'sort_order' => 'integer',
     ];
+
     public function conference()
     {
-        return $this->belongsTo(Conference::class);
+        return $this->belongsTo(
+            Conference::class
+        );
     }
+
     public function participants()
     {
-        return $this->hasMany(Participant::class, 'registration_type_id');
+        return $this->hasMany(
+            Participant::class,
+            'registration_type_id'
+        );
     }
+
     public function presentationPrices()
     {
         return $this->hasMany(

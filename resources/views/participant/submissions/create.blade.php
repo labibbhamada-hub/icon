@@ -1,6 +1,6 @@
 @extends('layouts.participant')
 
-@section('title', 'New Submission')
+@section('title', 'Abstract Submission')
 
 @section('header')
     <div class="row align-items-top">
@@ -11,12 +11,12 @@
                 </a>
 
                 <h1 class="mb-0 fs-3">
-                    New Submission
+                    Abstract Submission
                 </h1>
             </div>
 
             <p class="text-muted mb-0">
-                Submit your conference paper.
+                Submit your conference abstract.
             </p>
         </div>
 
@@ -158,7 +158,7 @@
                             </strong>
 
                             <div class="small mt-1">
-                                This paper will be submitted under the conference registration shown above.
+                                This abstract will be submitted under the conference registration shown above.
                             </div>
 
                         </div>
@@ -213,14 +213,50 @@
             </div>
         @endif
 
-        {{-- Paper Information --}}
+        <div class="card rounded-0 mb-3">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+
+                    <div class="d-flex align-items-start gap-3">
+
+                        <div class="text-primary fs-4">
+                            <i class="bi bi-file-earmark-word"></i>
+                        </div>
+
+                        <div>
+                            <strong>
+                                Abstract Template
+                            </strong>
+
+                            <div class="text-muted small mt-1">
+                                Download the official abstract template before preparing your submission.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <a href="{{ asset('storage/conference-templates/' . $participant->conference_id . '/abstract-template.docx') }}"
+                        class="btn btn-outline-primary btn-sm rounded-0" target="_blank" rel="noopener">
+                        <i class="bi bi-download me-1"></i>
+                        Download Template
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- Abstract Information --}}
         <div class="card rounded-0 mb-3">
 
             <div class="card-header">
 
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-text me-2"></i>
-                    Paper Information
+                    Abstract Information
                 </h3>
 
             </div>
@@ -265,7 +301,7 @@
 
                     <input type="text" name="title" value="{{ old('title') }}"
                         class="form-control @error('title') is-invalid @enderror rounded-0"
-                        placeholder="Enter the full title of your paper">
+                        placeholder="Enter the title of your research paper">
 
                     @error('title')
                         <div class="invalid-feedback">
@@ -283,7 +319,10 @@
                     </label>
 
                     <textarea name="abstract" rows="8" class="form-control @error('abstract') is-invalid @enderror rounded-0"
-                        placeholder="Write your paper abstract...">{{ old('abstract') }}</textarea>
+                        placeholder="Write your abstract (150–250 words)...">{{ old('abstract') }}</textarea>
+                    <div class="form-text">
+                        Write one paragraph containing 150–250 words.
+                    </div>
 
                     @error('abstract')
                         <div class="invalid-feedback">
@@ -302,35 +341,13 @@
 
                     <input type="text" name="keywords" value="{{ old('keywords') }}"
                         class="form-control @error('keywords') is-invalid @enderror rounded-0"
-                        placeholder="artificial intelligence, machine learning, smart campus">
+                        placeholder="artificial intelligence; machine learning; smart campus">
 
                     <div class="form-text">
-                        Separate keywords using commas.
+                        Separate keywords using semicolons (;). Enter 3–5 keywords.
                     </div>
 
                     @error('keywords')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-
-                </div>
-
-                <div>
-
-                    <label class="form-label">
-                        Paper File
-                        <span class="text-danger">*</span>
-                    </label>
-
-                    <input type="file" name="paper_file" accept="application/pdf"
-                        class="form-control @error('paper_file') is-invalid @enderror rounded-0">
-
-                    <div class="form-text">
-                        PDF only. Maximum 10 MB.
-                    </div>
-
-                    @error('paper_file')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
@@ -480,14 +497,14 @@
 
                 <i class="bi bi-shield-check me-1"></i>
 
-                Please review your paper information before submitting.
+                Please review your abstract information before submitting.
 
             </div>
 
             <button type="submit" class="btn btn-success rounded-0">
 
                 <i class="bi bi-send me-1"></i>
-                Submit Paper
+                Submit Abstract
 
             </button>
 

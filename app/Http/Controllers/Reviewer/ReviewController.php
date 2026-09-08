@@ -248,32 +248,49 @@ class ReviewController extends Controller
             'reviews',
         ]);
 
-        $reviews = $submission->reviews;
+        $reviewStage =
+            $submission->submission_stage;
+
+        $reviews =
+            $submission->reviews
+            ->where(
+                'review_stage',
+                $reviewStage
+            );
 
         if ($reviews->isEmpty()) {
             return;
         }
 
-        // Ambil review round terbaru
-        $currentRound = $reviews
-            ->max('review_round');
+        $currentRound =
+            $reviews->max('review_round');
 
-        $currentReviews = $reviews->where(
-            'review_round',
-            $currentRound
-        );
+        $currentReviews =
+            $reviews->where(
+                'review_round',
+                $currentRound
+            );
 
-        // Masih ada reviewer yang belum submit
-        $hasPendingReview = $currentReviews->contains(
-            function ($review) {
-                return is_null(
-                    $review->reviewed_at
-                );
-            }
-        );
+        if ($currentReviews->isEmpty()) {
+            return;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Pending Review
+    |--------------------------------------------------------------------------
+    */
+
+        $hasPendingReview =
+            $currentReviews->contains(
+                function ($review) {
+                    return is_null(
+                        $review->reviewed_at
+                    );
+                }
+            );
 
         if ($hasPendingReview) {
-
             $submission->update([
                 'status' => 'under_review',
             ]);
@@ -281,12 +298,18 @@ class ReviewController extends Controller
             return;
         }
 
-        // Ada reviewer yang menolak
-        $hasReject = $currentReviews->contains(
-            function ($review) {
-                return $review->recommendation === 'reject';
-            }
-        );
+        /*
+    |--------------------------------------------------------------------------
+    | Rejected
+    |--------------------------------------------------------------------------
+    */
+
+        $hasReject =
+            $currentReviews->contains(
+                function ($review) {
+                    return $review->recommendation === 'reject';
+                }
+            );
 
         if ($hasReject) {
             $submission->update([
@@ -303,7 +326,9 @@ class ReviewController extends Controller
                 )->queue(
                     new SubmissionStatusMail(
                         $submission,
-                        'We are sorry to inform you that your submission has not been accepted for publication.'
+                        $reviewStage === 'abstract'
+                            ? 'We are sorry to inform you that your abstract has not been accepted.'
+                            : 'We are sorry to inform you that your full paper has not been accepted for publication.'
                     )
                 );
             }
@@ -311,61 +336,94 @@ class ReviewController extends Controller
             return;
         }
 
-        // Ada reviewer meminta revisi
-        $hasRevision = $currentReviews->contains(
-            function ($review) {
-                return in_array(
-                    $review->recommendation,
-                    [
-                        'minor_revision',
-                        'major_revision',
-                    ],
-                    true
-                );
-            }
-        );
+        /*
+    |--------------------------------------------------------------------------
+    | Revision Required
+    |--------------------------------------------------------------------------
+    */
+
+        $hasRevision =
+            $currentReviews->contains(
+                function ($review) {
+                    return in_array(
+                        $review->recommendation,
+                        [
+                            'minor_revision',
+                            'major_revision',
+                        ],
+                        true
+                    );
+                }
+            );
+
         if ($hasRevision) {
             $submission->update([
                 'status' => 'revision',
             ]);
+
             $submission->load([
                 'participant',
             ]);
+
             if ($submission->participant?->email) {
                 Mail::to(
                     $submission->participant->email
                 )->queue(
                     new SubmissionStatusMail(
                         $submission,
-                        'Your paper requires revision based on the reviewer feedback. Please log in to the participant portal and upload your revised manuscript.'
+                        $reviewStage === 'abstract'
+                            ? 'Your abstract requires revision based on the reviewer feedback. Please log in to the participant portal and submit the revised abstract.'
+                            : 'Your full paper requires revision based on the reviewer feedback. Please log in to the participant portal and upload your revised manuscript.'
                     )
                 );
             }
+
             if ($submission->participant?->phone) {
                 SendRevisionRequiredWhatsApp::dispatch(
                     $submission->participant->id,
                     $submission->id
                 );
             }
+
             if ($submission->participant?->user) {
                 $submission->participant->user->notify(
                     new ConferenceNotification(
-                        'Revision Required',
-                        'Your paper requires revision based on the reviewer feedback. Please log in to the participant portal and upload your revised manuscript.',
+                        $reviewStage === 'abstract'
+                            ? 'Abstract Revision Required'
+                            : 'Paper Revision Required',
+
+                        $reviewStage === 'abstract'
+                            ? 'Your abstract requires revision based on the reviewer feedback. Please review the feedback and submit your revised abstract.'
+                            : 'Your full paper requires revision based on the reviewer feedback. Please review the feedback and upload your revised manuscript.',
+
                         'Upload Revision',
-                        route('participant.submissions.revision', $submission),
+
+                        route(
+                            'participant.submissions.revision',
+                            $submission
+                        ),
+
                         'warning'
                     )
                 );
             }
+
             return;
         }
-        // Semua reviewer menerima
-        $allAccepted = $currentReviews->every(
-            function ($review) {
-                return $review->recommendation === 'accept';
-            }
-        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | All Reviewers Accepted
+    |--------------------------------------------------------------------------
+    */
+
+        $allAccepted =
+            $currentReviews->every(
+                function ($review) {
+                    return $review->recommendation === 'accept';
+                }
+            );
+
         if (
             $currentReviews->isNotEmpty()
             && $allAccepted
@@ -373,35 +431,65 @@ class ReviewController extends Controller
             $submission->update([
                 'status' => 'accepted',
             ]);
+
             $submission->load([
                 'participant',
             ]);
+
             if ($submission->participant?->email) {
                 Mail::to(
                     $submission->participant->email
                 )->queue(
                     new SubmissionStatusMail(
                         $submission,
-                        'Congratulations! Your paper has been accepted. Please log in to the participant portal to upload the final camera-ready version.'
+                        $reviewStage === 'abstract'
+                            ? 'Congratulations! Your abstract has been accepted. Please log in to the participant portal to submit your full paper.'
+                            : 'Congratulations! Your full paper has been accepted. Please log in to the participant portal to continue with the next stage.'
                     )
                 );
             }
-            if ($submission->participant?->phone) {
+
+            if (
+                $reviewStage === 'full_paper'
+                && $submission->participant?->phone
+            ) {
                 SendSubmissionAcceptedWhatsApp::dispatch(
                     $submission->participant->id,
                     $submission->id
                 );
             }
+
             if ($submission->participant?->user) {
-                $submission->participant->user->notify(
-                    new ConferenceNotification(
-                        'Paper Accepted',
-                        'Congratulations! Your paper has been accepted. Your Letter of Acceptance is now available in the participant portal.',
-                        'View LOA',
-                        route('participant.submissions.loa', $submission),
-                        'success'
-                    )
-                );
+
+                if ($reviewStage === 'abstract') {
+
+                    $submission->participant->user->notify(
+                        new ConferenceNotification(
+                            'Abstract Accepted',
+                            'Congratulations! Your abstract has been accepted. You can now submit your full paper.',
+                            'Submit Full Paper',
+                            route(
+                                'participant.submissions.full-paper',
+                                $submission
+                            ),
+                            'success'
+                        )
+                    );
+                } else {
+
+                    $submission->participant->user->notify(
+                        new ConferenceNotification(
+                            'Full Paper Accepted',
+                            'Congratulations! Your full paper has been accepted. Your Letter of Acceptance is now available.',
+                            'View LOA',
+                            route(
+                                'participant.submissions.loa',
+                                $submission
+                            ),
+                            'success'
+                        )
+                    );
+                }
             }
         }
     }

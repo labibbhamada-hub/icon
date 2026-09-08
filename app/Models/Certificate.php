@@ -22,16 +22,22 @@ class Certificate extends Model
 
     public function participant()
     {
-        return $this->belongsTo(Participant::class);
+        return $this->belongsTo(
+            Participant::class
+        );
     }
 
     public function conference()
     {
-        return $this->belongsTo(Conference::class);
+        return $this->belongsTo(
+            Conference::class
+        );
     }
 
     public function submission()
     {
-        return $this->belongsTo(Submission::class);
+        return $this->belongsTo(
+            Submission::class
+        );
     }
 }

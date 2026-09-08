@@ -1,86 +1,269 @@
 <section class="speakers section-padding" id="speakers">
+
     <div class="container">
-        <!-- Section Heading -->
+
+        {{-- ========================================================
+            SECTION HEADER
+        ========================================================= --}}
+
         <div class="section-heading text-center">
+
             <span class="section-badge">
-                Keynote Speakers
+                Keynote & Invited Speakers
             </span>
+
             <h2 class="section-title mt-3">
+
                 Meet Our
                 <span>Distinguished Speakers</span>
+
             </h2>
-            <p class="section-description">
-                Learn from renowned professors, researchers, practitioners,
-                and industry experts who are shaping the future of health,
-                science, and technology.
+
+            <p>
+
+                Gain insights from distinguished keynote and invited speakers
+                who will share their knowledge, perspectives, and experience
+                in support of interdisciplinary research, innovation,
+                and sustainable development.
+
             </p>
+
         </div>
 
-        <!-- Featured Speaker -->
-        <div class="featured-speaker">
-            <div class="row align-items-center g-5">
-                <!-- Speaker Photo -->
-                <div class="col-lg-5">
-                    <div class="featured-speaker-image">
-                        <img src="{{ asset('assets/images/speaker/speaker-1.webp') }}" class="img-fluid"
-                            alt="Keynote Speaker">
+
+        @if ($conference && $conference->speakers->isNotEmpty())
+
+            @php
+
+                $featuredSpeaker = $conference->speakers->first();
+
+                $gridSpeakers = $conference->speakers->skip(1)->take(4);
+
+            @endphp
+
+
+            {{-- ====================================================
+                FEATURED SPEAKER
+            ===================================================== --}}
+
+            <div class="featured-speaker">
+
+                <div class="row align-items-center g-4">
+
+                    {{-- Photo --}}
+                    <div class="col-lg-5">
+
+                        <div class="featured-speaker-image">
+
+                            @if ($featuredSpeaker->photo)
+                                <img src="{{ asset('storage/' . $featuredSpeaker->photo) }}"
+                                    alt="{{ $featuredSpeaker->name }}">
+                            @else
+                                <div class="featured-speaker-placeholder">
+
+                                    <i class="bi bi-person"></i>
+
+                                </div>
+                            @endif
+
+                        </div>
+
                     </div>
+
+
+                    {{-- Information --}}
+                    <div class="col-lg-7">
+
+                        <span class="featured-label">
+
+                            Featured Keynote Speaker
+
+                        </span>
+
+
+                        <h3 class="featured-name">
+
+                            {{ $featuredSpeaker->name }}
+
+                        </h3>
+
+
+                        @if ($featuredSpeaker->title || $featuredSpeaker->position || $featuredSpeaker->institution)
+
+                            <div class="featured-position">
+
+                                @if ($featuredSpeaker->title)
+                                    <span>
+                                        {{ $featuredSpeaker->title }}
+                                    </span>
+                                @endif
+
+
+                                @if ($featuredSpeaker->title && $featuredSpeaker->position)
+                                    <span>
+                                        ·
+                                    </span>
+                                @endif
+
+
+                                @if ($featuredSpeaker->position)
+                                    <span>
+                                        {{ $featuredSpeaker->position }}
+                                    </span>
+                                @endif
+
+
+                                @if (($featuredSpeaker->title || $featuredSpeaker->position) && $featuredSpeaker->institution)
+                                    <span>
+                                        ·
+                                    </span>
+                                @endif
+
+
+                                @if ($featuredSpeaker->institution)
+                                    <span>
+                                        {{ $featuredSpeaker->institution }}
+                                    </span>
+                                @endif
+
+                            </div>
+
+                        @endif
+
+
+                        @if ($featuredSpeaker->bio)
+                            <p class="featured-description">
+
+                                {{ $featuredSpeaker->bio }}
+
+                            </p>
+                        @else
+                            <p class="featured-description">
+
+                                We are pleased to welcome
+                                {{ $featuredSpeaker->name }}
+                                as a keynote speaker at BHAMADA ICON 2026,
+                                contributing perspectives to the conference
+                                theme of interdisciplinary research,
+                                innovation, and sustainable development.
+
+                            </p>
+                        @endif
+
+
+                        <div class="featured-tags">
+
+                            @if ($featuredSpeaker->position)
+                                <span>
+                                    {{ $featuredSpeaker->position }}
+                                </span>
+                            @endif
+
+
+                            @if ($featuredSpeaker->institution)
+                                <span>
+                                    {{ $featuredSpeaker->institution }}
+                                </span>
+                            @endif
+
+
+                            @if ($featuredSpeaker->title)
+                                <span>
+                                    {{ $featuredSpeaker->title }}
+                                </span>
+                            @endif
+
+                        </div>
+
+
+                        @if ($featuredSpeaker->website || $featuredSpeaker->linkedin)
+
+                            <div class="featured-actions">
+
+                                @if ($featuredSpeaker->website)
+                                    <a href="{{ $featuredSpeaker->website }}" target="_blank" rel="noopener noreferrer"
+                                        class="btn btn-register">
+
+                                        <i class="bi bi-globe me-1"></i>
+
+                                        Website
+
+                                    </a>
+                                @endif
+
+
+                                @if ($featuredSpeaker->linkedin)
+                                    <a href="{{ $featuredSpeaker->linkedin }}" target="_blank"
+                                        rel="noopener noreferrer" class="btn btn-login">
+
+                                        <i class="bi bi-linkedin me-1"></i>
+
+                                        LinkedIn
+
+                                    </a>
+                                @endif
+
+                            </div>
+
+                        @endif
+
+                    </div>
+
                 </div>
-                <!-- Speaker Info -->
-                <div class="col-lg-7">
-                    <span class="featured-label">
-                        ★ Featured Keynote Speaker
-                    </span>
-                    <h3 class="featured-name">
-                        Prof. Dr. John Doe
-                    </h3>
-                    <div class="featured-position">
-                        Harvard Medical School
-                    </div>
-                    <p class="featured-description">
-                        Internationally recognized researcher in health innovation,
-                        artificial intelligence, and biomedical engineering with
-                        more than 20 years of academic and research experience.
-                    </p>
-                    <div class="featured-tags">
-                        <span>Artificial Intelligence</span>
-                        <span>Digital Health</span>
-                        <span>Biomedical Engineering</span>
-                    </div>
-                    <a href="#" class="btn btn-register mt-4">
-                        View Profile
-                    </a>
-                </div>
+
             </div>
-        </div>
 
-        <!-- Speaker Grid -->
-        <div class="speaker-grid">
-            <div class="row mt-5 g-4">
-                <div class="col-lg-3 col-md-6">
-                    <x-speaker-card image="speaker-2.webp" name="Prof. Maria Gonzalez"
-                        university="National University of Singapore" country="Singapore" />
+
+            {{-- ====================================================
+                SPEAKER GRID
+            ===================================================== --}}
+
+            @if ($gridSpeakers->isNotEmpty())
+
+                <div class="speaker-grid">
+
+                    <div class="row g-4">
+
+                        @foreach ($gridSpeakers as $speaker)
+                            <div class="col-lg-3 col-md-6">
+
+                                @php
+
+                                    $speakerPhoto = $speaker->photo ? asset('storage/' . $speaker->photo) : null;
+
+                                @endphp
+
+
+                                <x-speaker-card :photo="$speakerPhoto" :name="$speaker->name" :university="$speaker->institution ?? ($speaker->position ?? '-')" />
+
+                            </div>
+                        @endforeach
+
+                    </div>
+
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <x-speaker-card image="speaker-3.webp" name="Prof. James Wilson"
-                        university="University of Melbourne" country="Australia" />
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <x-speaker-card image="speaker-4.webp" name="Prof. Sarah Johnson" university="Kyoto University"
-                        country="Japan" />
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <x-speaker-card image="speaker-5.webp" name="Prof. Ahmad Fauzi" university="Universitas Indonesia"
-                        country="Indonesia" />
-                </div>
+
+            @endif
+        @else
+            <div class="text-center py-5">
+
+                <i class="bi bi-mic-mute display-5"></i>
+
+                <h4 class="mt-3">
+                    Speakers Coming Soon
+                </h4>
+
+                <p class="text-muted mb-0">
+
+                    Keynote and invited speaker information
+                    will be published here soon.
+
+                </p>
+
             </div>
-        </div>
 
-        <div class="text-center mt-5">
-            <a href="#" class="btn btn-register">
-                View All Speakers
-            </a>
-        </div>
+        @endif
 
     </div>
+
 </section>

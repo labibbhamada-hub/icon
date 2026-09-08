@@ -14,6 +14,7 @@ class Submission extends Model
         'title',
         'abstract',
         'keywords',
+        'submission_stage',
         'paper_file',
         'revised_file',
         'camera_ready_file',

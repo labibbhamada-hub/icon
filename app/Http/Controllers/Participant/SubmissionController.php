@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Participant\CameraReadyRequest;
 use App\Http\Requests\Participant\RevisionRequest;
 use App\Http\Requests\Participant\SubmissionRequest;
+use App\Http\Requests\Participant\FullPaperSubmissionRequest;
 use App\Mail\SubmissionStatusMail;
 use App\Models\ImportantDate;
 use App\Models\Participant;
 use App\Models\Review;
 use App\Models\Submission;
 use App\Models\Topic;
+use App\Models\Payment;
 use App\Services\PaymentCalculationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Builder\Builder;
@@ -120,7 +122,7 @@ class SubmissionController extends Controller
                 )
                 ->with(
                     'error',
-                    'You do not have a conference registration currently open for paper submission.'
+                    'You do not have a conference registration currently open for abstract submission.'
                 );
         }
 
@@ -135,7 +137,7 @@ class SubmissionController extends Controller
                 )
                 ->with(
                     'error',
-                    'The paper submission deadline has passed for this conference.'
+                    'The abstract submission deadline has passed for this conference.'
                 );
         }
 
@@ -146,7 +148,7 @@ class SubmissionController extends Controller
             )
             ->where(
                 'type',
-                'full_paper_submission'
+                'abstract_submission'
             )
             ->where(
                 'is_active',
@@ -177,9 +179,8 @@ class SubmissionController extends Controller
         );
     }
 
-    public function store(
-        SubmissionRequest $request
-    ) {
+    public function store(SubmissionRequest $request)
+    {
         $data = $request->validated();
 
         $participant = Participant::with([
@@ -253,7 +254,7 @@ class SubmissionController extends Controller
                 ->withInput()
                 ->with(
                     'error',
-                    'The paper submission deadline has passed for this conference.'
+                    'The abstract submission deadline has passed for this conference.'
                 );
         }
 
@@ -273,19 +274,10 @@ class SubmissionController extends Controller
 
         $submission = DB::transaction(
             function () use (
-                $request,
                 $data,
                 $participant,
                 $topic
             ) {
-                $paperFile =
-                    $request
-                    ->file('paper_file')
-                    ->store(
-                        'submissions/papers',
-                        'local'
-                    );
-
                 $submission = Submission::create([
                     'conference_id' =>
                     $participant->conference_id,
@@ -310,8 +302,8 @@ class SubmissionController extends Controller
                     'keywords' =>
                     $data['keywords'],
 
-                    'paper_file' =>
-                    $paperFile,
+                    'submission_stage' =>
+                    'abstract',
 
                     'status' =>
                     'submitted',
@@ -364,7 +356,7 @@ class SubmissionController extends Controller
             )->queue(
                 new SubmissionStatusMail(
                     $submission,
-                    'Your submission has been received successfully and is now waiting for the review process.'
+                    'Your abstract submission has been received successfully and is now waiting for the review process.'
                 )
             );
         }
@@ -376,7 +368,7 @@ class SubmissionController extends Controller
             )
             ->with(
                 'success',
-                'Submission created successfully.'
+                'Abstract submitted successfully.'
             );
     }
 
@@ -404,10 +396,206 @@ class SubmissionController extends Controller
             'authors',
         ]);
 
+        /*
+    |--------------------------------------------------------------------------
+    | Latest Payment
+    |--------------------------------------------------------------------------
+    */
+
+        $payment = Payment::where(
+            'participant_id',
+            $participant->id
+        )
+            ->latest()
+            ->first();
+
         return view(
             'participant.submissions.show',
-            compact('submission')
+            compact(
+                'submission',
+                'payment'
+            )
         );
+    }
+
+    public function fullPaper(
+        Submission $submission
+    ) {
+        $this->getOwnedSubmissionParticipant(
+            $submission
+        );
+
+        $submission->load([
+            'conference.setting',
+            'topic',
+            'authors',
+        ]);
+
+        if (
+            !$submission->conference?->setting?->submission_enabled
+            || $submission->conference?->setting?->maintenance_mode
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Submission workflow is currently unavailable.'
+                );
+        }
+
+        if (
+            !$this->isFullPaperSubmissionOpen(
+                $submission->conference_id
+            )
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'The full paper submission deadline has passed for this conference.'
+                );
+        }
+
+        if (
+            $submission->submission_stage !== 'abstract'
+            || $submission->status !== 'accepted'
+        ) {
+            return redirect()
+                ->route(
+                    'participant.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Full paper submission is only available for accepted abstracts.'
+                );
+        }
+
+        $fullPaperDeadline =
+            $this->getFullPaperSubmissionDeadline(
+                $submission->conference_id
+            );
+
+        return view(
+            'participant.submissions.full-paper',
+            compact(
+                'submission',
+                'fullPaperDeadline'
+            )
+        );
+    }
+
+    public function uploadFullPaper(
+        FullPaperSubmissionRequest $request,
+        Submission $submission
+    ) {
+        $this->getOwnedSubmissionParticipant(
+            $submission
+        );
+
+        $submission->load([
+            'conference.setting',
+        ]);
+
+        if (
+            !$submission->conference?->setting?->submission_enabled
+            || $submission->conference?->setting?->maintenance_mode
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'Submission workflow is currently unavailable.'
+                );
+        }
+
+        if (
+            !$this->isFullPaperSubmissionOpen(
+                $submission->conference_id
+            )
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'The full paper submission deadline has passed for this conference.'
+                );
+        }
+
+        if (
+            $submission->submission_stage !== 'abstract'
+            || $submission->status !== 'accepted'
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'Full paper submission is only available for accepted abstracts.'
+                );
+        }
+
+        $oldFile =
+            $submission->paper_file;
+
+        $newFile =
+            $request
+            ->file('paper_file')
+            ->store(
+                'submissions/papers',
+                'local'
+            );
+
+        DB::transaction(
+            function () use (
+                $submission,
+                $newFile
+            ) {
+                $submission->update([
+                    'paper_file' =>
+                    $newFile,
+
+                    'submission_stage' =>
+                    'full_paper',
+
+                    'status' =>
+                    'submitted',
+
+                    'submitted_at' =>
+                    now(),
+                ]);
+            }
+        );
+
+        if ($oldFile) {
+            Storage::disk('local')
+                ->delete($oldFile);
+        }
+
+        $submission->load('participant');
+
+        if ($submission->participant?->email) {
+            Mail::to(
+                $submission->participant->email
+            )->queue(
+                new SubmissionStatusMail(
+                    $submission,
+                    'Your full paper has been received successfully and is now waiting for the review process.'
+                )
+            );
+        }
+
+        return redirect()
+            ->route(
+                'participant.submissions.show',
+                $submission
+            )
+            ->with(
+                'success',
+                'Full paper submitted successfully.'
+            );
     }
 
     public function loa(
@@ -425,7 +613,8 @@ class SubmissionController extends Controller
         ]);
 
         if (
-            !in_array(
+            $submission->submission_stage !== 'full_paper'
+            || !in_array(
                 $submission->status,
                 [
                     'accepted',
@@ -493,7 +682,8 @@ class SubmissionController extends Controller
         ]);
 
         if (
-            !in_array(
+            $submission->submission_stage !== 'full_paper'
+            || !in_array(
                 $submission->status,
                 [
                     'accepted',
@@ -735,10 +925,17 @@ class SubmissionController extends Controller
                 $oldFile,
                 $newFile
             ) {
+                $reviewStage =
+                    $submission->submission_stage;
+
                 $currentRound =
                     Review::where(
                         'submission_id',
                         $submission->id
+                    )
+                    ->where(
+                        'review_stage',
+                        $reviewStage
                     )
                     ->max('review_round');
 
@@ -761,6 +958,10 @@ class SubmissionController extends Controller
                         $submission->id
                     )
                     ->where(
+                        'review_stage',
+                        $reviewStage
+                    )
+                    ->where(
                         'review_round',
                         $currentRound
                     )
@@ -776,6 +977,9 @@ class SubmissionController extends Controller
 
                         'reviewer_id' =>
                         $oldReview->reviewer_id,
+
+                        'review_stage' =>
+                        $reviewStage,
 
                         'review_round' =>
                         $nextRound,
@@ -870,7 +1074,8 @@ class SubmissionController extends Controller
         }
 
         if (
-            $submission->status !== 'accepted'
+            $submission->submission_stage !== 'full_paper'
+            || $submission->status !== 'accepted'
         ) {
             return redirect()
                 ->route(
@@ -879,7 +1084,7 @@ class SubmissionController extends Controller
                 )
                 ->with(
                     'error',
-                    'Camera-ready submission is only available for accepted papers.'
+                    'Camera-ready submission is only available for accepted full papers.'
                 );
         }
 
@@ -993,7 +1198,8 @@ class SubmissionController extends Controller
         }
 
         if (
-            $submission->status !== 'accepted'
+            $submission->submission_stage !== 'full_paper'
+            || $submission->status !== 'accepted'
         ) {
             return redirect()
                 ->route(
@@ -1002,7 +1208,7 @@ class SubmissionController extends Controller
                 )
                 ->with(
                     'error',
-                    'Camera-ready submission is only available for accepted papers.'
+                    'Camera-ready submission is only available for accepted full papers.'
                 );
         }
 
@@ -1185,7 +1391,25 @@ class SubmissionController extends Controller
             ->firstOrFail();
     }
 
-    private function getSubmissionDeadline(
+    private function getSubmissionDeadline($conferenceId): ?ImportantDate
+    {
+        return ImportantDate::where(
+            'conference_id',
+            $conferenceId
+        )
+            ->where(
+                'type',
+                'abstract_submission'
+            )
+            ->where(
+                'is_active',
+                true
+            )
+            ->orderByDesc('date')
+            ->first();
+    }
+
+    private function getFullPaperSubmissionDeadline(
         $conferenceId
     ): ?ImportantDate {
         return ImportantDate::where(
@@ -1202,6 +1426,40 @@ class SubmissionController extends Controller
             )
             ->orderByDesc('date')
             ->first();
+    }
+
+    private function isFullPaperSubmissionOpen(
+        $conferenceId
+    ): bool {
+        $deadline =
+            $this->getFullPaperSubmissionDeadline(
+                $conferenceId
+            );
+
+        if (!$deadline) {
+            return true;
+        }
+
+        $today =
+            now()->startOfDay();
+
+        $startDate =
+            $deadline->date
+            ->copy()
+            ->startOfDay();
+
+        if ($deadline->end_date) {
+            return $today->between(
+                $startDate,
+                $deadline->end_date
+                    ->copy()
+                    ->endOfDay()
+            );
+        }
+
+        return $today->lte(
+            $startDate
+        );
     }
 
     private function isSubmissionOpen(

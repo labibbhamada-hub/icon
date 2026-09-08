@@ -1,6 +1,6 @@
 @extends('layouts.reviewer')
 
-@section('title', 'Review Paper')
+@section('title', 'Review Submission')
 
 @section('header')
     <div class="row align-items-center">
@@ -10,11 +10,11 @@
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <h1 class="mb-0 fs-3">
-                    Review Paper
+                    Review Submission
                 </h1>
             </div>
             <p class="text-muted mb-0 mt-1">
-                Evaluate the assigned conference paper.
+                Evaluate the assigned conference submission.
             </p>
         </div>
         <div class="col-sm-6">
@@ -60,11 +60,11 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-text me-2"></i>
-                    Paper Information
+                    Submission Information
                 </h3>
                 <div class="float-end">
                     @if ($review->submission?->paper_file)
-                        <a href="{{ asset('storage/' . $review->submission->paper_file) }}" target="_blank"
+                        <a href="{{ route('reviewer.reviews.paper.download', $review) }}" target="_blank"
                             class="btn btn-danger btn-sm rounded-0">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper
@@ -85,6 +85,19 @@
                             {{ $review->submission->topic->name }}
                         </span>
                     @endif
+                    @if ($review->review_stage === 'abstract')
+                        <span class="badge text-bg-secondary rounded-0">
+                            Abstract Review
+                        </span>
+                    @elseif ($review->review_stage === 'full_paper')
+                        <span class="badge text-bg-primary rounded-0">
+                            Full Paper Review
+                        </span>
+                    @endif
+
+                    <span class="badge text-bg-light border rounded-0">
+                        Round {{ $review->review_round }}
+                    </span>
                 </div>
             </div>
             <div class="card-body border-top">

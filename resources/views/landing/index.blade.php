@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'International Conference')
+@section('title', $conference?->name ?? 'International Conference')
 
 @section('content')
 
@@ -17,6 +17,8 @@
     @include('landing.sections.important-dates')
 
     @include('landing.sections.call-for-papers')
+
+    @include('landing.sections.registration')
 
     @include('landing.sections.sponsors')
 

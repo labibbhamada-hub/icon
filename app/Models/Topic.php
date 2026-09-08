@@ -22,11 +22,15 @@ class Topic extends Model
 
     public function conference()
     {
-        return $this->belongsTo(Conference::class);
+        return $this->belongsTo(
+            Conference::class
+        );
     }
 
     public function submissions()
     {
-        return $this->hasMany(Submission::class);
+        return $this->hasMany(
+            Submission::class
+        );
     }
 }

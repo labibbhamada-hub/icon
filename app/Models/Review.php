@@ -9,6 +9,7 @@ class Review extends Model
     protected $fillable = [
         'submission_id',
         'reviewer_id',
+        'review_stage',
         'review_round',
         'score',
         'comment',
@@ -23,16 +24,22 @@ class Review extends Model
 
     public function submission()
     {
-        return $this->belongsTo(Submission::class);
+        return $this->belongsTo(
+            Submission::class
+        );
     }
 
     public function reviewer()
     {
-        return $this->belongsTo(Reviewer::class);
+        return $this->belongsTo(
+            Reviewer::class
+        );
     }
 
-    public function scopeForRound($query, int $round)
-    {
+    public function scopeForRound(
+        $query,
+        int $round
+    ) {
         return $query->where(
             'review_round',
             $round

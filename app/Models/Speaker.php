@@ -27,6 +27,8 @@ class Speaker extends Model
 
     public function conference()
     {
-        return $this->belongsTo(Conference::class);
+        return $this->belongsTo(
+            Conference::class
+        );
     }
 }

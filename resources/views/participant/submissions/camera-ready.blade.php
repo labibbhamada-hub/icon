@@ -45,19 +45,6 @@
         <div class="card-body">
             @if ($submission->camera_ready_correction_reason)
                 <div class="alert alert-warning rounded-0 mb-2">
-                    <i class="bi bi-arrow-repeat me-2"></i>
-                    Your camera-ready paper requires correction.
-                    Please review the correction reason below and upload the corrected version.
-                </div>
-            @else
-                <div class="alert alert-success rounded-0 mb-2">
-                    <i class="bi bi-check-circle me-2"></i>
-                    Your paper has been accepted.
-                    Please upload the final camera-ready version of your paper.
-                </div>
-            @endif
-            @if ($submission->camera_ready_correction_reason)
-                <div class="alert alert-warning rounded-0 mb-2">
                     <div class="fw-bold mb-1">
                         <i class="bi bi-exclamation-triangle me-2"></i>
                         Correction Required

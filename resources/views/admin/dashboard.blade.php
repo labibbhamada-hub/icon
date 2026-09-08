@@ -30,7 +30,7 @@
                     <p>Conferences</p>
                 </div>
                 <i class="small-box-icon bi bi-calendar-event"></i>
-                <a href="#"
+                <a href="{{ route('admin.conferences.index') }}"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                     Manage Conferences
                     <i class="bi bi-arrow-right"></i>
@@ -44,7 +44,7 @@
                     <p>Topics</p>
                 </div>
                 <i class="small-box-icon bi bi-diagram-3"></i>
-                <a href="#"
+                <a href="{{ route('admin.topics.index') }}"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                     Manage Topics
                     <i class="bi bi-arrow-right"></i>
@@ -54,13 +54,13 @@
         <div class="col-lg-3 col-6">
             <div class="small-box text-bg-warning rounded-0 mb-2">
                 <div class="inner">
-                    <h3>0</h3>
+                    <h3>{{ $speakerCount }}</h3>
                     <p>Speakers</p>
                 </div>
                 <i class="small-box-icon bi bi-mic"></i>
-                <a href="#"
+                <a href="{{ route('admin.speakers.index') }}"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                    Coming Soon
+                    Manage Speakers
                     <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
@@ -361,11 +361,11 @@
                             <i class="bi bi-plus-circle me-2"></i>
                             Add Topic
                         </a>
-                        <a href="#" class="btn btn-outline-secondary rounded-0 disabled">
+                        <a href="{{ route('admin.speakers.create') }}" class="btn btn-warning rounded-0">
                             <i class="bi bi-mic me-2"></i>
                             Add Speaker
                         </a>
-                        <a href="#" class="btn btn-outline-secondary rounded-0 disabled">
+                        <a href="{{ route('admin.partners.create') }}" class="btn btn-info rounded-0">
                             <i class="bi bi-building me-2"></i>
                             Add Partner
                         </a>

@@ -25,7 +25,7 @@
         <div class="card-header">
             <h3 class="card-title">
                 <i class="bi bi-clipboard-check me-2"></i>
-                Assigned Papers
+                Assigned Reviews
             </h3>
         </div>
         <div class="card-body p-0">
@@ -35,6 +35,7 @@
                         <tr>
                             <th width="40">No</th>
                             <th>Submission</th>
+                            <th>Stage</th>
                             <th>Topic</th>
                             <th>Conference</th>
                             <th>Status</th>
@@ -57,6 +58,21 @@
                                         </small>
                                     @else
                                         —
+                                    @endif
+                                </td>
+                                <td class="align-top">
+                                    @if ($review->review_stage === 'abstract')
+                                        <span class="badge text-bg-secondary rounded-0">
+                                            Abstract
+                                        </span>
+                                    @elseif ($review->review_stage === 'full_paper')
+                                        <span class="badge text-bg-primary rounded-0">
+                                            Full Paper
+                                        </span>
+                                    @else
+                                        <span class="badge text-bg-light border rounded-0">
+                                            {{ ucfirst(str_replace('_', ' ', $review->review_stage)) }}
+                                        </span>
                                     @endif
                                 </td>
                                 <td class="align-top">
@@ -91,13 +107,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
                                     <i class="bi bi-clipboard-x display-5 text-muted"></i>
                                     <h5 class="mt-3">
                                         No Review Assignments
                                     </h5>
                                     <p class="text-muted mb-0">
-                                        You currently have no papers assigned for review.
+                                        You currently have no reviews assigned to you.
                                     </p>
                                 </td>
                             </tr>

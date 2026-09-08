@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ConferenceRegistrationType;
+use App\Models\Participant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +18,7 @@ class ParticipantRequest extends FormRequest
     {
         $participant = $this->route('participant');
 
-        $participantId = $participant instanceof \App\Models\Participant
+        $participantId = $participant instanceof Participant
             ? $participant->id
             : null;
 
@@ -26,12 +28,20 @@ class ParticipantRequest extends FormRequest
                 'exists:conferences,id',
             ],
 
+            'registration_type_id' => [
+                'required',
+                'exists:conference_registration_types,id',
+            ],
+
             'registration_number' => [
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('participants', 'registration_number')
-                    ->ignore($participantId),
+
+                Rule::unique(
+                    'participants',
+                    'registration_number'
+                )->ignore($participantId),
             ],
 
             'full_name' => [
@@ -78,6 +88,7 @@ class ParticipantRequest extends FormRequest
 
             'participant_type' => [
                 'required',
+
                 Rule::in([
                     'regular',
                     'student',
@@ -88,6 +99,7 @@ class ParticipantRequest extends FormRequest
 
             'attendance_type' => [
                 'required',
+
                 Rule::in([
                     'offline',
                     'online',
@@ -97,6 +109,7 @@ class ParticipantRequest extends FormRequest
 
             'registration_status' => [
                 'required',
+
                 Rule::in([
                     'pending',
                     'confirmed',
@@ -120,18 +133,33 @@ class ParticipantRequest extends FormRequest
     {
         return [
             'conference_id' => 'conference',
+
+            'registration_type_id' => 'registration type',
+
             'registration_number' => 'registration number',
+
             'full_name' => 'full name',
+
             'email' => 'email address',
+
             'phone' => 'phone number',
+
             'institution' => 'institution',
+
             'department' => 'department',
+
             'country' => 'country',
+
             'city' => 'city',
+
             'participant_type' => 'participant type',
+
             'attendance_type' => 'attendance type',
+
             'registration_status' => 'registration status',
+
             'notes' => 'notes',
+
             'registered_at' => 'registration date',
         ];
     }

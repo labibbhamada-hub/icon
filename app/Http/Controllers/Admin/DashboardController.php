@@ -8,15 +8,20 @@ use App\Models\Conference;
 use App\Models\Participant;
 use App\Models\Payment;
 use App\Models\Submission;
+use App\Models\Speaker;
 use App\Models\Topic;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $conferenceCount = Conference::count();
+        /*
+        |--------------------------------------------------------------------------
+        | Conferences
+        |--------------------------------------------------------------------------
+        */
 
-        $topicCount = Topic::count();
+        $conferenceCount = Conference::count();
 
         $activeConference = Conference::with('setting')
             ->whereHas('setting', function ($query) {
@@ -29,64 +34,149 @@ class DashboardController extends Controller
             $activeConference = Conference::latest('year')->first();
         }
 
-        $latestTopics = Topic::with('conference')
-            ->latest()
-            ->take(5)
-            ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Conference-scoped statistics
+        |--------------------------------------------------------------------------
+        */
 
-        $participantCount = Participant::count();
+        if ($activeConference) {
 
-        $confirmedParticipantCount = Participant::where(
-            'registration_status',
-            'confirmed'
-        )->count();
+            $conferenceId = $activeConference->id;
 
-        $pendingPaymentCount = Payment::where(
-            'status',
-            'pending'
-        )->count();
+            $topicCount = Topic::where(
+                'conference_id',
+                $conferenceId
+            )->count();
 
-        $submissionCount = Submission::count();
+            $speakerCount = Speaker::where(
+                'conference_id',
+                $conferenceId
+            )->count();
 
-        $underReviewCount = Submission::where(
-            'status',
-            'under_review'
-        )->count();
+            $participantCount = Participant::where(
+                'conference_id',
+                $conferenceId
+            )->count();
 
-        $revisionCount = Submission::where(
-            'status',
-            'revision'
-        )->count();
+            $confirmedParticipantCount =
+                Participant::where(
+                    'conference_id',
+                    $conferenceId
+                )
+                ->where(
+                    'registration_status',
+                    'confirmed'
+                )
+                ->count();
 
-        $acceptedCount = Submission::where(
-            'status',
-            'accepted'
-        )->count();
+            $pendingPaymentCount = Payment::whereHas(
+                'participant',
+                function ($query) use ($conferenceId) {
+                    $query->where(
+                        'conference_id',
+                        $conferenceId
+                    );
+                }
+            )
+                ->where(
+                    'status',
+                    'pending'
+                )
+                ->count();
 
-        $publishedCount = Submission::where(
-            'status',
-            'published'
-        )->count();
+            $submissionCount = Submission::where(
+                'conference_id',
+                $conferenceId
+            )->count();
 
-        $certificateCount = Certificate::count();
+            $underReviewCount = Submission::where(
+                'conference_id',
+                $conferenceId
+            )
+                ->where(
+                    'status',
+                    'under_review'
+                )
+                ->count();
 
-        return view('admin.dashboard', compact(
-            'conferenceCount',
-            'topicCount',
-            'activeConference',
-            'latestTopics',
+            $revisionCount = Submission::where(
+                'conference_id',
+                $conferenceId
+            )
+                ->where(
+                    'status',
+                    'revision'
+                )
+                ->count();
 
-            'participantCount',
-            'confirmedParticipantCount',
-            'pendingPaymentCount',
+            $acceptedCount = Submission::where(
+                'conference_id',
+                $conferenceId
+            )
+                ->where(
+                    'status',
+                    'accepted'
+                )
+                ->count();
 
-            'submissionCount',
-            'underReviewCount',
-            'revisionCount',
-            'acceptedCount',
-            'publishedCount',
+            $publishedCount = Submission::where(
+                'conference_id',
+                $conferenceId
+            )
+                ->where(
+                    'status',
+                    'published'
+                )
+                ->count();
 
-            'certificateCount',
-        ));
+            $certificateCount = Certificate::where(
+                'conference_id',
+                $conferenceId
+            )->count();
+
+            $latestTopics = Topic::with('conference')
+                ->where(
+                    'conference_id',
+                    $conferenceId
+                )
+                ->latest()
+                ->take(5)
+                ->get();
+        } else {
+
+            $topicCount = 0;
+            $speakerCount = 0;
+            $participantCount = 0;
+            $confirmedParticipantCount = 0;
+            $pendingPaymentCount = 0;
+            $submissionCount = 0;
+            $underReviewCount = 0;
+            $revisionCount = 0;
+            $acceptedCount = 0;
+            $publishedCount = 0;
+            $certificateCount = 0;
+            $latestTopics = collect();
+        }
+
+        return view(
+            'admin.dashboard',
+            compact(
+                'conferenceCount',
+                'activeConference',
+                'topicCount',
+                'speakerCount',
+                'participantCount',
+                'confirmedParticipantCount',
+                'pendingPaymentCount',
+                'submissionCount',
+                'underReviewCount',
+                'revisionCount',
+                'acceptedCount',
+                'publishedCount',
+                'certificateCount',
+                'latestTopics',
+            )
+        );
     }
 }

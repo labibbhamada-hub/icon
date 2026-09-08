@@ -250,7 +250,99 @@
 
             </div>
         @endif
+
+        @php
+            $eligibleWhatsappGroups = collect();
+
+            foreach ($participants as $participant) {
+                $group = $participantWhatsappGroups[$participant->id] ?? null;
+
+                if ($group) {
+                    $eligibleWhatsappGroups->put($participant->conference_id, [
+                        'participant' => $participant,
+                        'group' => $group,
+                    ]);
+                }
+            }
+        @endphp
+
+        @if ($eligibleWhatsappGroups->isNotEmpty())
+            <div class="card rounded-0 mb-3">
+
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-whatsapp me-2"></i>
+                        WhatsApp Group
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    @foreach ($eligibleWhatsappGroups as $item)
+                        @php
+                            $participant = $item['participant'];
+                            $group = $item['group'];
+                        @endphp
+
+                        <div class="border rounded-0 p-3 mb-3">
+
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+
+                                <div>
+                                    <h5 class="fw-bold mb-1">
+                                        {{ $group->title }}
+                                    </h5>
+
+                                    <small class="text-muted">
+                                        {{ $participant->conference?->name ?? 'Conference' }}
+
+                                        @if ($participant->conference?->year)
+                                            ({{ $participant->conference->year }})
+                                        @endif
+                                    </small>
+                                </div>
+
+                                <span class="badge text-bg-success rounded-0">
+                                    Active
+                                </span>
+
+                            </div>
+
+                            <hr>
+
+                            @if ($group->description)
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-1">
+                                        Description
+                                    </small>
+
+                                    <div>
+                                        {!! nl2br(e($group->description)) !!}
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div>
+                                <a href="{{ $group->group_url }}" target="_blank" rel="noopener noreferrer"
+                                    class="btn btn-success rounded-0">
+                                    <i class="bi bi-whatsapp me-1"></i>
+                                    Join WhatsApp Group
+                                </a>
+                            </div>
+
+                        </div>
+                    @endforeach
+
+                </div>
+
+            </div>
+        @endif
+
         @if ($importantDates->isNotEmpty())
+            @php
+                $conferenceIds = $participants->pluck('conference_id')->unique()->values();
+            @endphp
+
             <div class="card rounded-0 mb-3">
                 <div class="card-header">
                     <h3 class="card-title">
@@ -258,52 +350,65 @@
                         Important Dates
                     </h3>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
-                        @foreach ($participants as $participant)
+                        @foreach ($conferenceIds as $conferenceId)
                             @php
-                                $conferenceDates = $importantDates->get($participant->conference_id, collect());
+                                $participant = $participants->firstWhere('conference_id', $conferenceId);
+                                $conferenceDates = $importantDates->get($conferenceId, collect());
                             @endphp
-                            @if ($conferenceDates->isNotEmpty())
+
+                            @if ($participant && $conferenceDates->isNotEmpty())
                                 <div class="col-lg-6 mb-3">
                                     <div class="border rounded-0 h-100 p-3">
+
                                         <h6 class="fw-bold mb-1">
                                             {{ $participant->conference?->name ?? 'Conference' }}
                                         </h6>
+
                                         <small class="text-muted d-block mb-3">
                                             {{ $participant->conference?->short_name ?? '—' }}
+
                                             @if ($participant->conference?->year)
                                                 ({{ $participant->conference->year }})
                                             @endif
                                         </small>
+
                                         <div class="list-group list-group-flush">
                                             @foreach ($conferenceDates as $importantDate)
                                                 <div class="list-group-item px-0">
                                                     <div class="d-flex justify-content-between align-items-start gap-3">
+
                                                         <div>
                                                             <div class="fw-semibold">
                                                                 {{ $importantDate->title }}
                                                             </div>
+
                                                             @if ($importantDate->description)
                                                                 <small class="text-muted d-block mt-1">
                                                                     {{ $importantDate->description }}
                                                                 </small>
                                                             @endif
                                                         </div>
+
                                                         <div class="text-end text-nowrap">
                                                             <small class="fw-semibold">
                                                                 {{ $importantDate->date->format('d M Y') }}
                                                             </small>
-                                                            @if ($importantDate->end_date)
+
+                                                            @if ($importantDate->end_date && !$importantDate->date->isSameDay($importantDate->end_date))
                                                                 <small class="text-muted d-block">
                                                                     to {{ $importantDate->end_date->format('d M Y') }}
                                                                 </small>
                                                             @endif
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </div>
+
                                     </div>
                                 </div>
                             @endif
@@ -312,6 +417,7 @@
                 </div>
             </div>
         @endif
+
         <div class="card rounded-0 mb-3">
             <div class="card-header">
                 <h3 class="card-title">

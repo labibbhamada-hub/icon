@@ -267,12 +267,13 @@ class SubmissionController extends Controller
         \App\Services\CertificateGenerationService $certificateGenerationService
     ) {
         if (
-            $submission->status !== 'camera_ready'
+            $submission->submission_stage !== 'full_paper'
+            || $submission->status !== 'camera_ready'
         ) {
             return back()
                 ->with(
                     'error',
-                    'This submission is not currently awaiting camera-ready approval.'
+                    'Only submitted camera-ready full papers can be approved.'
                 );
         }
 
@@ -399,11 +400,14 @@ class SubmissionController extends Controller
 
     public function requestCameraReadyCorrection(Request $request, Submission $submission)
     {
-        if ($submission->status !== 'camera_ready') {
+        if (
+            $submission->submission_stage !== 'full_paper'
+            || $submission->status !== 'camera_ready'
+        ) {
             return back()
                 ->with(
                     'error',
-                    'This submission is not currently awaiting camera-ready approval.'
+                    'Only submitted camera-ready full papers can receive a correction request.'
                 );
         }
 
@@ -504,6 +508,38 @@ class SubmissionController extends Controller
                     basename($submission->camera_ready_file) .
                     '"',
             ]
+        );
+    }
+
+    public function downloadPaper(Submission $submission)
+    {
+        abort_unless(
+            $submission->paper_file
+                && Storage::disk('local')->exists(
+                    $submission->paper_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $submission->paper_file,
+            basename($submission->paper_file)
+        );
+    }
+
+    public function downloadRevisedPaper(Submission $submission)
+    {
+        abort_unless(
+            $submission->revised_file
+                && Storage::disk('local')->exists(
+                    $submission->revised_file
+                ),
+            404
+        );
+
+        return Storage::disk('local')->download(
+            $submission->revised_file,
+            basename($submission->revised_file)
         );
     }
 

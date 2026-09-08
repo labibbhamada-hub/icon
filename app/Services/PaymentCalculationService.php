@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Participant;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class PaymentCalculationService
@@ -15,6 +14,7 @@ class PaymentCalculationService
 
         return $participant
             ->submissions
+            ->where('submission_stage', 'full_paper')
             ->where('status', 'accepted')
             ->count();
     }
@@ -36,7 +36,13 @@ class PaymentCalculationService
 
         return $participant
             ->submissions
-            ->whereNotNull('presentation_type')
+            ->where(
+                'submission_stage',
+                'full_paper'
+            )
+            ->whereNotNull(
+                'presentation_type'
+            )
             ->sortBy('id')
             ->first()
             ?->presentation_type;
