@@ -75,10 +75,29 @@ class SubmissionRequest extends FormRequest
                 'min:1',
             ],
 
+            'authors.*.title_prefix' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
             'authors.*.name' => [
                 'required',
                 'string',
                 'max:255',
+            ],
+
+            'authors.*.title_suffix' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'authors.*.orcid' => [
+                'nullable',
+                'string',
+                'max:19',
+                'regex:/^\d{4}-\d{4}-\d{4}-\d{4}$/',
             ],
 
             'authors.*.email' => [
@@ -129,16 +148,12 @@ class SubmissionRequest extends FormRequest
                 }
 
                 $canSubmit =
-                    $participant->registration_status === 'confirmed'
-                    || (
-                        $participant->registration_status === 'pending'
-                        && $participant->registrationType?->category === 'presenter'
-                    );
+                    $participant->registration_status === 'confirmed';
 
                 if (!$canSubmit) {
                     $validator->errors()->add(
                         'participant_id',
-                        'You must have a confirmed registration or an active presenter registration to submit a paper.'
+                        'You must have a confirmed registration to submit a paper.'
                     );
                 }
 

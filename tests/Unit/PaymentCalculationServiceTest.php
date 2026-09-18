@@ -46,7 +46,7 @@ class PaymentCalculationServiceTest extends TestCase
             'name' => 'Author / Presenter',
             'code' => 'presenter',
             'category' => 'presenter',
-            'payment_timing' => 'after_acceptance',
+            'payment_timing' => 'immediate',
             'fee' => 0,
             'included_papers' => 1,
             'additional_paper_fee' => 150000,
@@ -94,13 +94,14 @@ class PaymentCalculationServiceTest extends TestCase
         ]);
     }
 
-    private function createParticipant(): Participant
-    {
+    private function createParticipant(
+        string $presentationType = 'oral'
+    ): Participant {
         return Participant::create([
             'user_id' => null,
             'conference_id' => $this->conference->id,
             'registration_type_id' => $this->registrationType->id,
-            'presentation_type' => null,
+            'presentation_type' => $presentationType,
             'registration_number' => 'TEST-' . fake()->unique()->numerify('######'),
             'full_name' => 'Test Participant',
             'email' => 'test@example.com',
@@ -191,7 +192,7 @@ class PaymentCalculationServiceTest extends TestCase
 
     public function test_presenter_poster_price_is_used_as_base_fee(): void
     {
-        $participant = $this->createParticipant();
+        $participant = $this->createParticipant('poster');
 
         $this->createSubmission(
             $participant,
@@ -272,7 +273,7 @@ class PaymentCalculationServiceTest extends TestCase
 
     public function test_verified_payment_reduces_outstanding_amount(): void
     {
-        $participant = $this->createParticipant();
+        $participant = $this->createParticipant('poster');
 
         $this->createSubmission(
             $participant,
@@ -319,7 +320,7 @@ class PaymentCalculationServiceTest extends TestCase
 
     public function test_outstanding_amount_never_becomes_negative(): void
     {
-        $participant = $this->createParticipant();
+        $participant = $this->createParticipant('poster');
 
         $this->createSubmission(
             $participant,
@@ -361,6 +362,37 @@ class PaymentCalculationServiceTest extends TestCase
         $this->assertEquals(
             0.0,
             $result['outstanding_amount']
+        );
+    }
+
+    public function test_new_presenter_registration_can_pay_immediately(): void
+    {
+        $participant = $this->createParticipant('oral');
+
+        $participant->update([
+            'registration_status' => 'pending',
+        ]);
+
+        $service = app(PaymentCalculationService::class);
+
+        $this->assertTrue(
+            $service->canPay($participant->fresh())
+        );
+    }
+
+    public function test_presenter_with_no_presentation_type_cannot_pay(): void
+    {
+        $participant = $this->createParticipant();
+
+        $participant->update([
+            'presentation_type' => null,
+            'registration_status' => 'pending',
+        ]);
+
+        $service = app(PaymentCalculationService::class);
+
+        $this->assertFalse(
+            $service->canPay($participant->fresh())
         );
     }
 }

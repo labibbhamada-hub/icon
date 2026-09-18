@@ -96,14 +96,15 @@ class SubmissionController extends Controller
                 $request->validated('authors') as $index => $author
             ) {
                 $submission->authors()->create([
+                    'title_prefix' => $author['title_prefix'] ?? null,
                     'name' => $author['name'],
+                    'title_suffix' => $author['title_suffix'] ?? null,
                     'email' => $author['email'] ?? null,
+                    'orcid' => $author['orcid'] ?? null,
                     'institution' => $author['institution'] ?? null,
                     'department' => $author['department'] ?? null,
-                    'is_corresponding' =>
-                    !empty($author['is_corresponding']),
-                    'sort_order' =>
-                    $author['sort_order'] ?? $index + 1,
+                    'is_corresponding' => !empty($author['is_corresponding']),
+                    'sort_order' => $author['sort_order'] ?? $index + 1,
                 ]);
             }
         });
@@ -198,14 +199,15 @@ class SubmissionController extends Controller
                 $request->validated('authors') as $index => $author
             ) {
                 $submission->authors()->create([
+                    'title_prefix' => $author['title_prefix'] ?? null,
                     'name' => $author['name'],
+                    'title_suffix' => $author['title_suffix'] ?? null,
                     'email' => $author['email'] ?? null,
+                    'orcid' => $author['orcid'] ?? null,
                     'institution' => $author['institution'] ?? null,
                     'department' => $author['department'] ?? null,
-                    'is_corresponding' =>
-                    !empty($author['is_corresponding']),
-                    'sort_order' =>
-                    $author['sort_order'] ?? $index + 1,
+                    'is_corresponding' => !empty($author['is_corresponding']),
+                    'sort_order' => $author['sort_order'] ?? $index + 1,
                 ]);
             }
         });

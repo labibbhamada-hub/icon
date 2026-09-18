@@ -507,15 +507,17 @@
                 <table class="table table-hover align-middle mb-0">
 
                     <thead>
-
                         <tr>
-
                             <th width="50">
                                 No
                             </th>
 
                             <th>
                                 Author
+                            </th>
+
+                            <th>
+                                ORCID
                             </th>
 
                             <th>
@@ -533,11 +535,8 @@
                             <th>
                                 Role
                             </th>
-
                         </tr>
-
                     </thead>
-
 
                     <tbody>
 
@@ -549,9 +548,27 @@
                                 </td>
 
                                 <td>
-                                    <strong>
-                                        {{ $author->name }}
+                                    <strong class="d-block">
+                                        {{ trim(($author->title_prefix ? $author->title_prefix . ' ' : '') . $author->name) }}
                                     </strong>
+
+                                    @if ($author->title_suffix)
+                                        <small class="text-muted">
+                                            {{ $author->title_suffix }}
+                                        </small>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    @if ($author->orcid)
+                                        <span class="text-nowrap">
+                                            {{ $author->orcid }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">
+                                            -
+                                        </span>
+                                    @endif
                                 </td>
 
                                 <td>
@@ -603,7 +620,7 @@
 
                             <tr>
 
-                                <td colspan="6" class="text-center text-muted py-4">
+                                <td colspan="7" class="text-center text-muted py-4">
                                     No authors available.
                                 </td>
 
@@ -1129,10 +1146,10 @@
 @push('scripts')
     <script>
         /*
-                            |--------------------------------------------------------------------------
-                            | Remove Reviewer
-                            |--------------------------------------------------------------------------
-                            */
+                                                |--------------------------------------------------------------------------
+                                                | Remove Reviewer
+                                                |--------------------------------------------------------------------------
+                                                */
 
         document
             .querySelectorAll('.delete-review-form')

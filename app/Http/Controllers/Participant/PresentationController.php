@@ -18,7 +18,17 @@ class PresentationController extends Controller
                 'id',
                 $submission->participant_id
             )
+            ->where(
+                'registration_status',
+                'confirmed'
+            )
+            ->with('registrationType')
             ->firstOrFail();
+
+        abort_unless(
+            $participant->registrationType?->category === 'presenter',
+            403
+        );
 
         abort_unless(
             $submission->submission_stage === 'full_paper'
@@ -30,32 +40,16 @@ class PresentationController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Get presentation type already used by this registration
+        | Presentation type comes from registration
         |--------------------------------------------------------------------------
         |
-        | The first accepted submission that already has a presentation type
-        | determines the presentation type for the registration.
+        | Presentation type is selected during conference registration and
+        | stored on the participant record.
         |
         */
 
         $registrationPresentationType =
-            Submission::where(
-                'participant_id',
-                $participant->id
-            )
-            ->where(
-                'submission_stage',
-                'full_paper'
-            )
-            ->where(
-                'status',
-                'accepted'
-            )
-            ->whereNotNull(
-                'presentation_type'
-            )
-            ->orderBy('id')
-            ->value('presentation_type');
+            $participant->presentation_type;
 
         /*
         |--------------------------------------------------------------------------
@@ -92,7 +86,17 @@ class PresentationController extends Controller
                 'id',
                 $submission->participant_id
             )
+            ->where(
+                'registration_status',
+                'confirmed'
+            )
+            ->with('registrationType')
             ->firstOrFail();
+
+        abort_unless(
+            $participant->registrationType?->category === 'presenter',
+            403
+        );
 
         abort_unless(
             $submission->submission_stage === 'full_paper'
@@ -100,8 +104,7 @@ class PresentationController extends Controller
             403
         );
 
-        $validated =
-            $request->validated();
+        $validated = $request->validated();
 
         $presenterAuthor =
             $submission->authors()
@@ -113,101 +116,17 @@ class PresentationController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Find existing presentation type in this registration
+        | Presentation type comes from registration
         |--------------------------------------------------------------------------
         */
 
-        $existingPresentationType =
-            Submission::where(
-                'participant_id',
-                $participant->id
-            )
-            ->where(
-                'submission_stage',
-                'full_paper'
-            )
-            ->where(
-                'status',
-                'accepted'
-            )
-            ->whereNotNull(
-                'presentation_type'
-            )
-            ->where(
-                'id',
-                '!=',
-                $submission->id
-            )
-            ->orderBy('id')
-            ->value('presentation_type');
+        $presentationType =
+            $participant->presentation_type;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Check payment lock
-        |--------------------------------------------------------------------------
-        */
-
-        $hasVerifiedPayment =
-            $participant->payments()
-            ->where(
-                'status',
-                'verified'
-            )
-            ->exists();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Determine presentation type
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $hasVerifiedPayment
-            && $submission->presentation_type
-        ) {
-            /*
-            |--------------------------------------------------------------------------
-            | Existing paper already has a type and payment is verified.
-            | Keep the existing value.
-            |--------------------------------------------------------------------------
-            */
-
-            $presentationType =
-                $submission->presentation_type;
-        } elseif (
-            $existingPresentationType
-        ) {
-            /*
-            |--------------------------------------------------------------------------
-            | Another paper has already established the registration type.
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                $validated['presentation_type']
-                !==
-                $existingPresentationType
-            ) {
-                return back()
-                    ->withInput()
-                    ->with(
-                        'error',
-                        'All papers in the same Author / Presenter registration must use the same presentation type.'
-                    );
-            }
-
-            $presentationType =
-                $existingPresentationType;
-        } else {
-            /*
-            |--------------------------------------------------------------------------
-            | First presentation type selection
-            |--------------------------------------------------------------------------
-            */
-
-            $presentationType =
-                $validated['presentation_type'];
-        }
+        abort_unless(
+            $presentationType !== null,
+            422
+        );
 
         /*
         |--------------------------------------------------------------------------

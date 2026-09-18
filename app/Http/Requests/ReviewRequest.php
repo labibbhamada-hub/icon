@@ -40,19 +40,6 @@ class ReviewRequest extends FormRequest
             $currentRound =
                 $currentRound ?: 1;
 
-            $previousStageReviewerIds =
-                \App\Models\Review::where(
-                    'submission_id',
-                    $submission->id
-                )
-                ->where(
-                    'review_stage',
-                    '!=',
-                    $reviewStage
-                )
-                ->pluck('reviewer_id')
-                ->all();
-
             return [
 
                 'reviewer_id' => [
@@ -75,10 +62,6 @@ class ReviewRequest extends FormRequest
                                     true
                                 );
                         }),
-
-                    Rule::notIn(
-                        $previousStageReviewerIds
-                    ),
 
                     Rule::unique(
                         'reviews',
@@ -175,9 +158,6 @@ class ReviewRequest extends FormRequest
 
             'reviewer_id.unique' =>
             'This reviewer has already been assigned in the current review round.',
-
-            'reviewer_id.not_in' =>
-            'This reviewer has already reviewed this submission in another stage and cannot be assigned again.',
 
             'score.required' =>
             'Score is required.',

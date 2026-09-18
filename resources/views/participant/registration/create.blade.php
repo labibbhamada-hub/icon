@@ -266,6 +266,23 @@
 
                     <div class="row">
 
+                        {{-- Title Prefix --}}
+                        <div class="col-md-3 mb-2">
+                            <label for="title_prefix" class="form-label">
+                                Title Prefix
+                            </label>
+
+                            <input type="text" id="title_prefix" name="title_prefix" value="{{ old('title_prefix') }}"
+                                class="form-control rounded-0 @error('title_prefix') is-invalid @enderror"
+                                placeholder="e.g. Dr.">
+
+                            @error('title_prefix')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
                         {{-- Full Name --}}
                         <div class="col-md-6 mb-2">
 
@@ -278,6 +295,23 @@
 
                         </div>
 
+                        {{-- Title Suffix --}}
+                        <div class="col-md-3 mb-2">
+                            <label for="title_suffix" class="form-label">
+                                Title Suffix
+                            </label>
+
+                            <input type="text" id="title_suffix" name="title_suffix" value="{{ old('title_suffix') }}"
+                                class="form-control rounded-0 @error('title_suffix') is-invalid @enderror"
+                                placeholder="e.g. S.Kom., M.Kom.">
+
+                            @error('title_suffix')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
                         {{-- Email --}}
                         <div class="col-md-6 mb-2">
 
@@ -288,6 +322,27 @@
                             <input type="email" value="{{ auth()->user()->email }}" class="form-control rounded-0"
                                 readonly>
 
+                        </div>
+
+                        {{-- ORCID --}}
+                        <div class="col-md-6 mb-2">
+                            <label for="orcid" class="form-label">
+                                ORCID
+                            </label>
+
+                            <input type="text" id="orcid" name="orcid" value="{{ old('orcid') }}"
+                                class="form-control rounded-0 @error('orcid') is-invalid @enderror"
+                                placeholder="e.g. 0000-0002-1825-0097" maxlength="19">
+
+                            @error('orcid')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                            <div class="form-text">
+                                Optional. Enter your ORCID identifier.
+                            </div>
                         </div>
 
                         {{-- Phone --}}

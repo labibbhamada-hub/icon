@@ -51,10 +51,29 @@ class ProfileController extends Controller
         }
 
         $validated = $request->validate([
+            'title_prefix' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
             'full_name' => [
                 'required',
                 'string',
                 'max:255',
+            ],
+
+            'title_suffix' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'orcid' => [
+                'nullable',
+                'string',
+                'max:19',
+                'regex:/^\d{4}-\d{4}-\d{4}-\d{4}$/',
             ],
 
             'phone' => [

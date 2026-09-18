@@ -69,6 +69,24 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
+                            {{-- Title Prefix --}}
+                            <div class="col-md-3 mb-2">
+                                <label for="title_prefix" class="form-label">
+                                    Title Prefix
+                                </label>
+
+                                <input type="text" id="title_prefix" name="title_prefix"
+                                    value="{{ old('title_prefix', $participant->title_prefix) }}"
+                                    class="form-control @error('title_prefix') is-invalid @enderror rounded-0"
+                                    placeholder="e.g. Dr.">
+
+                                @error('title_prefix')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Full Name
@@ -83,6 +101,25 @@
                                     </div>
                                 @enderror
                             </div>
+
+                            {{-- Title Suffix --}}
+                            <div class="col-md-3 mb-2">
+                                <label for="title_suffix" class="form-label">
+                                    Title Suffix
+                                </label>
+
+                                <input type="text" id="title_suffix" name="title_suffix"
+                                    value="{{ old('title_suffix', $participant->title_suffix) }}"
+                                    class="form-control @error('title_suffix') is-invalid @enderror rounded-0"
+                                    placeholder="e.g. S.Kom., M.Kom.">
+
+                                @error('title_suffix')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Email
@@ -93,6 +130,29 @@
                                     Email is managed through your account.
                                 </div>
                             </div>
+
+                            {{-- ORCID --}}
+                            <div class="col-md-6 mb-2">
+                                <label for="orcid" class="form-label">
+                                    ORCID
+                                </label>
+
+                                <input type="text" id="orcid" name="orcid"
+                                    value="{{ old('orcid', $participant->orcid) }}"
+                                    class="form-control @error('orcid') is-invalid @enderror rounded-0"
+                                    placeholder="e.g. 0000-0002-1825-0097" maxlength="19">
+
+                                @error('orcid')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                                <div class="form-text">
+                                    Optional. Format: 0000-0002-1825-0097
+                                </div>
+                            </div>
+
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Phone Number
@@ -105,6 +165,7 @@
                                     </div>
                                 @enderror
                             </div>
+
                             <div class="col-md-3 mb-2">
                                 <label class="form-label">
                                     Country
@@ -118,6 +179,7 @@
                                     </div>
                                 @enderror
                             </div>
+
                             <div class="col-md-3 mb-2">
                                 <label class="form-label">
                                     City
@@ -130,6 +192,7 @@
                                     </div>
                                 @enderror
                             </div>
+
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Institution
@@ -143,6 +206,7 @@
                                     </div>
                                 @enderror
                             </div>
+
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Department
@@ -156,6 +220,7 @@
                                     </div>
                                 @enderror
                             </div>
+                            
                         </div>
                     </div>
                     <div class="card-footer text-end">

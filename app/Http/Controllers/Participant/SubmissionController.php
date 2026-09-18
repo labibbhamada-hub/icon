@@ -67,29 +67,10 @@ class SubmissionController extends Controller
                 'user_id',
                 Auth::id()
             )
-            ->where(function ($query) {
-                $query
-                    ->where(
-                        'registration_status',
-                        'confirmed'
-                    )
-                    ->orWhere(function ($query) {
-                        $query
-                            ->where(
-                                'registration_status',
-                                'pending'
-                            )
-                            ->whereHas(
-                                'registrationType',
-                                function ($query) {
-                                    $query->where(
-                                        'category',
-                                        'presenter'
-                                    );
-                                }
-                            );
-                    });
-            })
+            ->where(
+                'registration_status',
+                'confirmed'
+            )
             ->whereHas(
                 'conference.setting',
                 function ($query) {
@@ -196,40 +177,14 @@ class SubmissionController extends Controller
                 'user_id',
                 Auth::id()
             )
-            ->where(function ($query) {
-                $query
-                    ->where(
-                        'registration_status',
-                        'confirmed'
-                    )
-                    ->orWhere(function ($query) {
-                        $query
-                            ->where(
-                                'registration_status',
-                                'pending'
-                            )
-                            ->whereHas(
-                                'registrationType',
-                                function ($query) {
-                                    $query->where(
-                                        'category',
-                                        'presenter'
-                                    );
-                                }
-                            );
-                    });
-            })
+            ->where(
+                'registration_status',
+                'confirmed'
+            )
             ->firstOrFail();
 
-        $canSubmit =
-            $participant->registration_status === 'confirmed'
-            || (
-                $participant->registration_status === 'pending'
-                && $participant->registrationType?->category === 'presenter'
-            );
-
         abort_unless(
-            $canSubmit,
+            $participant->registration_status === 'confirmed',
             403
         );
 
@@ -316,28 +271,17 @@ class SubmissionController extends Controller
                     $data['authors']
                     as $index => $author
                 ) {
-                    $submission
-                        ->authors()
-                        ->create([
-                            'name' =>
-                            $author['name'],
-
-                            'email' =>
-                            $author['email'] ?? null,
-
-                            'institution' =>
-                            $author['institution'] ?? null,
-
-                            'department' =>
-                            $author['department'] ?? null,
-
-                            'is_corresponding' =>
-                            !empty($author['is_corresponding']),
-
-                            'sort_order' =>
-                            $author['sort_order']
-                                ?? ($index + 1),
-                        ]);
+                    $submission->authors()->create([
+                        'title_prefix' => $author['title_prefix'] ?? null,
+                        'name' => $author['name'],
+                        'title_suffix' => $author['title_suffix'] ?? null,
+                        'orcid' => $author['orcid'] ?? null,
+                        'email' => $author['email'] ?? null,
+                        'institution' => $author['institution'] ?? null,
+                        'department' => $author['department'] ?? null,
+                        'is_corresponding' => !empty($author['is_corresponding']),
+                        'sort_order' => $author['sort_order'] ?? $index + 1,
+                    ]);
                 }
 
                 return $submission;
@@ -382,6 +326,10 @@ class SubmissionController extends Controller
             ->where(
                 'id',
                 $submission->participant_id
+            )
+            ->where(
+                'registration_status',
+                'confirmed'
             )
             ->first();
 
@@ -1387,6 +1335,10 @@ class SubmissionController extends Controller
             ->where(
                 'id',
                 $submission->participant_id
+            )
+            ->where(
+                'registration_status',
+                'confirmed'
             )
             ->firstOrFail();
     }

@@ -91,10 +91,29 @@ class SubmissionRequest extends FormRequest
                 'min:1',
             ],
 
+            'authors.*.title_prefix' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
             'authors.*.name' => [
                 'required',
                 'string',
                 'max:255',
+            ],
+
+            'authors.*.title_suffix' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'authors.*.orcid' => [
+                'nullable',
+                'string',
+                'max:19',
+                'regex:/^\d{4}-\d{4}-\d{4}-\d{4}$/',
             ],
 
             'authors.*.email' => [
@@ -164,6 +183,10 @@ class SubmissionRequest extends FormRequest
             'authors.required' => 'At least one author is required.',
             'authors.min' => 'At least one author is required.',
             'authors.*.name.required' => 'Author name is required.',
+            'authors.*.title_prefix' => 'author title prefix',
+            'authors.*.title_suffix' => 'author title suffix',
+            'authors.*.orcid' => 'author ORCID',
+            'authors.*.orcid.regex' => 'Author ORCID must use the format 0000-0000-0000-0000.',
         ];
     }
 

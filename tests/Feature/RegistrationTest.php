@@ -77,6 +77,25 @@ class RegistrationTest extends TestCase
         ]);
     }
 
+    private function createPresenterRegistrationType(Conference $conference): ConferenceRegistrationType
+    {
+        return ConferenceRegistrationType::create([
+            'conference_id' => $conference->id,
+            'name' => 'Presenter',
+            'code' => 'PRESENTER',
+            'category' => 'presenter',
+            'payment_timing' => 'immediate',
+            'fee' => 500000,
+            'included_papers' => 1,
+            'additional_paper_fee' => 250000,
+            'currency' => 'IDR',
+            'description' => 'Test presenter registration type.',
+            'benefits' => 'Test presenter benefit.',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+    }
+
     public function test_valid_registration_creates_participant(): void
     {
         $conference = $this->createOpenConference();
@@ -302,6 +321,113 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseMissing('participants', [
             'user_id' => $user->id,
             'conference_id' => $conference->id,
+        ]);
+    }
+
+    public function test_presenter_registration_requires_presentation_type(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createPresenterRegistrationType($conference);
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post('/participant/registration', [
+                'conference_id' => $conference->id,
+                'registration_type_id' => $registrationType->id,
+                'phone' => '081234567890',
+                'institution' => 'Test University',
+                'department' => 'Test Department',
+                'country' => 'Indonesia',
+                'city' => 'Slawi',
+                'attendance_type' => 'online',
+            ]);
+
+        $response->assertRedirect();
+
+        $response->assertSessionHasErrors([
+            'presentation_type',
+        ]);
+
+        $this->assertDatabaseMissing('participants', [
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+        ]);
+    }
+
+    public function test_presenter_registration_with_oral_presentation_succeeds(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createPresenterRegistrationType($conference);
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post('/participant/registration', [
+                'conference_id' => $conference->id,
+                'registration_type_id' => $registrationType->id,
+                'phone' => '081234567890',
+                'institution' => 'Test University',
+                'department' => 'Test Department',
+                'country' => 'Indonesia',
+                'city' => 'Slawi',
+                'attendance_type' => 'online',
+                'presentation_type' => 'oral',
+            ]);
+
+        $response->assertRedirect(
+            route('participant.registration.index')
+        );
+
+        $this->assertDatabaseHas('participants', [
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+            'presentation_type' => 'oral',
+            'registration_status' => 'pending',
+        ]);
+    }
+
+    public function test_presenter_registration_with_poster_presentation_succeeds(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createPresenterRegistrationType($conference);
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post('/participant/registration', [
+                'conference_id' => $conference->id,
+                'registration_type_id' => $registrationType->id,
+                'country' => 'Indonesia',
+                'attendance_type' => 'online',
+                'presentation_type' => 'poster',
+            ]);
+
+        $response->assertRedirect(
+            route('participant.registration.index')
+        );
+
+        $this->assertDatabaseHas('participants', [
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+            'presentation_type' => 'poster',
+            'registration_status' => 'pending',
         ]);
     }
 }

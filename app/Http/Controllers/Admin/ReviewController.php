@@ -51,10 +51,10 @@ class ReviewController extends Controller
         $currentRound = $currentRound ?: 1;
 
         /*
-    |--------------------------------------------------------------------------
-    | Reviewer already assigned in the current stage + round
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Reviewer already assigned in the current stage + round
+        |--------------------------------------------------------------------------
+        */
 
         $assignedReviewerIds = Review::where(
             'submission_id',
@@ -71,31 +71,10 @@ class ReviewController extends Controller
             ->pluck('reviewer_id');
 
         /*
-    |--------------------------------------------------------------------------
-    | Reviewer already used in another stage
-    |--------------------------------------------------------------------------
-    */
-
-        $previousStageReviewerIds = Review::where(
-            'submission_id',
-            $submission->id
-        )
-            ->where(
-                'review_stage',
-                '!=',
-                $reviewStage
-            )
-            ->pluck('reviewer_id');
-
-        /*
-    |--------------------------------------------------------------------------
-    | Available Reviewers
-    |--------------------------------------------------------------------------
-    */
-
-        $excludedReviewerIds = $assignedReviewerIds
-            ->merge($previousStageReviewerIds)
-            ->unique();
+        |--------------------------------------------------------------------------
+        | Available Reviewers
+        |--------------------------------------------------------------------------
+        */
 
         $reviewers = Reviewer::with('user')
             ->where(
@@ -108,7 +87,7 @@ class ReviewController extends Controller
             )
             ->whereNotIn(
                 'id',
-                $excludedReviewerIds
+                $assignedReviewerIds
             )
             ->orderBy('id')
             ->get();
@@ -148,40 +127,10 @@ class ReviewController extends Controller
         $reviewerId = $request->validated('reviewer_id');
 
         /*
-    |--------------------------------------------------------------------------
-    | Prevent reviewer reuse across different submission stages
-    |--------------------------------------------------------------------------
-    */
-
-        $usedInPreviousStage = Review::where(
-            'submission_id',
-            $submission->id
-        )
-            ->where(
-                'reviewer_id',
-                $reviewerId
-            )
-            ->where(
-                'review_stage',
-                '!=',
-                $reviewStage
-            )
-            ->exists();
-
-        if ($usedInPreviousStage) {
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    'This reviewer has already reviewed this submission in another stage and cannot be assigned again.'
-                );
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Current review round
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Current review round
+        |--------------------------------------------------------------------------
+        */
 
         $currentRound = Review::where(
             'submission_id',

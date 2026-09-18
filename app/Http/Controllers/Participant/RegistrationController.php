@@ -196,8 +196,17 @@ class RegistrationController extends Controller
             'registration_number' =>
             $registrationNumber,
 
+            'title_prefix' =>
+            $data['title_prefix'] ?? null,
+
             'full_name' =>
             Auth::user()->name,
+
+            'title_suffix' =>
+            $data['title_suffix'] ?? null,
+
+            'orcid' =>
+            $data['orcid'] ?? null,
 
             'email' =>
             Auth::user()->email,
@@ -224,6 +233,11 @@ class RegistrationController extends Controller
 
             'attendance_type' =>
             $data['attendance_type'],
+
+            'presentation_type' =>
+            $registrationType->category === 'presenter'
+                ? $data['presentation_type']
+                : null,
 
             'registration_status' =>
             'pending',

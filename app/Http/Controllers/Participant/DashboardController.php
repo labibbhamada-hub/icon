@@ -166,9 +166,14 @@ class DashboardController extends Controller
 
             if (
                 $isPresenter
-                && $participant->submissions
-                ->whereNotNull('presentation_type')
-                ->isNotEmpty()
+                && $participant->presentation_type
+                && $participant->registrationType
+                ->presentationPrices
+                ->contains(function ($price) use ($participant) {
+                    return $price->presentation_type ===
+                        $participant->presentation_type
+                        && $price->is_active;
+                })
             ) {
                 $paymentCalculation =
                     $paymentCalculationService
@@ -250,7 +255,7 @@ class DashboardController extends Controller
                 | Presenter registration
                 |--------------------------------------------------------------------------
                 |
-                | Presenter registrations may submit papers before payment.
+                | Presenter must complete registration payment before submitting papers.
                 |
                 */
 
@@ -269,19 +274,7 @@ class DashboardController extends Controller
                             'participant.payments.index'
                         ),
                     ];
-
-                    if (
-                        $candidate['priority']
-                        < $actionPriority
-                    ) {
-                        $nextAction = $candidate;
-                        $actionPriority = $candidate['priority'];
-                    }
-
-                    continue;
-                }
-
-                if ($hasPendingPayment) {
+                } elseif ($hasPendingPayment) {
                     $candidate = [
                         'priority' => 5,
                         'type' => 'warning',
@@ -293,64 +286,29 @@ class DashboardController extends Controller
                             'participant.payments.index'
                         ),
                     ];
-
-                    if (
-                        $candidate['priority']
-                        < $actionPriority
-                    ) {
-                        $nextAction = $candidate;
-                        $actionPriority = $candidate['priority'];
-                    }
-
-                    continue;
+                } else {
+                    $candidate = [
+                        'priority' => 10,
+                        'type' => 'warning',
+                        'icon' => 'bi-credit-card',
+                        'title' => 'Payment Required',
+                        'description' => 'Please complete your presenter registration payment before submitting your paper.',
+                        'button' => 'Submit Payment',
+                        'route' => route(
+                            'participant.payments.create'
+                        ),
+                    ];
                 }
-
-                /*
-                |--------------------------------------------------------------------------
-                | Presenter can submit paper before payment
-                |--------------------------------------------------------------------------
-                */
 
                 if (
-                    $submissions->isEmpty()
+                    $candidate['priority']
+                    < $actionPriority
                 ) {
-                    if (
-                        $participant->conference?->setting?->submission_enabled
-                        && !$participant->conference?->setting?->maintenance_mode
-                    ) {
-                        $candidate = [
-                            'priority' => 20,
-                            'type' => 'success',
-                            'icon' => 'bi-file-earmark-plus',
-                            'title' => 'Submit Your Paper',
-                            'description' => 'You can submit your paper for review before completing presenter payment.',
-                            'button' => 'Submit Paper',
-                            'route' => route(
-                                'participant.submissions.create'
-                            ),
-                        ];
-                    } else {
-                        $candidate = [
-                            'priority' => 90,
-                            'type' => 'info',
-                            'icon' => 'bi-hourglass',
-                            'title' => 'Waiting for Submission',
-                            'description' => 'Submission is currently not open.',
-                            'button' => null,
-                            'route' => null,
-                        ];
-                    }
-
-                    if (
-                        $candidate['priority']
-                        < $actionPriority
-                    ) {
-                        $nextAction = $candidate;
-                        $actionPriority = $candidate['priority'];
-                    }
-
-                    continue;
+                    $nextAction = $candidate;
+                    $actionPriority = $candidate['priority'];
                 }
+
+                continue;
             }
 
             /*

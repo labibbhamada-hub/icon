@@ -3,23 +3,29 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
-    public function verify(EmailVerificationRequest $request)
+    public function verify(Request $request, $id, $hash)
     {
-        if (!$request->user()->hasVerifiedEmail()) {
-            $request->fulfill();
+        $user = \App\Models\User::findOrFail($id);
 
-            return view('auth.email-verified', [
-                'alreadyVerified' => false,
-            ]);
+        if (!hash_equals(
+            sha1($user->getEmailForVerification()),
+            (string) $hash
+        )) {
+            abort(403, 'Invalid verification link.');
+        }
+
+        $alreadyVerified = $user->hasVerifiedEmail();
+
+        if (!$alreadyVerified) {
+            $user->markEmailAsVerified();
         }
 
         return view('auth.email-verified', [
-            'alreadyVerified' => true,
+            'alreadyVerified' => $alreadyVerified,
         ]);
     }
 

@@ -8,8 +8,11 @@ class SubmissionAuthor extends Model
 {
     protected $fillable = [
         'submission_id',
+        'title_prefix',
         'name',
+        'title_suffix',
         'email',
+        'orcid',
         'institution',
         'department',
         'is_corresponding',

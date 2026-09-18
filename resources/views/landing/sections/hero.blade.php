@@ -3,37 +3,31 @@
 ======================================-->
 
 @php
-
-    /*
-    |--------------------------------------------------------------------------
-    | BHAMADA ICON 2026
-    |--------------------------------------------------------------------------
-    | Content below follows the official TOR.
-    */
-
-    $conferenceName = 'BHAMADA ICON';
-
-    $conferenceShortName = 'BHAMADA ICON';
-
-    $conferenceYear = 2026;
-
-    $conferenceTheme = 'Advancing Interdisciplinary Research and Innovation for Sustainable Development.';
+    $conferenceName = $conference?->name ?? 'BHAMADA ICON';
+    $conferenceShortName = $conference?->short_name ?? 'ICON';
+    $conferenceYear = $conference?->year ?? 2026;
+    $conferenceTheme =
+        $conference?->theme ?? 'Advancing Interdisciplinary Research and Innovation for Sustainable Development.';
 
     $conferenceDescription =
-        'BHAMADA ICON 2026 is an international conference that brings together academics, researchers, students, and practitioners from various disciplines to disseminate research, exchange ideas, and strengthen interdisciplinary collaboration for sustainable development.';
+        'BHAMADA ICON ' .
+        $conferenceYear .
+        ' is an international conference that brings together academics, researchers, students, and practitioners from various disciplines to disseminate research, exchange ideas, and strengthen interdisciplinary collaboration for sustainable development.';
 
-    /*
-    |--------------------------------------------------------------------------
-    | Conference Information
-    |--------------------------------------------------------------------------
-    */
+    $conferenceDate = null;
 
-    $conferenceDate = '27 August 2026';
+    if ($conference?->start_date) {
+        $conferenceDate = $conference->start_date->translatedFormat('d F Y');
 
-    $conferenceLocation = 'Online Conference — Zoom Meeting / Virtual Conference Platform';
+        if ($conference->end_date && $conference->end_date->ne($conference->start_date)) {
+            $conferenceDate .= ' – ' . $conference->end_date->translatedFormat('d F Y');
+        }
+    }
 
+    $conferenceLocation = collect([$conference?->venue, $conference?->city, $conference?->country])
+        ->filter()
+        ->implode(' — ');
 @endphp
-
 
 <section class="hero" id="home">
 

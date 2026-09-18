@@ -380,7 +380,10 @@
                     ? $submission->authors->toArray()
                     : [
                         [
+                            'title_prefix' => '',
                             'name' => '',
+                            'title_suffix' => '',
+                            'orcid' => '',
                             'email' => '',
                             'institution' => '',
                             'department' => '',
@@ -419,6 +422,17 @@
 
                 <div class="row g-3">
 
+                    {{-- Title Prefix --}}
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            Title Prefix
+                        </label>
+
+                        <input type="text" name="authors[{{ $index }}][title_prefix]"
+                            value="{{ $author['title_prefix'] ?? '' }}" class="form-control rounded-0"
+                            placeholder="e.g. Prof. Dr.">
+                    </div>
+
                     {{-- Name --}}
                     <div class="col-md-6">
 
@@ -433,6 +447,31 @@
 
                     </div>
 
+                    {{-- Title Suffix --}}
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            Title Suffix
+                        </label>
+
+                        <input type="text" name="authors[{{ $index }}][title_suffix]"
+                            value="{{ $author['title_suffix'] ?? '' }}" class="form-control rounded-0"
+                            placeholder="e.g. S.Kom., M.Kom.">
+                    </div>
+
+                    {{-- ORCID --}}
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            ORCID
+                        </label>
+
+                        <input type="text" name="authors[{{ $index }}][orcid]"
+                            value="{{ $author['orcid'] ?? '' }}" class="form-control rounded-0"
+                            placeholder="0000-0000-0000-0000">
+
+                        <div class="form-text">
+                            Format: 0000-0000-0000-0000
+                        </div>
+                    </div>
 
                     {{-- Email --}}
                     <div class="col-md-6">
@@ -740,6 +779,20 @@
 
                     <div class="row g-3">
 
+<div class="col-md-3">
+
+    <label class="form-label">
+        Title Prefix
+    </label>
+
+    <input
+        type="text"
+        name="authors[${authorIndex}][title_prefix]"
+        class="form-control rounded-0"
+        placeholder="e.g. Prof. Dr."
+    >
+
+</div>
 
                         <div class="col-md-6">
 
@@ -757,6 +810,39 @@
 
                         </div>
 
+<div class="col-md-3">
+
+    <label class="form-label">
+        Title Suffix
+    </label>
+
+    <input
+        type="text"
+        name="authors[${authorIndex}][title_suffix]"
+        class="form-control rounded-0"
+        placeholder="e.g. S.Kom., M.Kom."
+    >
+
+</div>
+
+<div class="col-md-6">
+
+    <label class="form-label">
+        ORCID
+    </label>
+
+    <input
+        type="text"
+        name="authors[${authorIndex}][orcid]"
+        class="form-control rounded-0"
+        placeholder="0000-0000-0000-0000"
+    >
+
+    <div class="form-text">
+        Format: 0000-0000-0000-0000
+    </div>
+
+</div>
 
                         <div class="col-md-6">
 

@@ -22,10 +22,7 @@ class PaymentCalculationService
     public function presentationType(
         Participant $participant
     ): ?string {
-        $participant->loadMissing([
-            'registrationType',
-            'submissions',
-        ]);
+        $participant->loadMissing('registrationType');
 
         if (
             $participant->registrationType?->category !==
@@ -34,27 +31,15 @@ class PaymentCalculationService
             return null;
         }
 
-        return $participant
-            ->submissions
-            ->where(
-                'submission_stage',
-                'full_paper'
-            )
-            ->whereNotNull(
-                'presentation_type'
-            )
-            ->sortBy('id')
-            ->first()
-            ?->presentation_type;
+        return $participant->presentation_type;
     }
 
     public function presentationPrice(
         Participant $participant
     ): ?float {
-        $participant->loadMissing([
-            'registrationType.presentationPrices',
-            'submissions',
-        ]);
+        $participant->loadMissing(
+            'registrationType.presentationPrices'
+        );
 
         if (
             $participant->registrationType?->category !==
@@ -304,15 +289,7 @@ class PaymentCalculationService
         ) {
             if (
                 $registrationType->payment_timing !==
-                'after_acceptance'
-            ) {
-                return false;
-            }
-
-            if (
-                $this->acceptedPaperCount(
-                    $participant
-                ) <= 0
+                'immediate'
             ) {
                 return false;
             }
@@ -325,9 +302,13 @@ class PaymentCalculationService
                 return false;
             }
 
-            return $this->outstandingAmount(
-                $participant
-            ) > 0;
+            return (
+                $participant->registration_status ===
+                'pending'
+            )
+                && $this->outstandingAmount(
+                    $participant
+                ) > 0;
         }
 
         /*
