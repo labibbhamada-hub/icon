@@ -111,34 +111,23 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="payment_timing" class="form-select @error('payment_timing') is-invalid @enderror rounded-0">
-                <option value="">
-                    Select Payment Timing
-                </option>
+            <input type="hidden" name="payment_timing" value="immediate">
 
-                <option value="immediate" @selected(old('payment_timing', $conferenceRegistrationType->payment_timing ?? '') === 'immediate')>
-                    Pay during registration
-                </option>
-
-                <option value="after_acceptance" @selected(old('payment_timing', $conferenceRegistrationType->payment_timing ?? '') === 'after_acceptance')>
-                    Pay after paper acceptance
-                </option>
-
-            </select>
+            <input type="text" class="form-control rounded-0" value="Pay during registration" readonly>
 
             @error('payment_timing')
-                <div class="invalid-feedback">
+                <div class="invalid-feedback d-block">
                     {{ $message }}
                 </div>
             @enderror
 
             <div class="form-text">
-                Determine when participants are required to make payment.
+                Payment is required before abstract submission.
             </div>
 
         </div>
 
-        {{-- Presenter information --}}
+        {{-- Registration information --}}
         <div class="col-md-6 mb-3">
 
             <div class="border border-info rounded-0 p-3 h-100 bg-info-subtle">
@@ -146,15 +135,12 @@
                 <div class="small">
 
                     <strong>
-                        Presenter Registration
+                        Registration Information
                     </strong>
 
                     <div class="mt-1">
-                        If payment is set to
-                        <strong>
-                            Pay after paper acceptance
-                        </strong>,
-                        participants can submit papers before making payment.
+                        Payment must be verified before the participant can
+                        submit an abstract.
                     </div>
 
                 </div>
@@ -166,21 +152,30 @@
         {{-- Pricing --}}
         <div class="col-12 mb-3">
 
-            @php
-                $selectedCategory = old('category', $conferenceRegistrationType->category ?? 'participant');
-            @endphp
+            <div class="border rounded-0 p-3">
 
-            <div id="participant-fee-section" @class([
-                'border rounded-0 p-3',
-                'd-none' => $selectedCategory === 'presenter',
-            ])>
+                <div class="d-flex justify-content-between align-items-center mb-3">
 
-                <label class="form-label">
-                    Registration Fee
-                    <span class="text-danger">*</span>
-                </label>
+                    <div>
 
-                <div class="row">
+                        <label class="form-label mb-0">
+                            Registration Fee
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <div class="form-text">
+                            Registration fee for this registration type.
+                        </div>
+
+                    </div>
+
+                    <span class="badge text-bg-primary rounded-0">
+                        Registration
+                    </span>
+
+                </div>
+
+                <div class="row g-3">
 
                     <div class="col-md-6">
 
@@ -198,131 +193,16 @@
 
                     <div class="col-md-6">
 
-                        <div class="form-text mt-md-2">
-                            Registration fee for non-presenter participants.
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            @php
-                $presentationPrices = $conferenceRegistrationType?->presentationPrices ?? collect();
-
-                $oralPrice = $presentationPrices->firstWhere('presentation_type', 'oral');
-
-                $posterPrice = $presentationPrices->firstWhere('presentation_type', 'poster');
-
-                $oralFee = old('oral_fee', $oralPrice?->fee ?? 0);
-
-                $posterFee = old('poster_fee', $posterPrice?->fee ?? 0);
-
-                $pricingCurrency =
-                    $oralPrice?->currency ??
-                    ($posterPrice?->currency ?? ($conferenceRegistrationType?->currency ?? 'IDR'));
-            @endphp
-
-            <div id="presenter-pricing-section" @class([
-                'border rounded-0 p-3',
-                'd-none' => $selectedCategory !== 'presenter',
-            ])>
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <div>
-
-                        <label class="form-label mb-0">
-                            Presentation Pricing
-                            <span class="text-danger">*</span>
-                        </label>
+                        <input type="text" class="form-control rounded-0"
+                            value="{{ strtoupper(old('currency', $conferenceRegistrationType->currency ?? 'IDR')) }}"
+                            readonly>
 
                         <div class="form-text">
-                            Set fees for each presentation type.
+                            Currency follows the registration type configuration.
                         </div>
 
                     </div>
 
-                    <span class="badge text-bg-primary rounded-0">
-                        Presenter
-                    </span>
-
-                </div>
-
-                <div class="row g-3">
-
-                    {{-- Oral --}}
-                    <div class="col-md-6">
-
-                        <div class="border rounded-0 p-3 h-100">
-
-                            <label for="oral_fee" class="form-label">
-                                <i class="bi bi-mic me-1"></i>
-                                Oral Presentation
-                            </label>
-
-                            <div class="input-group">
-
-                                <input type="number" id="oral_fee" name="oral_fee" min="0" step="0.01"
-                                    value="{{ $oralFee }}"
-                                    class="form-control @error('oral_fee') is-invalid @enderror rounded-0"
-                                    placeholder="350000">
-
-                                <span class="input-group-text rounded-0">
-                                    {{ $pricingCurrency }}
-                                </span>
-
-                            </div>
-
-                            @error('oral_fee')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                    {{-- Poster --}}
-                    <div class="col-md-6">
-
-                        <div class="border rounded-0 p-3 h-100">
-
-                            <label for="poster_fee" class="form-label">
-                                <i class="bi bi-image me-1"></i>
-                                Poster Presentation
-                            </label>
-
-                            <div class="input-group">
-
-                                <input type="number" id="poster_fee" name="poster_fee" min="0" step="0.01"
-                                    value="{{ $posterFee }}"
-                                    class="form-control @error('poster_fee') is-invalid @enderror rounded-0"
-                                    placeholder="250000">
-
-                                <span class="input-group-text rounded-0">
-                                    {{ $pricingCurrency }}
-                                </span>
-
-                            </div>
-
-                            @error('poster_fee')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="form-text mt-3">
-                    These fees are used when participants select Oral or Poster
-                    Presentation after their paper is accepted.
                 </div>
 
             </div>
@@ -423,8 +303,7 @@
                 Description
             </label>
 
-            <textarea name="description" rows="4"
-                class="form-control @error('description') is-invalid @enderror rounded-0"
+            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-0"
                 placeholder="Explain who this registration type is for...">{{ old('description', $conferenceRegistrationType->description ?? '') }}</textarea>
 
             @error('description')
@@ -482,56 +361,3 @@
     </div>
 
 </div>
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const categorySelect = document.querySelector(
-                'select[name="category"]'
-            );
-
-            const participantFeeSection =
-                document.getElementById(
-                    'participant-fee-section'
-                );
-
-            const presenterPricingSection =
-                document.getElementById(
-                    'presenter-pricing-section'
-                );
-
-            if (
-                !categorySelect ||
-                !participantFeeSection ||
-                !presenterPricingSection
-            ) {
-                return;
-            }
-
-            function togglePricingSections() {
-
-                const isPresenter =
-                    categorySelect.value === 'presenter';
-
-                participantFeeSection.classList.toggle(
-                    'd-none',
-                    isPresenter
-                );
-
-                presenterPricingSection.classList.toggle(
-                    'd-none',
-                    !isPresenter
-                );
-            }
-
-            categorySelect.addEventListener(
-                'change',
-                togglePricingSections
-            );
-
-            togglePricingSections();
-
-        });
-    </script>
-@endpush

@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Conference;
 use App\Models\ConferenceAttendanceOption;
 use App\Models\ConferencePaymentMethod;
-use App\Models\ConferencePresentationPrice;
 use App\Models\ConferenceRegistrationType;
 use App\Models\ConferenceSetting;
 use App\Models\Participant;
@@ -67,31 +66,16 @@ class PaymentFlowTest extends TestCase
     ): ConferenceRegistrationType {
         return ConferenceRegistrationType::create([
             'conference_id' => $conference->id,
-            'name' => 'Presenter',
-            'code' => 'PRESENTER',
+            'name' => 'Presenter Bhamada',
+            'code' => 'presenter_bhamada',
             'category' => 'presenter',
             'payment_timing' => 'immediate',
-            'fee' => 0,
+            'fee' => 250000,
             'included_papers' => 1,
-            'additional_paper_fee' => 250000,
+            'additional_paper_fee' => 0,
             'currency' => 'IDR',
             'description' => 'Test presenter registration type.',
             'benefits' => 'Test presenter benefits.',
-            'is_active' => true,
-            'sort_order' => 1,
-        ]);
-    }
-
-    private function createPresentationPrice(
-        ConferenceRegistrationType $registrationType,
-        string $presentationType = 'oral',
-        float $fee = 350000
-    ): ConferencePresentationPrice {
-        return ConferencePresentationPrice::create([
-            'registration_type_id' => $registrationType->id,
-            'presentation_type' => $presentationType,
-            'fee' => $fee,
-            'currency' => 'IDR',
             'is_active' => true,
             'sort_order' => 1,
         ]);
@@ -117,8 +101,7 @@ class PaymentFlowTest extends TestCase
     private function createPresenterParticipant(
         Conference $conference,
         ConferenceRegistrationType $registrationType,
-        User $user,
-        string $presentationType = 'oral'
+        User $user
     ): Participant {
         return Participant::create([
             'user_id' => $user->id,
@@ -130,7 +113,6 @@ class PaymentFlowTest extends TestCase
             'country' => 'Indonesia',
             'attendance_type' => 'online',
             'participant_type' => 'presenter',
-            'presentation_type' => $presentationType,
             'registration_status' => 'pending',
             'registered_at' => now(),
         ]);
@@ -146,12 +128,6 @@ class PaymentFlowTest extends TestCase
             $conference
         );
 
-        $this->createPresentationPrice(
-            $registrationType,
-            'oral',
-            350000
-        );
-
         $paymentMethod = $this->createPaymentMethod(
             $conference
         );
@@ -164,8 +140,7 @@ class PaymentFlowTest extends TestCase
         $participant = $this->createPresenterParticipant(
             $conference,
             $registrationType,
-            $user,
-            'oral'
+            $user
         );
 
         $proofFile = UploadedFile::fake()->create(
@@ -194,7 +169,7 @@ class PaymentFlowTest extends TestCase
         $this->assertDatabaseHas('payments', [
             'participant_id' => $participant->id,
             'payment_method_id' => $paymentMethod->id,
-            'amount' => 350000,
+            'amount' => 250000,
             'status' => 'pending',
         ]);
 
@@ -217,12 +192,6 @@ class PaymentFlowTest extends TestCase
             $conference
         );
 
-        $this->createPresentationPrice(
-            $registrationType,
-            'oral',
-            350000
-        );
-
         $paymentMethod = $this->createPaymentMethod(
             $conference
         );
@@ -235,15 +204,14 @@ class PaymentFlowTest extends TestCase
         $participant = $this->createPresenterParticipant(
             $conference,
             $registrationType,
-            $user,
-            'oral'
+            $user
         );
 
         $payment = Payment::create([
             'participant_id' => $participant->id,
             'payment_method_id' => $paymentMethod->id,
             'payment_code' => 'PAY-TEST-VERIFY',
-            'amount' => 350000,
+            'amount' => 250000,
             'proof_file' => 'payments/proofs/test-proof.pdf',
             'status' => 'pending',
             'paid_at' => now(),
@@ -295,12 +263,6 @@ class PaymentFlowTest extends TestCase
             $conference
         );
 
-        $this->createPresentationPrice(
-            $registrationType,
-            'oral',
-            350000
-        );
-
         $paymentMethod = $this->createPaymentMethod(
             $conference
         );
@@ -313,15 +275,14 @@ class PaymentFlowTest extends TestCase
         $participant = $this->createPresenterParticipant(
             $conference,
             $registrationType,
-            $user,
-            'oral'
+            $user
         );
 
         $payment = Payment::create([
             'participant_id' => $participant->id,
             'payment_method_id' => $paymentMethod->id,
             'payment_code' => 'PAY-TEST-REJECT',
-            'amount' => 350000,
+            'amount' => 250000,
             'proof_file' => 'payments/proofs/test-reject.pdf',
             'status' => 'pending',
             'paid_at' => now(),

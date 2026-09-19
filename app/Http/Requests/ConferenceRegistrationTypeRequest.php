@@ -24,9 +24,6 @@ class ConferenceRegistrationTypeRequest extends FormRequest
         $registrationTypeId =
             $this->route('conference_registration_type')?->id;
 
-        $isPresenter =
-            $this->input('category') === 'presenter';
-
         return [
             'conference_id' => [
                 'required',
@@ -68,22 +65,16 @@ class ConferenceRegistrationTypeRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
-            | Base registration fee
+            | Registration fee
             |--------------------------------------------------------------------------
             |
-            | Participant:
-            |   required
-            |
-            | Presenter:
-            |   not used as the actual presentation fee.
+            | The registration fee is the actual fee for all registration types,
+            | including presenter registration types.
             |
             */
 
             'fee' => [
-                Rule::requiredIf(
-                    fn() => !$isPresenter
-                ),
-                'nullable',
+                'required',
                 'numeric',
                 'min:0',
             ],
@@ -111,24 +102,6 @@ class ConferenceRegistrationTypeRequest extends FormRequest
             | Presenter pricing
             |--------------------------------------------------------------------------
             */
-
-            'oral_fee' => [
-                Rule::requiredIf(
-                    fn() => $isPresenter
-                ),
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
-
-            'poster_fee' => [
-                Rule::requiredIf(
-                    fn() => $isPresenter
-                ),
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
 
             'description' => [
                 'nullable',
@@ -210,24 +183,6 @@ class ConferenceRegistrationTypeRequest extends FormRequest
             'currency.required' =>
             'Currency is required.',
 
-            'oral_fee.required' =>
-            'Oral presentation fee is required for presenter registration types.',
-
-            'oral_fee.numeric' =>
-            'Oral presentation fee must be a number.',
-
-            'oral_fee.min' =>
-            'Oral presentation fee cannot be negative.',
-
-            'poster_fee.required' =>
-            'Poster presentation fee is required for presenter registration types.',
-
-            'poster_fee.numeric' =>
-            'Poster presentation fee must be a number.',
-
-            'poster_fee.min' =>
-            'Poster presentation fee cannot be negative.',
-
             'is_active.required' =>
             'Status is required.',
 
@@ -265,12 +220,6 @@ class ConferenceRegistrationTypeRequest extends FormRequest
 
             'currency' =>
             'currency',
-
-            'oral_fee' =>
-            'oral presentation fee',
-
-            'poster_fee' =>
-            'poster presentation fee',
 
             'description' =>
             'description',

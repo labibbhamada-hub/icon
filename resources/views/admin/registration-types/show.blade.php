@@ -137,71 +137,13 @@
                 <div class="col-md-6 mb-3">
 
                     <small class="text-muted d-block">
-                        @if ($conferenceRegistrationType->category === 'presenter')
-                            Presentation Pricing
-                        @else
-                            Registration Fee
-                        @endif
+                        Registration Fee
                     </small>
 
-                    @if ($conferenceRegistrationType->category === 'presenter')
-
-                        @php
-                            $oralPrice = $conferenceRegistrationType->presentationPrices->firstWhere(
-                                'presentation_type',
-                                'oral',
-                            );
-
-                            $posterPrice = $conferenceRegistrationType->presentationPrices->firstWhere(
-                                'presentation_type',
-                                'poster',
-                            );
-                        @endphp
-
-                        @if ($oralPrice || $posterPrice)
-
-                            <div class="mt-1">
-
-                                @if ($oralPrice)
-                                    <div>
-                                        <span class="text-muted">
-                                            Oral:
-                                        </span>
-
-                                        <strong class="text-success">
-                                            {{ $oralPrice->currency }}
-                                            {{ number_format($oralPrice->fee, 0, ',', '.') }}
-                                        </strong>
-                                    </div>
-                                @endif
-
-                                @if ($posterPrice)
-                                    <div class="mt-1">
-                                        <span class="text-muted">
-                                            Poster:
-                                        </span>
-
-                                        <strong class="text-success">
-                                            {{ $posterPrice->currency }}
-                                            {{ number_format($posterPrice->fee, 0, ',', '.') }}
-                                        </strong>
-                                    </div>
-                                @endif
-
-                            </div>
-                        @else
-                            <span class="text-muted">
-                                Presentation pricing not configured.
-                            </span>
-
-                        @endif
-                    @else
-                        <strong class="text-success">
-                            {{ $conferenceRegistrationType->currency }}
-                            {{ number_format($conferenceRegistrationType->fee, 0, ',', '.') }}
-                        </strong>
-
-                    @endif
+                    <strong class="text-success">
+                        {{ $conferenceRegistrationType->currency }}
+                        {{ number_format($conferenceRegistrationType->fee, 0, ',', '.') }}
+                    </strong>
 
                 </div>
 

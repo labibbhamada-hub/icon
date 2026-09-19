@@ -13,7 +13,6 @@ class ConferenceRegistrationTypeController extends Controller
     {
         $registrationTypes = ConferenceRegistrationType::with([
             'conference',
-            'presentationPrices',
         ])
             ->orderBy('conference_id')
             ->orderBy('sort_order')
@@ -41,52 +40,10 @@ class ConferenceRegistrationTypeController extends Controller
     ) {
         $data = $request->validated();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Extract presenter pricing
-        |--------------------------------------------------------------------------
-        */
-
-        $oralFee = $data['oral_fee'] ?? null;
-        $posterFee = $data['poster_fee'] ?? null;
-
-        unset(
-            $data['oral_fee'],
-            $data['poster_fee']
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Presenter does not use the legacy registration fee
-        |--------------------------------------------------------------------------
-        */
-
-        if ($data['category'] === 'presenter') {
-            $data['fee'] = 0;
-        }
-
         $registrationType =
             ConferenceRegistrationType::create(
                 $data
             );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Save presenter prices
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $registrationType->category ===
-            'presenter'
-        ) {
-            $this->syncPresentationPrices(
-                $registrationType,
-                $oralFee,
-                $posterFee,
-                $registrationType->currency
-            );
-        }
 
         return redirect()
             ->route(
@@ -103,7 +60,6 @@ class ConferenceRegistrationTypeController extends Controller
     ) {
         $conferenceRegistrationType->load([
             'conference',
-            'presentationPrices',
         ]);
 
         return view(
@@ -117,10 +73,6 @@ class ConferenceRegistrationTypeController extends Controller
     public function edit(
         ConferenceRegistrationType $conferenceRegistrationType
     ) {
-        $conferenceRegistrationType->load([
-            'presentationPrices',
-        ]);
-
         $conferences =
             Conference::orderByDesc('year')
             ->get();
@@ -140,51 +92,9 @@ class ConferenceRegistrationTypeController extends Controller
     ) {
         $data = $request->validated();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Extract presenter pricing
-        |--------------------------------------------------------------------------
-        */
-
-        $oralFee = $data['oral_fee'] ?? null;
-        $posterFee = $data['poster_fee'] ?? null;
-
-        unset(
-            $data['oral_fee'],
-            $data['poster_fee']
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Presenter does not use legacy fee
-        |--------------------------------------------------------------------------
-        */
-
-        if ($data['category'] === 'presenter') {
-            $data['fee'] = 0;
-        }
-
         $conferenceRegistrationType->update(
             $data
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Sync presenter prices
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $conferenceRegistrationType->category ===
-            'presenter'
-        ) {
-            $this->syncPresentationPrices(
-                $conferenceRegistrationType,
-                $oralFee,
-                $posterFee,
-                $conferenceRegistrationType->currency
-            );
-        }
 
         return redirect()
             ->route(
@@ -220,61 +130,6 @@ class ConferenceRegistrationTypeController extends Controller
             ->with(
                 'success',
                 'Registration type deleted successfully.'
-            );
-    }
-
-    private function syncPresentationPrices(
-        ConferenceRegistrationType $registrationType,
-        $oralFee,
-        $posterFee,
-        string $currency
-    ): void {
-        $registrationType
-            ->presentationPrices()
-            ->updateOrCreate(
-                [
-                    'presentation_type' =>
-                    'oral',
-                ],
-                [
-                    'fee' =>
-                    $oralFee,
-
-                    'currency' =>
-                    strtoupper(
-                        $currency
-                    ),
-
-                    'is_active' =>
-                    true,
-
-                    'sort_order' =>
-                    1,
-                ]
-            );
-
-        $registrationType
-            ->presentationPrices()
-            ->updateOrCreate(
-                [
-                    'presentation_type' =>
-                    'poster',
-                ],
-                [
-                    'fee' =>
-                    $posterFee,
-
-                    'currency' =>
-                    strtoupper(
-                        $currency
-                    ),
-
-                    'is_active' =>
-                    true,
-
-                    'sort_order' =>
-                    2,
-                ]
             );
     }
 }
