@@ -324,10 +324,13 @@ class RegistrationTest extends TestCase
         ]);
     }
 
-    public function test_presenter_registration_requires_presentation_type(): void
+    public function test_presenter_registration_does_not_require_presentation_type(): void
     {
         $conference = $this->createOpenConference();
-        $registrationType = $this->createPresenterRegistrationType($conference);
+
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
 
         $user = User::factory()->create([
             'role' => 'participant',
@@ -347,22 +350,26 @@ class RegistrationTest extends TestCase
                 'attendance_type' => 'online',
             ]);
 
-        $response->assertRedirect();
+        $response->assertRedirect(
+            route('participant.registration.index')
+        );
 
-        $response->assertSessionHasErrors([
-            'presentation_type',
-        ]);
-
-        $this->assertDatabaseMissing('participants', [
+        $this->assertDatabaseHas('participants', [
             'user_id' => $user->id,
             'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+            'registration_status' => 'pending',
         ]);
     }
 
-    public function test_presenter_registration_with_oral_presentation_succeeds(): void
+    public function test_legacy_presentation_type_is_not_saved_during_registration(): void
     {
         $conference = $this->createOpenConference();
-        $registrationType = $this->createPresenterRegistrationType($conference);
+
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
 
         $user = User::factory()->create([
             'role' => 'participant',
@@ -380,6 +387,8 @@ class RegistrationTest extends TestCase
                 'country' => 'Indonesia',
                 'city' => 'Slawi',
                 'attendance_type' => 'online',
+
+                // Legacy field. It must no longer affect registration.
                 'presentation_type' => 'oral',
             ]);
 
@@ -392,42 +401,8 @@ class RegistrationTest extends TestCase
             'conference_id' => $conference->id,
             'registration_type_id' => $registrationType->id,
             'participant_type' => 'presenter',
-            'presentation_type' => 'oral',
             'registration_status' => 'pending',
-        ]);
-    }
-
-    public function test_presenter_registration_with_poster_presentation_succeeds(): void
-    {
-        $conference = $this->createOpenConference();
-        $registrationType = $this->createPresenterRegistrationType($conference);
-
-        $user = User::factory()->create([
-            'role' => 'participant',
-            'status' => 'active',
-        ]);
-
-        $response = $this
-            ->actingAs($user)
-            ->post('/participant/registration', [
-                'conference_id' => $conference->id,
-                'registration_type_id' => $registrationType->id,
-                'country' => 'Indonesia',
-                'attendance_type' => 'online',
-                'presentation_type' => 'poster',
-            ]);
-
-        $response->assertRedirect(
-            route('participant.registration.index')
-        );
-
-        $this->assertDatabaseHas('participants', [
-            'user_id' => $user->id,
-            'conference_id' => $conference->id,
-            'registration_type_id' => $registrationType->id,
-            'participant_type' => 'presenter',
-            'presentation_type' => 'poster',
-            'registration_status' => 'pending',
+            'presentation_type' => null,
         ]);
     }
 }

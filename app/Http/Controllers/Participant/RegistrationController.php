@@ -43,14 +43,6 @@ class RegistrationController extends Controller
             'registrationTypes' => function ($query) {
                 $query
                     ->where('is_active', true)
-                    ->with([
-                        'presentationPrices' => function ($query) {
-                            $query
-                                ->where('is_active', true)
-                                ->orderBy('sort_order')
-                                ->orderBy('presentation_type');
-                        },
-                    ])
                     ->orderBy('category')
                     ->orderBy('sort_order')
                     ->orderBy('name');
@@ -233,11 +225,6 @@ class RegistrationController extends Controller
 
             'attendance_type' =>
             $data['attendance_type'],
-
-            'presentation_type' =>
-            $registrationType->category === 'presenter'
-                ? $data['presentation_type']
-                : null,
 
             'registration_status' =>
             'pending',

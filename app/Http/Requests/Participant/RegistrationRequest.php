@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Participant;
 
 use App\Models\Conference;
-use App\Models\ConferenceRegistrationType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -123,32 +122,6 @@ class RegistrationRequest extends FormRequest
                 ),
             ],
 
-            'presentation_type' => [
-                'nullable',
-                'string',
-                Rule::in([
-                    'oral',
-                    'poster',
-                ]),
-                Rule::requiredIf(function () {
-                    $registrationType = ConferenceRegistrationType::where(
-                        'id',
-                        $this->input('registration_type_id')
-                    )
-                        ->where(
-                            'conference_id',
-                            $this->input('conference_id')
-                        )
-                        ->where(
-                            'is_active',
-                            true
-                        )
-                        ->first();
-
-                    return $registrationType?->category === 'presenter';
-                }),
-            ],
-
             'title_prefix' => [
                 'nullable',
                 'string',
@@ -193,9 +166,6 @@ class RegistrationRequest extends FormRequest
 
             'attendance_type.in' =>
             'The selected attendance option is not available for this conference.',
-
-            'presentation_type.required' =>
-            'Please select Oral or Poster presentation.',
         ];
     }
 }
