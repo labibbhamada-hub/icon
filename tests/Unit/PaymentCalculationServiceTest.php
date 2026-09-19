@@ -20,12 +20,6 @@ class PaymentCalculationServiceTest extends TestCase
 
     private Conference $conference;
 
-    private ConferenceRegistrationType $registrationType;
-
-    private ConferencePaymentMethod $paymentMethod;
-
-    private Topic $topic;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -34,29 +28,102 @@ class PaymentCalculationServiceTest extends TestCase
             'name' => 'ICON 2026',
             'short_name' => 'ICON',
             'year' => 2026,
-            'theme' => 'Innovation and Technology',
+            'theme' => 'Advancing Interdisciplinary Research and Innovation for Sustainable Development',
             'country' => 'Indonesia',
-            'start_date' => '2026-11-01',
-            'end_date' => '2026-11-01',
+            'start_date' => '2026-08-27',
+            'end_date' => '2026-08-27',
+            'registration_deadline' => '2026-08-20',
             'status' => 'registration_open',
         ]);
+    }
 
-        $this->registrationType = ConferenceRegistrationType::create([
+    private function createRegistrationType(
+        string $name,
+        string $code,
+        string $category,
+        float $fee,
+        string $currency = 'IDR',
+        string $paymentTiming = 'immediate'
+    ): ConferenceRegistrationType {
+        return ConferenceRegistrationType::create([
             'conference_id' => $this->conference->id,
-            'name' => 'Author / Presenter',
-            'code' => 'presenter',
-            'category' => 'presenter',
-            'payment_timing' => 'immediate',
-            'fee' => 0,
+            'name' => $name,
+            'code' => $code,
+            'category' => $category,
+            'payment_timing' => $paymentTiming,
+            'fee' => $fee,
             'included_papers' => 1,
             'additional_paper_fee' => 150000,
-            'currency' => 'IDR',
+            'currency' => $currency,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+    }
+
+    private function createParticipant(
+        ConferenceRegistrationType $registrationType,
+        string $status = 'pending'
+    ): Participant {
+        return Participant::create([
+            'user_id' => null,
+            'conference_id' => $this->conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => 'TEST-' . fake()->unique()->numerify('######'),
+            'full_name' => 'Test Participant',
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => '+628123456789',
+            'institution' => 'Test University',
+            'department' => 'Informatics',
+            'country' => 'Indonesia',
+            'city' => 'Slawi',
+            'participant_type' => $registrationType->category === 'presenter'
+                ? 'presenter'
+                : 'regular',
+            'attendance_type' => 'online',
+            'registration_status' => $status,
+            'registered_at' => now(),
+        ]);
+    }
+
+    private function createAcceptedFullPaper(Participant $participant): Submission
+    {
+        $topic = Topic::create([
+            'conference_id' => $this->conference->id,
+            'name' => 'Artificial Intelligence',
+            'description' => 'AI topic for testing.',
             'is_active' => true,
             'sort_order' => 0,
         ]);
 
+        return Submission::create([
+            'conference_id' => $this->conference->id,
+            'participant_id' => $participant->id,
+            'topic_id' => $topic->id,
+            'submission_code' => 'TEST-SUB-' . strtoupper(fake()->unique()->bothify('########')),
+            'title' => 'Test Submission',
+            'abstract' => 'Test abstract.',
+            'keywords' => 'test, conference, technology',
+            'paper_file' => 'test/paper.pdf',
+            'submission_stage' => 'full_paper',
+            'status' => 'accepted',
+            'submitted_at' => now(),
+        ]);
+    }
+
+    public function test_presenter_fee_uses_registration_type_fee(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Presenter Bhamada',
+            'PRESENTER-BHAMADA',
+            'presenter',
+            250000
+        );
+
+        $participant = $this->createParticipant($registrationType);
+
+        // Legacy Oral/Poster pricing must not affect the current calculation.
         ConferencePresentationPrice::create([
-            'registration_type_id' => $this->registrationType->id,
+            'registration_type_id' => $registrationType->id,
             'presentation_type' => 'oral',
             'fee' => 350000,
             'currency' => 'IDR',
@@ -65,7 +132,7 @@ class PaymentCalculationServiceTest extends TestCase
         ]);
 
         ConferencePresentationPrice::create([
-            'registration_type_id' => $this->registrationType->id,
+            'registration_type_id' => $registrationType->id,
             'presentation_type' => 'poster',
             'fee' => 250000,
             'currency' => 'IDR',
@@ -73,7 +140,118 @@ class PaymentCalculationServiceTest extends TestCase
             'sort_order' => 2,
         ]);
 
-        $this->paymentMethod = ConferencePaymentMethod::create([
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant->fresh());
+
+        $this->assertSame(250000.0, $result['base_fee']);
+        $this->assertSame(250000.0, $result['total_amount']);
+        $this->assertSame('IDR', $result['currency']);
+        $this->assertNull($result['presentation_type']);
+        $this->assertNull($result['presentation_fee']);
+    }
+
+    public function test_presenter_luar_bhamada_fee_is_400000_idr(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Presenter Luar Bhamada',
+            'PRESENTER-LUAR-BHAMADA',
+            'presenter',
+            400000
+        );
+
+        $participant = $this->createParticipant($registrationType);
+
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant);
+
+        $this->assertSame(400000.0, $result['total_amount']);
+        $this->assertSame('IDR', $result['currency']);
+    }
+
+    public function test_presenter_overseas_fee_is_60_usd(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Presenter Overseas',
+            'PRESENTER-OVERSEAS',
+            'presenter',
+            60,
+            'USD'
+        );
+
+        $participant = $this->createParticipant($registrationType);
+
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant);
+
+        $this->assertSame(60.0, $result['base_fee']);
+        $this->assertSame(60.0, $result['total_amount']);
+        $this->assertSame('USD', $result['currency']);
+    }
+
+    public function test_seminar_umum_fee_is_75000_idr(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Peserta Seminar Umum',
+            'SEMINAR-UMUM',
+            'participant',
+            75000
+        );
+
+        $participant = $this->createParticipant($registrationType);
+
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant);
+
+        $this->assertSame(75000.0, $result['base_fee']);
+        $this->assertSame(75000.0, $result['total_amount']);
+        $this->assertSame('IDR', $result['currency']);
+    }
+
+    public function test_seminar_bhamada_fee_is_10000_idr(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Peserta Seminar Bhamada',
+            'SEMINAR-BHAMADA',
+            'participant',
+            10000
+        );
+
+        $participant = $this->createParticipant($registrationType);
+
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant);
+
+        $this->assertSame(10000.0, $result['total_amount']);
+        $this->assertSame('IDR', $result['currency']);
+    }
+
+    public function test_additional_paper_fee_is_ignored_even_when_legacy_value_exists(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Presenter Bhamada',
+            'PRESENTER-BHAMADA',
+            'presenter',
+            250000
+        );
+
+        $participant = $this->createParticipant($registrationType);
+
+        $this->createAcceptedFullPaper($participant);
+        $this->createAcceptedFullPaper($participant);
+
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant->fresh());
+
+        $this->assertSame(2, $result['accepted_papers']);
+        $this->assertSame(0, $result['additional_papers']);
+        $this->assertSame(0.0, $result['additional_paper_fee']);
+        $this->assertSame(0.0, $result['additional_amount']);
+        $this->assertSame(250000.0, $result['total_amount']);
+    }
+
+    public function test_verified_payment_reduces_outstanding_amount(): void
+    {
+        $paymentMethod = ConferencePaymentMethod::create([
             'conference_id' => $this->conference->id,
             'type' => 'bank_transfer',
             'name' => 'Bank Transfer',
@@ -85,314 +263,121 @@ class PaymentCalculationServiceTest extends TestCase
             'sort_order' => 0,
         ]);
 
-        $this->topic = Topic::create([
-            'conference_id' => $this->conference->id,
-            'name' => 'Artificial Intelligence',
-            'description' => 'AI topic for testing.',
-            'is_active' => true,
-            'sort_order' => 0,
-        ]);
-    }
-
-    private function createParticipant(
-        string $presentationType = 'oral'
-    ): Participant {
-        return Participant::create([
-            'user_id' => null,
-            'conference_id' => $this->conference->id,
-            'registration_type_id' => $this->registrationType->id,
-            'presentation_type' => $presentationType,
-            'registration_number' => 'TEST-' . fake()->unique()->numerify('######'),
-            'full_name' => 'Test Participant',
-            'email' => 'test@example.com',
-            'phone' => '+628123456789',
-            'institution' => 'Test University',
-            'department' => 'Informatics',
-            'country' => 'Indonesia',
-            'city' => 'Semarang',
-            'participant_type' => 'regular',
-            'attendance_type' => 'online',
-            'registration_status' => 'confirmed',
-            'registered_at' => now(),
-        ]);
-    }
-
-    private function createSubmission(
-        Participant $participant,
-        string $presentationType,
-        int $idOffset = 0
-    ): Submission {
-        return Submission::create([
-            'conference_id' => $this->conference->id,
-            'participant_id' => $participant->id,
-            'topic_id' => $this->topic->id,
-            'submission_code' => 'TEST-SUB-' .
-                strtoupper(
-                    substr(
-                        md5(
-                            $participant->id .
-                                '-' .
-                                $presentationType .
-                                '-' .
-                                $idOffset
-                        ),
-                        0,
-                        8
-                    )
-                ),
-            'title' => 'Test Submission ' . ($idOffset + 1),
-            'abstract' => 'Test abstract.',
-            'keywords' => 'test, conference, technology',
-            'paper_file' => 'test/paper.pdf',
-            'status' => 'accepted',
-            'presentation_type' => $presentationType,
-            'presentation_mode' => 'online',
-            'presentation_completed' => true,
-        ]);
-    }
-
-    public function test_presenter_oral_price_is_used_as_base_fee(): void
-    {
-        $participant = $this->createParticipant();
-
-        $this->createSubmission(
-            $participant,
-            'oral'
+        $registrationType = $this->createRegistrationType(
+            'Presenter Bhamada',
+            'PRESENTER-BHAMADA',
+            'presenter',
+            250000
         );
 
-        $service = app(PaymentCalculationService::class);
-
-        $result = $service->calculate($participant->fresh());
-
-        $this->assertSame(
-            'oral',
-            $result['presentation_type']
-        );
-
-        $this->assertSame(
-            350000.0,
-            $result['presentation_fee']
-        );
-
-        $this->assertSame(
-            350000.0,
-            $result['base_fee']
-        );
-
-        $this->assertSame(
-            350000.0,
-            $result['total_amount']
-        );
-
-        $this->assertSame(
-            0.0,
-            $result['additional_amount']
-        );
-    }
-
-    public function test_presenter_poster_price_is_used_as_base_fee(): void
-    {
-        $participant = $this->createParticipant('poster');
-
-        $this->createSubmission(
-            $participant,
-            'poster'
-        );
-
-        $service = app(PaymentCalculationService::class);
-
-        $result = $service->calculate($participant->fresh());
-
-        $this->assertSame(
-            'poster',
-            $result['presentation_type']
-        );
-
-        $this->assertSame(
-            250000.0,
-            $result['presentation_fee']
-        );
-
-        $this->assertSame(
-            250000.0,
-            $result['base_fee']
-        );
-
-        $this->assertSame(
-            250000.0,
-            $result['total_amount']
-        );
-    }
-
-    public function test_additional_accepted_papers_are_charged_correctly(): void
-    {
-        $participant = $this->createParticipant();
-
-        $this->createSubmission(
-            $participant,
-            'oral',
-            0
-        );
-
-        $this->createSubmission(
-            $participant,
-            'oral',
-            1
-        );
-
-        $this->createSubmission(
-            $participant,
-            'oral',
-            2
-        );
-
-        $service = app(PaymentCalculationService::class);
-
-        $result = $service->calculate($participant->fresh());
-
-        $this->assertSame(
-            3,
-            $result['accepted_papers']
-        );
-
-        $this->assertSame(
-            2,
-            $result['additional_papers']
-        );
-
-        $this->assertSame(
-            300000.0,
-            $result['additional_amount']
-        );
-
-        $this->assertSame(
-            650000.0,
-            $result['total_amount']
-        );
-    }
-
-    public function test_verified_payment_reduces_outstanding_amount(): void
-    {
-        $participant = $this->createParticipant('poster');
-
-        $this->createSubmission(
-            $participant,
-            'poster'
-        );
+        $participant = $this->createParticipant($registrationType);
 
         Payment::create([
             'participant_id' => $participant->id,
-            'payment_method_id' => $this->paymentMethod->id,
-            'payment_code' => 'PAY-TEST-' . strtoupper(
-                substr(
-                    md5(
-                        $participant->id . '-verified'
-                    ),
-                    0,
-                    8
-                )
-            ),
+            'payment_method_id' => $paymentMethod->id,
+            'payment_code' => 'PAY-TEST-' . strtoupper(fake()->unique()->bothify('######')),
             'amount' => 250000,
             'status' => 'verified',
             'paid_at' => now(),
             'verified_at' => now(),
         ]);
 
-        $service = app(PaymentCalculationService::class);
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant->fresh());
 
-        $result = $service->calculate($participant->fresh());
-
-        $this->assertSame(
-            250000.0,
-            $result['total_amount']
-        );
-
-        $this->assertSame(
-            250000.0,
-            $result['verified_payment_amount']
-        );
-
-        $this->assertEquals(
-            0.0,
-            $result['outstanding_amount']
-        );
+        $this->assertSame(250000.0, $result['total_amount']);
+        $this->assertSame(250000.0, $result['verified_payment_amount']);
+        $this->assertSame(0.0, $result['outstanding_amount']);
     }
 
     public function test_outstanding_amount_never_becomes_negative(): void
     {
-        $participant = $this->createParticipant('poster');
+        $paymentMethod = ConferencePaymentMethod::create([
+            'conference_id' => $this->conference->id,
+            'type' => 'bank_transfer',
+            'name' => 'Bank Transfer',
+            'provider' => 'BRI',
+            'account_number' => '1234567890',
+            'account_name' => 'ICON 2026',
+            'currency' => 'IDR',
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
 
-        $this->createSubmission(
-            $participant,
-            'poster'
+        $registrationType = $this->createRegistrationType(
+            'Peserta Seminar Umum',
+            'SEMINAR-UMUM',
+            'participant',
+            75000
         );
+
+        $participant = $this->createParticipant($registrationType);
 
         Payment::create([
             'participant_id' => $participant->id,
-            'payment_method_id' => $this->paymentMethod->id,
-            'payment_code' => 'PAY-TEST-' . strtoupper(
-                substr(
-                    md5(
-                        $participant->id . '-overpayment'
-                    ),
-                    0,
-                    8
-                )
-            ),
-            'amount' => 300000,
+            'payment_method_id' => $paymentMethod->id,
+            'payment_code' => 'PAY-TEST-' . strtoupper(fake()->unique()->bothify('######')),
+            'amount' => 100000,
             'status' => 'verified',
             'paid_at' => now(),
             'verified_at' => now(),
         ]);
 
-        $service = app(PaymentCalculationService::class);
+        $result = app(PaymentCalculationService::class)
+            ->calculate($participant->fresh());
 
-        $result = $service->calculate($participant->fresh());
-
-        $this->assertSame(
-            250000.0,
-            $result['total_amount']
-        );
-
-        $this->assertSame(
-            300000.0,
-            $result['verified_payment_amount']
-        );
-
-        $this->assertEquals(
-            0.0,
-            $result['outstanding_amount']
-        );
+        $this->assertSame(75000.0, $result['total_amount']);
+        $this->assertSame(100000.0, $result['verified_payment_amount']);
+        $this->assertSame(0.0, $result['outstanding_amount']);
     }
 
-    public function test_new_presenter_registration_can_pay_immediately(): void
+    public function test_immediate_payment_registration_is_payable_while_pending(): void
     {
-        $participant = $this->createParticipant('oral');
+        $registrationType = $this->createRegistrationType(
+            'Presenter Bhamada',
+            'PRESENTER-BHAMADA',
+            'presenter',
+            250000
+        );
 
-        $participant->update([
-            'registration_status' => 'pending',
-        ]);
-
-        $service = app(PaymentCalculationService::class);
+        $participant = $this->createParticipant($registrationType, 'pending');
 
         $this->assertTrue(
-            $service->canPay($participant->fresh())
+            app(PaymentCalculationService::class)->canPay($participant)
         );
     }
 
-    public function test_presenter_with_no_presentation_type_cannot_pay(): void
+    public function test_confirmed_registration_cannot_start_another_payment(): void
     {
-        $participant = $this->createParticipant();
+        $registrationType = $this->createRegistrationType(
+            'Presenter Bhamada',
+            'PRESENTER-BHAMADA',
+            'presenter',
+            250000
+        );
 
-        $participant->update([
-            'presentation_type' => null,
-            'registration_status' => 'pending',
-        ]);
-
-        $service = app(PaymentCalculationService::class);
+        $participant = $this->createParticipant($registrationType, 'confirmed');
 
         $this->assertFalse(
-            $service->canPay($participant->fresh())
+            app(PaymentCalculationService::class)->canPay($participant)
+        );
+    }
+
+    public function test_after_acceptance_payment_timing_is_not_allowed_for_icon_2026(): void
+    {
+        $registrationType = $this->createRegistrationType(
+            'Presenter Legacy',
+            'PRESENTER-LEGACY',
+            'presenter',
+            250000,
+            'IDR',
+            'after_acceptance'
+        );
+
+        $participant = $this->createParticipant($registrationType, 'pending');
+
+        $this->assertFalse(
+            app(PaymentCalculationService::class)->canPay($participant)
         );
     }
 }

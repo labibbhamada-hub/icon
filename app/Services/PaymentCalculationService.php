@@ -7,97 +7,61 @@ use InvalidArgumentException;
 
 class PaymentCalculationService
 {
-    public function acceptedPaperCount(
-        Participant $participant
-    ): int {
+    /**
+     * Count accepted full papers for the participant.
+     *
+     * Kept for backward compatibility with existing callers/tests.
+     * BHAMADA ICON 2026 business rules allow one presenter to submit one paper,
+     * so this value is informational and is not used to add fees.
+     */
+    public function acceptedPaperCount(Participant $participant): int
+    {
         $participant->loadMissing('submissions');
 
-        return $participant
-            ->submissions
+        return $participant->submissions
             ->where('submission_stage', 'full_paper')
             ->where('status', 'accepted')
             ->count();
     }
 
-    public function presentationType(
-        Participant $participant
-    ): ?string {
-        $participant->loadMissing('registrationType');
-
-        if (
-            $participant->registrationType?->category !==
-            'presenter'
-        ) {
-            return null;
-        }
-
-        return $participant->presentation_type;
+    /**
+     * Presentation type is no longer part of the payment calculation.
+     *
+     * Kept as a compatibility method so existing callers do not break while
+     * the legacy Oral/Poster flow is retired.
+     */
+    public function presentationType(Participant $participant): ?string
+    {
+        return null;
     }
 
-    public function presentationPrice(
-        Participant $participant
-    ): ?float {
-        $participant->loadMissing(
-            'registrationType.presentationPrices'
-        );
-
-        if (
-            $participant->registrationType?->category !==
-            'presenter'
-        ) {
-            return null;
-        }
-
-        $presentationType =
-            $this->presentationType(
-                $participant
-            );
-
-        if (!$presentationType) {
-            return null;
-        }
-
-        $price =
-            $participant
-            ->registrationType
-            ->presentationPrices
-            ->firstWhere(
-                'presentation_type',
-                $presentationType
-            );
-
-        if (
-            !$price ||
-            !$price->is_active
-        ) {
-            return null;
-        }
-
-        return (float) $price->fee;
+    /**
+     * Presentation-specific pricing is no longer used.
+     *
+     * Kept as a compatibility method while the legacy pricing table is
+     * retired from the application flow.
+     */
+    public function presentationPrice(Participant $participant): ?float
+    {
+        return null;
     }
 
-    public function verifiedPaymentAmount(
-        Participant $participant
-    ): float {
+    public function verifiedPaymentAmount(Participant $participant): float
+    {
         return (float) $participant
             ->payments()
-            ->where(
-                'status',
-                'verified'
-            )
+            ->where('status', 'verified')
             ->sum('amount');
     }
 
-    public function calculate(
-        Participant $participant
-    ): array {
+    public function calculate(Participant $participant): array
+    {
         $participant->loadMissing([
-            'registrationType.presentationPrices',
+            'registrationType',
             'submissions',
         ]);
 
-        $registrationType =
-            $participant->registrationType;
+        $registrationType = $participant->registrationType;
 
         if (!$registrationType) {
             throw new InvalidArgumentException(
@@ -105,231 +69,76 @@ class PaymentCalculationService
             );
         }
 
-        $presentationType =
-            $this->presentationType(
-                $participant
-            );
-
-        $presentationPrice =
-            $this->presentationPrice(
-                $participant
-            );
-
         /*
         |--------------------------------------------------------------------------
-        | Determine base fee
+        | BHAMADA ICON 2026 payment rule
         |--------------------------------------------------------------------------
         |
-        | Regular participants use the registration type fee.
+        | Payment is based only on the selected registration type fee.
         |
-        | Presenters use the configured presentation price:
-        | Oral / Poster.
-        |
+        | Presenter = 1 presenter + 1 paper + 1 video.
+        | There is no Oral/Poster pricing and no additional-paper fee.
+        |--------------------------------------------------------------------------
         */
 
-        if (
-            $registrationType->category ===
-            'presenter'
-        ) {
-            if (
-                !$presentationType ||
-                $presentationPrice === null
-            ) {
-                throw new InvalidArgumentException(
-                    'Presentation type and pricing have not been configured for this registration.'
-                );
-            }
+        $baseFee = (float) $registrationType->fee;
+        $currency = strtoupper((string) $registrationType->currency);
 
-            $baseFee =
-                $presentationPrice;
-        } else {
-            $baseFee =
-                (float) $registrationType->fee;
-        }
+        $includedPapers = min(1, max(0, (int) $registrationType->included_papers));
+        $acceptedPapers = $this->acceptedPaperCount($participant);
 
-        $includedPapers =
-            (int) $registrationType->included_papers;
+        // Additional papers are not part of the current conference business rule.
+        $additionalPapers = 0;
+        $additionalPaperFee = 0.0;
+        $additionalAmount = 0.0;
 
-        $additionalPaperFee =
-            (float) $registrationType->additional_paper_fee;
-
-        $acceptedPapers =
-            $this->acceptedPaperCount(
-                $participant
-            );
-
-        $additionalPapers =
-            max(
-                0,
-                $acceptedPapers -
-                    $includedPapers
-            );
-
-        $additionalAmount =
-            $additionalPapers *
-            $additionalPaperFee;
-
-        $totalAmount =
-            $baseFee +
-            $additionalAmount;
-
-        $verifiedPaymentAmount =
-            $this->verifiedPaymentAmount(
-                $participant
-            );
-
-        $outstandingAmount =
-            max(
-                0,
-                $totalAmount -
-                    $verifiedPaymentAmount
-            );
+        $totalAmount = $baseFee;
+        $verifiedPaymentAmount = $this->verifiedPaymentAmount($participant);
+        $outstandingAmount = max(
+            0.0,
+            $totalAmount - $verifiedPaymentAmount
+        );
 
         return [
-            'registration_type_id' =>
-            $registrationType->id,
-
-            'registration_type_name' =>
-            $registrationType->name,
-
-            'payment_timing' =>
-            $registrationType->payment_timing,
-
-            'presentation_type' =>
-            $presentationType,
-
-            'presentation_fee' =>
-            $presentationPrice,
-
-            'currency' =>
-            strtoupper(
-                $presentationPrice !== null
-                    ? (
-                        $registrationType
-                        ->presentationPrices
-                        ->firstWhere(
-                            'presentation_type',
-                            $presentationType
-                        )
-                        ?->currency
-                        ?? $registrationType->currency
-                    )
-                    : $registrationType->currency
-            ),
-
-            'base_fee' =>
-            $baseFee,
-
-            'included_papers' =>
-            $includedPapers,
-
-            'accepted_papers' =>
-            $acceptedPapers,
-
-            'additional_papers' =>
-            $additionalPapers,
-
-            'additional_paper_fee' =>
-            $additionalPaperFee,
-
-            'additional_amount' =>
-            $additionalAmount,
-
-            'total_amount' =>
-            $totalAmount,
-
-            'verified_payment_amount' =>
-            $verifiedPaymentAmount,
-
-            'outstanding_amount' =>
-            $outstandingAmount,
+            'registration_type_id' => $registrationType->id,
+            'registration_type_name' => $registrationType->name,
+            'payment_timing' => $registrationType->payment_timing,
+            'presentation_type' => null,
+            'presentation_fee' => null,
+            'currency' => $currency,
+            'base_fee' => $baseFee,
+            'included_papers' => $includedPapers,
+            'accepted_papers' => $acceptedPapers,
+            'additional_papers' => $additionalPapers,
+            'additional_paper_fee' => $additionalPaperFee,
+            'additional_amount' => $additionalAmount,
+            'total_amount' => $totalAmount,
+            'verified_payment_amount' => $verifiedPaymentAmount,
+            'outstanding_amount' => $outstandingAmount,
         ];
     }
 
-    public function outstandingAmount(
-        Participant $participant
-    ): float {
-        $participant->loadMissing([
-            'registrationType.presentationPrices',
-            'submissions',
-        ]);
-
-        $calculation =
-            $this->calculate(
-                $participant
-            );
-
-        return $calculation['outstanding_amount'];
+    public function outstandingAmount(Participant $participant): float
+    {
+        return $this->calculate($participant)['outstanding_amount'];
     }
 
-    public function canPay(
-        Participant $participant
-    ): bool {
-        $participant->loadMissing([
-            'registrationType.presentationPrices',
-            'submissions',
-        ]);
+    public function canPay(Participant $participant): bool
+    {
+        $participant->loadMissing('registrationType');
 
-        $registrationType =
-            $participant->registrationType;
+        $registrationType = $participant->registrationType;
 
         if (!$registrationType) {
             return false;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Presenter
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $registrationType->category ===
-            'presenter'
-        ) {
-            if (
-                $registrationType->payment_timing !==
-                'immediate'
-            ) {
-                return false;
-            }
-
-            if (
-                !$this->presentationType(
-                    $participant
-                )
-            ) {
-                return false;
-            }
-
-            return (
-                $participant->registration_status ===
-                'pending'
-            )
-                && $this->outstandingAmount(
-                    $participant
-                ) > 0;
+        // All ICON 2026 registration payments are due before abstract submission.
+        if ($registrationType->payment_timing !== 'immediate') {
+            return false;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Immediate payment participants
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $registrationType->payment_timing ===
-            'immediate'
-        ) {
-            return (
-                $participant->registration_status ===
-                'pending'
-            )
-                && $this->outstandingAmount(
-                    $participant
-                ) > 0;
-        }
-
-        return false;
+        return $participant->registration_status === 'pending'
+            && $this->outstandingAmount($participant) > 0;
     }
 }
