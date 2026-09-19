@@ -976,7 +976,7 @@ class SubmissionController extends Controller
             );
 
         $participant->load([
-            'registrationType.presentationPrices',
+            'registrationType',
             'submissions',
             'payments',
         ]);
@@ -1038,13 +1038,12 @@ class SubmissionController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Presentation Details Check
+        | Video Submission Check
         |--------------------------------------------------------------------------
         */
 
         if (
-            empty($submission->presentation_type)
-            || empty($submission->presentation_mode)
+            empty($submission->video_url)
             || empty($submission->presenter_author_id)
         ) {
             return redirect()
@@ -1054,7 +1053,7 @@ class SubmissionController extends Controller
                 )
                 ->with(
                     'error',
-                    'Please complete the presentation details before submitting the camera-ready paper.'
+                    'Please complete the presentation video submission before submitting the camera-ready paper.'
                 );
         }
 
@@ -1105,7 +1104,7 @@ class SubmissionController extends Controller
             );
 
         $participant->load([
-            'registrationType.presentationPrices',
+            'registrationType',
             'submissions',
             'payments',
         ]);
@@ -1162,13 +1161,12 @@ class SubmissionController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Presentation Details Check
+        | Video Submission Check
         |--------------------------------------------------------------------------
         */
 
         if (
-            empty($submission->presentation_type)
-            || empty($submission->presentation_mode)
+            empty($submission->video_url)
             || empty($submission->presenter_author_id)
         ) {
             return redirect()
@@ -1178,7 +1176,7 @@ class SubmissionController extends Controller
                 )
                 ->with(
                     'error',
-                    'Please complete the presentation details before submitting the camera-ready paper.'
+                    'Please complete the presentation video submission before submitting the camera-ready paper.'
                 );
         }
 

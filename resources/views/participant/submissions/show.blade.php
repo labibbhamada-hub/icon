@@ -232,7 +232,7 @@
                 {{-- Full Paper Accepted --}}
                 @if ($submission->submission_stage === 'full_paper' && $submission->status === 'accepted')
 
-                    @if (!$submission->presentation_completed)
+                    @if (!$submission->video_url)
                         <div class="alert alert-success rounded-0 mb-2">
 
                             <div class="d-flex justify-content-between align-items-center gap-3">
@@ -244,16 +244,16 @@
                                     </strong>
 
                                     <div class="small">
-                                        Your full paper has been accepted. Please complete your presentation details before
-                                        proceeding to the next stage.
+                                        Your full paper has been accepted. Please submit your presentation video using your
+                                        own Google Drive link.
                                     </div>
 
                                 </div>
 
-                                <a href="{{ route('participant.submissions.presentation.edit', $submission) }}"
+                                <a href="{{ route('participant.submissions.video.edit', $submission) }}"
                                     class="btn btn-primary btn-sm rounded-0 text-nowrap">
-                                    <i class="bi bi-easel2 me-1"></i>
-                                    Presentation Details
+                                    <i class="bi bi-camera-video me-1"></i>
+                                    Submit Presentation Video
                                 </a>
 
                             </div>

@@ -18,6 +18,8 @@ class Submission extends Model
         'paper_file',
         'revised_file',
         'camera_ready_file',
+        'video_url',
+        'video_submitted_at',
         'camera_ready_correction_reason',
         'status',
         'presentation_type',
@@ -29,6 +31,7 @@ class Submission extends Model
 
     protected $casts = [
         'submitted_at' => 'datetime',
+        'video_submitted_at' => 'datetime',
         'presentation_completed' => 'boolean',
     ];
 

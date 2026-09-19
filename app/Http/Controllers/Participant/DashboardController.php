@@ -18,7 +18,7 @@ class DashboardController extends Controller
     ) {
         $participants = Participant::with([
             'conference.setting',
-            'registrationType.presentationPrices',
+            'registrationType',
             'submissions.topic',
             'payments',
         ])
@@ -160,21 +160,15 @@ class DashboardController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Presenter Payment Calculation
+            | Payment Calculation
             |--------------------------------------------------------------------------
+            |
+            | Registration fee is determined directly from the registration type.
+            | This applies to both participants and presenters.
+            |
             */
 
-            if (
-                $isPresenter
-                && $participant->presentation_type
-                && $participant->registrationType
-                ->presentationPrices
-                ->contains(function ($price) use ($participant) {
-                    return $price->presentation_type ===
-                        $participant->presentation_type
-                        && $price->is_active;
-                })
-            ) {
+            if ($participant->registrationType) {
                 $paymentCalculation =
                     $paymentCalculationService
                     ->calculate(
@@ -420,87 +414,41 @@ class DashboardController extends Controller
                         }
 
                         /*
-    |--------------------------------------------------------------------------
-    | Full Paper Accepted
-    |--------------------------------------------------------------------------
-    */
+                        |--------------------------------------------------------------------------
+                        | Full Paper Accepted
+                        |--------------------------------------------------------------------------
+                        */
 
                         if ($submission->submission_stage !== 'full_paper') {
                             break;
                         }
 
-                        $presentationComplete =
-                            !empty($submission->presentation_type)
-                            && !empty($submission->presentation_mode)
-                            && !empty($submission->presenter_author_id);
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Presentation Video
+                        |--------------------------------------------------------------------------
+                        */
 
-                        if (!$presentationComplete) {
+                        if (!$submission->video_url) {
                             $candidate = [
                                 'priority' => 3,
                                 'type' => 'success',
-                                'icon' => 'bi-easel',
-                                'title' => 'Complete Presentation Details',
-                                'description' => 'Your full paper has been accepted. Please complete your presentation details before proceeding to payment.',
-                                'button' => 'Presentation Details',
+                                'icon' => 'bi-camera-video',
+                                'title' => 'Submit Presentation Video',
+                                'description' => 'Your full paper has been accepted. Please submit your presentation video using your own Google Drive link.',
+                                'button' => 'Submit Presentation Video',
                                 'route' => route(
-                                    'participant.submissions.presentation.edit',
+                                    'participant.submissions.video.edit',
                                     $submission
                                 ),
                             ];
-                        } elseif (
-                            $hasRejectedPayment
-                            && !$hasPendingPayment
-                            && $paymentCalculation
-                            && $paymentCalculation['outstanding_amount'] > 0
-                        ) {
-                            $candidate = [
-                                'priority' => 1,
-                                'type' => 'danger',
-                                'icon' => 'bi-exclamation-circle',
-                                'title' => 'Payment Rejected',
-                                'description' => 'Your latest payment requires attention. Please review the payment information and submit a new proof.',
-                                'button' => 'Review Payment',
-                                'route' => route(
-                                    'participant.payments.index'
-                                ),
-                            ];
-                        } elseif ($hasPendingPayment) {
-                            $candidate = [
-                                'priority' => 4,
-                                'type' => 'warning',
-                                'icon' => 'bi-hourglass-split',
-                                'title' => 'Payment Verification',
-                                'description' => 'Your payment proof has been submitted and is waiting for administrator verification.',
-                                'button' => 'View Payment',
-                                'route' => route(
-                                    'participant.payments.index'
-                                ),
-                            ];
-                        } elseif (
-                            $paymentCalculation
-                            && $paymentCalculation['outstanding_amount'] > 0
-                        ) {
-                            $candidate = [
-                                'priority' => 4,
-                                'type' => 'warning',
-                                'icon' => 'bi-credit-card',
-                                'title' => 'Payment Required',
-                                'description' => 'Your presentation details are complete. Please complete the remaining payment for your accepted papers.',
-                                'button' => 'Submit Payment',
-                                'route' => route(
-                                    'participant.payments.create'
-                                ),
-                            ];
-                        } elseif (
-                            $paymentCalculation
-                            && $paymentCalculation['outstanding_amount'] <= 0
-                        ) {
+                        } else {
                             $candidate = [
                                 'priority' => 5,
                                 'type' => 'info',
                                 'icon' => 'bi-file-earmark-check',
                                 'title' => 'Submit Camera-Ready Paper',
-                                'description' => 'Your paper, presentation details, and payment are complete. Please upload the final camera-ready version of your paper.',
+                                'description' => 'Your presentation video has been submitted. Please upload the final camera-ready version of your paper.',
                                 'button' => 'Upload Camera Ready',
                                 'route' => route(
                                     'participant.submissions.camera-ready',

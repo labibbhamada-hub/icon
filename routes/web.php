@@ -132,8 +132,9 @@ Route::middleware(['auth', 'role:participant', 'verified'])
 
         Route::get('/submissions/{submission}/loa', [App\Http\Controllers\Participant\SubmissionController::class, 'loa'])->name('submissions.loa');
         Route::get('/submissions/{submission}/loa/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadLoa'])->name('submissions.loa.download');
-        Route::get('/submissions/{submission}/presentation', [App\Http\Controllers\Participant\PresentationController::class, 'edit'])->name('submissions.presentation.edit');
-        Route::put('/submissions/{submission}/presentation', [App\Http\Controllers\Participant\PresentationController::class, 'update'])->name('submissions.presentation.update');
+
+        Route::get('/submissions/{submission}/video', [App\Http\Controllers\Participant\VideoSubmissionController::class, 'edit'])->name('submissions.video.edit');
+        Route::put('/submissions/{submission}/video', [App\Http\Controllers\Participant\VideoSubmissionController::class, 'update'])->name('submissions.video.update');
 
         Route::get('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'revision'])->name('submissions.revision');
         Route::post('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadRevision'])->name('submissions.revision.upload');

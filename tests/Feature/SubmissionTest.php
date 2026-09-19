@@ -12,7 +12,8 @@ use App\Models\Participant;
 use App\Models\ConferenceSetting;
 use App\Models\ConferenceAttendanceOption;
 use App\Models\ConferenceRegistrationType;
-use App\Models\ConferencePresentationPrice;
+use App\Models\ConferencePaymentMethod;
+use App\Models\Payment;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
@@ -95,12 +96,12 @@ class SubmissionTest extends TestCase
     private function createPresenterRegistrationType(
         Conference $conference
     ): ConferenceRegistrationType {
-        $registrationType = ConferenceRegistrationType::create([
+        return ConferenceRegistrationType::create([
             'conference_id' => $conference->id,
             'name' => 'Presenter',
             'code' => 'PRESENTER-TEST',
             'category' => 'presenter',
-            'fee' => 0,
+            'fee' => 250000,
             'currency' => 'IDR',
             'included_papers' => 1,
             'additional_paper_fee' => 0,
@@ -108,24 +109,6 @@ class SubmissionTest extends TestCase
             'is_active' => true,
             'sort_order' => 1,
         ]);
-
-        ConferencePresentationPrice::create([
-            'registration_type_id' => $registrationType->id,
-            'presentation_type' => 'oral',
-            'fee' => 0,
-            'currency' => 'IDR',
-            'is_active' => true,
-        ]);
-
-        ConferencePresentationPrice::create([
-            'registration_type_id' => $registrationType->id,
-            'presentation_type' => 'poster',
-            'fee' => 0,
-            'currency' => 'IDR',
-            'is_active' => true,
-        ]);
-
-        return $registrationType;
     }
 
     private function createTopic(
@@ -1272,7 +1255,7 @@ class SubmissionTest extends TestCase
             'name' => 'Presenter',
             'code' => 'PRESENTER-TEST',
             'category' => 'presenter',
-            'fee' => 0,
+            'fee' => 250000,
             'currency' => 'IDR',
             'included_papers' => 1,
             'additional_paper_fee' => 0,
@@ -1284,15 +1267,6 @@ class SubmissionTest extends TestCase
 
         $participant->update([
             'registration_type_id' => $registrationType->id,
-            'presentation_type' => 'oral',
-        ]);
-
-        ConferencePresentationPrice::create([
-            'registration_type_id' => $registrationType->id,
-            'presentation_type' => 'oral',
-            'fee' => 0,
-            'currency' => 'IDR',
-            'is_active' => true,
         ]);
 
         $topic = $this->createTopic($conference);
@@ -1306,8 +1280,7 @@ class SubmissionTest extends TestCase
             [
                 'submission_stage' => 'full_paper',
                 'status' => 'camera_ready',
-                'presentation_type' => 'oral',
-                'presentation_mode' => 'online',
+                'video_url' => 'https://drive.google.com/file/d/test-video-id/view',
                 'camera_ready_file' => 'submissions/camera-ready/old-camera-ready.pdf',
             ]
         );
@@ -1325,15 +1298,40 @@ class SubmissionTest extends TestCase
             'presenter_author_id' => $author->id,
         ]);
 
-        Storage::disk('local')->put(
-            'submissions/camera-ready/old-camera-ready.pdf',
-            'OLD CAMERA READY'
-        );
-
         $admin = User::factory()->create([
             'role' => 'admin',
             'status' => 'active',
         ]);
+
+        $paymentMethod = ConferencePaymentMethod::create([
+            'conference_id' => $conference->id,
+            'type' => 'bank_transfer',
+            'name' => 'Bank Transfer',
+            'provider' => 'BRI',
+            'account_number' => '1234567890',
+            'account_name' => 'Test Conference',
+            'currency' => 'IDR',
+            'instructions' => 'Transfer to the test account.',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        Payment::create([
+            'participant_id' => $participant->id,
+            'payment_method_id' => $paymentMethod->id,
+            'payment_code' => 'PAY-TEST-CAMERA-READY',
+            'amount' => 250000,
+            'proof_file' => 'payments/proofs/test-camera-ready.pdf',
+            'status' => 'verified',
+            'paid_at' => now(),
+            'verified_at' => now(),
+            'verified_by' => $admin->id,
+        ]);
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/old-camera-ready.pdf',
+            'OLD CAMERA READY'
+        );
 
         $this->actingAs($admin)
             ->patch(
@@ -1447,7 +1445,6 @@ class SubmissionTest extends TestCase
             'email' => $user->email,
             'country' => 'Indonesia',
             'attendance_type' => 'online',
-            'presentation_type' => 'oral',
             'participant_type' => 'presenter',
             'registration_status' => 'pending',
             'registered_at' => now(),
@@ -1499,7 +1496,6 @@ class SubmissionTest extends TestCase
             'email' => $user->email,
             'country' => 'Indonesia',
             'attendance_type' => 'online',
-            'presentation_type' => 'oral',
             'participant_type' => 'presenter',
             'registration_status' => 'pending',
             'registered_at' => now(),
@@ -1562,7 +1558,6 @@ class SubmissionTest extends TestCase
             'department' => 'Test Department',
             'attendance_type' => 'online',
             'participant_type' => 'presenter',
-            'presentation_type' => 'oral',
             'registration_status' => 'pending',
             'registered_at' => now(),
         ]);
@@ -1609,7 +1604,6 @@ class SubmissionTest extends TestCase
             'department' => 'Test Department',
             'attendance_type' => 'online',
             'participant_type' => 'presenter',
-            'presentation_type' => 'oral',
             'registration_status' => 'pending',
             'registered_at' => now(),
         ]);
@@ -1645,7 +1639,7 @@ class SubmissionTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_pending_presenter_cannot_open_presentation_form(): void
+    public function test_pending_presenter_cannot_open_video_submission_form(): void
     {
         $conference = $this->createOpenConference();
 
@@ -1655,13 +1649,12 @@ class SubmissionTest extends TestCase
             'user_id' => $user->id,
             'conference_id' => $conference->id,
             'registration_type_id' => $this->createPresenterRegistrationType($conference)->id,
-            'registration_number' => 'REG-PENDING-PRESENTATION',
+            'registration_number' => 'REG-PENDING-VIDEO',
             'full_name' => 'Pending Presenter',
             'email' => $user->email,
             'institution' => 'Test Institution',
             'participant_type' => 'presenter',
             'attendance_type' => 'online',
-            'presentation_type' => 'oral',
             'registration_status' => 'pending',
             'registered_at' => now(),
         ]);
@@ -1681,14 +1674,14 @@ class SubmissionTest extends TestCase
         $this->actingAs($user)
             ->get(
                 route(
-                    'participant.submissions.presentation.edit',
+                    'participant.submissions.video.edit',
                     $submission
                 )
             )
             ->assertNotFound();
     }
 
-    public function test_pending_presenter_cannot_update_presentation(): void
+    public function test_pending_presenter_cannot_update_video_submission(): void
     {
         $conference = $this->createOpenConference();
 
@@ -1701,13 +1694,12 @@ class SubmissionTest extends TestCase
             'user_id' => $user->id,
             'conference_id' => $conference->id,
             'registration_type_id' => $registrationType->id,
-            'registration_number' => 'REG-PENDING-PRESENTATION-UPDATE',
+            'registration_number' => 'REG-PENDING-VIDEO-UPDATE',
             'full_name' => 'Pending Presenter',
             'email' => $user->email,
             'institution' => 'Test Institution',
             'participant_type' => 'presenter',
             'attendance_type' => 'online',
-            'presentation_type' => 'oral',
             'registration_status' => 'pending',
             'registered_at' => now(),
         ]);
@@ -1724,22 +1716,31 @@ class SubmissionTest extends TestCase
             ]
         );
 
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => 'Pending Presenter',
+            'email' => $user->email,
+            'institution' => 'Test University',
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
         $this->actingAs($user)
             ->put(
                 route(
-                    'participant.submissions.presentation.update',
+                    'participant.submissions.video.update',
                     $submission
                 ),
                 [
-                    'presentation_type' => 'oral',
-                    'presentation_mode' => 'online',
-                    'presenter_author_id' => 1,
+                    'presenter_author_id' => $author->id,
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
                 ]
             )
             ->assertNotFound();
     }
 
-    public function test_presentation_type_uses_registration_type(): void
+    public function test_presenter_can_submit_video_link_with_selected_presenter(): void
     {
         $conference = $this->createOpenConference();
 
@@ -1752,13 +1753,12 @@ class SubmissionTest extends TestCase
             'user_id' => $user->id,
             'conference_id' => $conference->id,
             'registration_type_id' => $registrationType->id,
-            'registration_number' => 'REG-PRESENTER-TYPE',
+            'registration_number' => 'REG-VIDEO-SUBMISSION',
             'full_name' => 'Presenter Test',
             'email' => $user->email,
             'institution' => 'Test Institution',
             'participant_type' => 'presenter',
             'attendance_type' => 'online',
-            'presentation_type' => 'oral',
             'registration_status' => 'confirmed',
             'registered_at' => now(),
         ]);
@@ -1772,7 +1772,88 @@ class SubmissionTest extends TestCase
             [
                 'submission_stage' => 'full_paper',
                 'status' => 'accepted',
-                'presentation_type' => 'poster',
+            ]
+        );
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => 'Presenter Test',
+            'email' => $participant->email,
+            'institution' => 'Test University',
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $videoUrl =
+            'https://drive.google.com/file/d/test-video-id/view';
+
+        $this->actingAs($user)
+            ->put(
+                route(
+                    'participant.submissions.video.update',
+                    $submission
+                ),
+                [
+                    'presenter_author_id' => $author->id,
+                    'video_url' => $videoUrl,
+                ]
+            )
+            ->assertRedirect(
+                route(
+                    'participant.submissions.show',
+                    $submission
+                )
+            );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            $author->id,
+            $submission->presenter_author_id
+        );
+
+        $this->assertSame(
+            $videoUrl,
+            $submission->video_url
+        );
+
+        $this->assertNotNull(
+            $submission->video_submitted_at
+        );
+    }
+
+    public function test_video_submission_rejects_non_google_drive_url(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $user = User::factory()->create();
+
+        $registrationType =
+            $this->createPresenterRegistrationType($conference);
+
+        $participant = Participant::create([
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => 'REG-VIDEO-INVALID-URL',
+            'full_name' => 'Presenter Test',
+            'email' => $user->email,
+            'institution' => 'Test Institution',
+            'participant_type' => 'presenter',
+            'attendance_type' => 'online',
+            'registration_status' => 'confirmed',
+            'registered_at' => now(),
+        ]);
+
+        $topic = $this->createTopic($conference);
+
+        $submission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic,
+            [
+                'submission_stage' => 'full_paper',
+                'status' => 'accepted',
             ]
         );
 
@@ -1788,22 +1869,111 @@ class SubmissionTest extends TestCase
         $this->actingAs($user)
             ->put(
                 route(
-                    'participant.submissions.presentation.update',
+                    'participant.submissions.video.update',
                     $submission
                 ),
                 [
-                    'presentation_type' => 'poster',
-                    'presentation_mode' => 'online',
                     'presenter_author_id' => $author->id,
+                    'video_url' => 'https://example.com/video.mp4',
                 ]
             )
-            ->assertRedirect();
+            ->assertSessionHasErrors([
+                'video_url',
+            ]);
 
         $submission->refresh();
 
-        $this->assertSame(
-            'oral',
-            $submission->presentation_type
+        $this->assertNull(
+            $submission->video_url
+        );
+
+        $this->assertNull(
+            $submission->video_submitted_at
+        );
+    }
+
+    public function test_video_submission_rejects_presenter_from_another_submission(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $user = User::factory()->create();
+
+        $registrationType =
+            $this->createPresenterRegistrationType($conference);
+
+        $participant = Participant::create([
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => 'REG-VIDEO-WRONG-PRESENTER',
+            'full_name' => 'Presenter Test',
+            'email' => $user->email,
+            'institution' => 'Test Institution',
+            'participant_type' => 'presenter',
+            'attendance_type' => 'online',
+            'registration_status' => 'confirmed',
+            'registered_at' => now(),
+        ]);
+
+        $topic = $this->createTopic($conference);
+
+        $submission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic,
+            [
+                'submission_stage' => 'full_paper',
+                'status' => 'accepted',
+            ]
+        );
+
+        $otherSubmission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic,
+            [
+                'submission_stage' => 'full_paper',
+                'status' => 'accepted',
+            ]
+        );
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $otherSubmission->id,
+            'name' => 'Presenter From Another Paper',
+            'email' => $participant->email,
+            'institution' => 'Test University',
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $this->actingAs($user)
+            ->put(
+                route(
+                    'participant.submissions.video.update',
+                    $submission
+                ),
+                [
+                    'presenter_author_id' => $author->id,
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
+                ]
+            )
+            ->assertSessionHasErrors([
+                'presenter_author_id',
+            ]);
+
+        $submission->refresh();
+
+        $this->assertNull(
+            $submission->video_url
+        );
+
+        $this->assertNull(
+            $submission->video_submitted_at
+        );
+
+        $this->assertNull(
+            $submission->presenter_author_id
         );
     }
 }
