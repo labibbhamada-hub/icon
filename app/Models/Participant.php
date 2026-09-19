@@ -23,7 +23,6 @@ class Participant extends Model
         'city',
         'participant_type',
         'attendance_type',
-        'presentation_type',
         'registration_status',
         'notes',
         'registered_at',

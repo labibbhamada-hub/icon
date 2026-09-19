@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Models\Conference;
 use App\Models\ConferencePaymentMethod;
-use App\Models\ConferencePresentationPrice;
 use App\Models\ConferenceRegistrationType;
 use App\Models\Participant;
 use App\Models\Payment;
@@ -121,33 +120,12 @@ class PaymentCalculationServiceTest extends TestCase
 
         $participant = $this->createParticipant($registrationType);
 
-        // Legacy Oral/Poster pricing must not affect the current calculation.
-        ConferencePresentationPrice::create([
-            'registration_type_id' => $registrationType->id,
-            'presentation_type' => 'oral',
-            'fee' => 350000,
-            'currency' => 'IDR',
-            'is_active' => true,
-            'sort_order' => 1,
-        ]);
-
-        ConferencePresentationPrice::create([
-            'registration_type_id' => $registrationType->id,
-            'presentation_type' => 'poster',
-            'fee' => 250000,
-            'currency' => 'IDR',
-            'is_active' => true,
-            'sort_order' => 2,
-        ]);
-
         $result = app(PaymentCalculationService::class)
             ->calculate($participant->fresh());
 
         $this->assertSame(250000.0, $result['base_fee']);
         $this->assertSame(250000.0, $result['total_amount']);
         $this->assertSame('IDR', $result['currency']);
-        $this->assertNull($result['presentation_type']);
-        $this->assertNull($result['presentation_fee']);
     }
 
     public function test_presenter_luar_bhamada_fee_is_400000_idr(): void

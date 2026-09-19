@@ -415,16 +415,20 @@
                     @endif
 
 
-                    @if ($review->submission->presentation_type)
+                    @if ($review->submission->presenterAuthor)
                         <span class="badge text-bg-secondary rounded-0">
-                            {{ ucfirst($review->submission->presentation_type) }}
+                            Presenter:
+                            {{ $review->submission->presenterAuthor->name }}
                         </span>
                     @endif
 
-
-                    @if ($review->submission->presentation_mode)
-                        <span class="badge text-bg-secondary rounded-0">
-                            {{ ucfirst($review->submission->presentation_mode) }}
+                    @if ($review->submission->video_url)
+                        <span class="badge text-bg-success rounded-0">
+                            Video Submitted
+                        </span>
+                    @else
+                        <span class="badge text-bg-warning rounded-0">
+                            Video Not Submitted
                         </span>
                     @endif
 

@@ -258,26 +258,51 @@
 
                         <div class="col-md-4">
                             <strong>
-                                Presentation
+                                Presenter
                             </strong>
                         </div>
 
                         <div class="col-md-8">
 
-                            @if ($submission->presentation_type)
+                            @if ($submission->presenterAuthor)
                                 <strong>
-                                    {{ ucfirst($submission->presentation_type) }}
+                                    {{ $submission->presenterAuthor->name }}
                                 </strong>
                             @else
                                 <span class="text-muted">
-                                    Not set
+                                    Presenter not set
                                 </span>
                             @endif
 
-                            @if ($submission->presentation_mode)
-                                <small class="text-muted ms-2">
-                                    {{ ucfirst($submission->presentation_mode) }}
-                                </small>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-2">
+
+                        <div class="col-md-4">
+                            <strong>
+                                Presentation Video
+                            </strong>
+                        </div>
+
+                        <div class="col-md-8">
+
+                            @if ($submission->video_url)
+                                <a href="{{ $submission->video_url }}" target="_blank" rel="noopener noreferrer">
+                                    Open Google Drive Video
+                                </a>
+
+                                @if ($submission->video_submitted_at)
+                                    <div class="small text-muted mt-1">
+                                        Submitted:
+                                        {{ $submission->video_submitted_at->format('d M Y H:i') }}
+                                    </div>
+                                @endif
+                            @else
+                                <span class="text-muted">
+                                    Video not submitted
+                                </span>
                             @endif
 
                         </div>
@@ -1146,10 +1171,10 @@
 @push('scripts')
     <script>
         /*
-                                                |--------------------------------------------------------------------------
-                                                | Remove Reviewer
-                                                |--------------------------------------------------------------------------
-                                                */
+                                                    |--------------------------------------------------------------------------
+                                                    | Remove Reviewer
+                                                    |--------------------------------------------------------------------------
+                                                    */
 
         document
             .querySelectorAll('.delete-review-form')

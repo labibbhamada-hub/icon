@@ -39,7 +39,6 @@ class MigrationTest extends TestCase
             'conference_registration_types',
             'conference_attendance_options',
             'conference_payment_methods',
-            'conference_presentation_prices',
             'conference_online_meetings',
         ];
 

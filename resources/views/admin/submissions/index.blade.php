@@ -103,7 +103,7 @@
                             </th>
 
                             <th>
-                                Presentation
+                                Presenter / Video
                             </th>
 
                             <th>
@@ -227,26 +227,27 @@
                                 </td>
 
 
-                                {{-- Presentation --}}
+                                {{-- Presenter / Video --}}
                                 <td class="align-top">
 
-                                    @if ($submission->presentation_type)
+                                    @if ($submission->presenterAuthor)
                                         <div class="fw-semibold">
-
-                                            {{ ucfirst($submission->presentation_type) }}
-
+                                            {{ $submission->presenterAuthor->name }}
                                         </div>
                                     @else
                                         <div class="text-muted">
-                                            Not set
+                                            Presenter not set
                                         </div>
                                     @endif
 
-                                    @if ($submission->presentation_mode)
+                                    @if ($submission->video_url)
+                                        <a href="{{ $submission->video_url }}" target="_blank" rel="noopener noreferrer"
+                                            class="small">
+                                            Open Video
+                                        </a>
+                                    @else
                                         <small class="text-muted d-block">
-
-                                            {{ ucfirst($submission->presentation_mode) }}
-
+                                            Video not submitted
                                         </small>
                                     @endif
 

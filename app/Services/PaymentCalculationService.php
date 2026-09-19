@@ -103,8 +103,6 @@ class PaymentCalculationService
             'registration_type_id' => $registrationType->id,
             'registration_type_name' => $registrationType->name,
             'payment_timing' => $registrationType->payment_timing,
-            'presentation_type' => null,
-            'presentation_fee' => null,
             'currency' => $currency,
             'base_fee' => $baseFee,
             'included_papers' => $includedPapers,

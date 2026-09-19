@@ -22,17 +22,13 @@ class Submission extends Model
         'video_submitted_at',
         'camera_ready_correction_reason',
         'status',
-        'presentation_type',
-        'presentation_mode',
         'presenter_author_id',
-        'presentation_completed',
         'submitted_at',
     ];
 
     protected $casts = [
         'submitted_at' => 'datetime',
         'video_submitted_at' => 'datetime',
-        'presentation_completed' => 'boolean',
     ];
 
     public function conference()

@@ -30,6 +30,7 @@ class SubmissionController extends Controller
             'conference',
             'participant',
             'topic',
+            'presenterAuthor',
         ])
             ->latest()
             ->paginate(15);
@@ -124,6 +125,7 @@ class SubmissionController extends Controller
             'participant',
             'topic',
             'authors',
+            'presenterAuthor',
             'reviews.reviewer.user',
         ]);
 

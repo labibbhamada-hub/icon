@@ -96,16 +96,4 @@ class Conference extends Model
             ConferenceWhatsappGroup::class
         );
     }
-
-    public function presentationPrices()
-    {
-        return $this->hasManyThrough(
-            ConferencePresentationPrice::class,
-            ConferenceRegistrationType::class,
-            'conference_id',
-            'registration_type_id',
-            'id',
-            'id'
-        )->orderBy('conference_presentation_prices.sort_order');
-    }
 }

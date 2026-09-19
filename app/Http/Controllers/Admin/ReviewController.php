@@ -214,6 +214,7 @@ class ReviewController extends Controller
         $review->load([
             'submission.conference',
             'submission.topic',
+            'submission.presenterAuthor',
             'reviewer.user',
         ]);
 

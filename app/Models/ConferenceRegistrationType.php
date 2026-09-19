@@ -44,14 +44,4 @@ class ConferenceRegistrationType extends Model
             'registration_type_id'
         );
     }
-
-    public function presentationPrices()
-    {
-        return $this->hasMany(
-            ConferencePresentationPrice::class,
-            'registration_type_id'
-        )
-            ->orderBy('sort_order')
-            ->orderBy('presentation_type');
-    }
 }

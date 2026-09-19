@@ -324,7 +324,7 @@ class RegistrationTest extends TestCase
         ]);
     }
 
-    public function test_presenter_registration_does_not_require_presentation_type(): void
+    public function test_presenter_registration_does_not_require_presentation_fields(): void
     {
         $conference = $this->createOpenConference();
 
@@ -360,49 +360,6 @@ class RegistrationTest extends TestCase
             'registration_type_id' => $registrationType->id,
             'participant_type' => 'presenter',
             'registration_status' => 'pending',
-        ]);
-    }
-
-    public function test_legacy_presentation_type_is_not_saved_during_registration(): void
-    {
-        $conference = $this->createOpenConference();
-
-        $registrationType = $this->createPresenterRegistrationType(
-            $conference
-        );
-
-        $user = User::factory()->create([
-            'role' => 'participant',
-            'status' => 'active',
-        ]);
-
-        $response = $this
-            ->actingAs($user)
-            ->post('/participant/registration', [
-                'conference_id' => $conference->id,
-                'registration_type_id' => $registrationType->id,
-                'phone' => '081234567890',
-                'institution' => 'Test University',
-                'department' => 'Test Department',
-                'country' => 'Indonesia',
-                'city' => 'Slawi',
-                'attendance_type' => 'online',
-
-                // Legacy field. It must no longer affect registration.
-                'presentation_type' => 'oral',
-            ]);
-
-        $response->assertRedirect(
-            route('participant.registration.index')
-        );
-
-        $this->assertDatabaseHas('participants', [
-            'user_id' => $user->id,
-            'conference_id' => $conference->id,
-            'registration_type_id' => $registrationType->id,
-            'participant_type' => 'presenter',
-            'registration_status' => 'pending',
-            'presentation_type' => null,
         ]);
     }
 }
