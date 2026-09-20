@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary btn-sm rounded-0"
+            <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary btn-sm rounded-2"
                 title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
@@ -53,9 +53,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-whatsapp me-2"></i>
@@ -65,7 +65,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.conference-whatsapp-groups.edit', $conferenceWhatsappGroup) }}"
-                    class="btn btn-warning btn-sm rounded-0">
+                    class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit WhatsApp Group
                 </a>
@@ -88,11 +88,11 @@
                     <div class="mb-3">
 
                         @if ($conferenceWhatsappGroup->is_active)
-                            <span class="badge text-bg-success rounded-0">
+                            <span class="badge text-bg-success rounded-pill">
                                 Active
                             </span>
                         @else
-                            <span class="badge text-bg-secondary rounded-0">
+                            <span class="badge text-bg-secondary rounded-pill">
                                 Inactive
                             </span>
                         @endif
@@ -178,7 +178,7 @@
                 {{-- WhatsApp Icon --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-0 bg-light text-center p-5 h-100">
+                    <div class="border rounded-3 bg-light text-center p-5 h-100">
 
                         <div class="mb-3">
                             <i class="bi bi-whatsapp display-1 text-muted"></i>
@@ -224,9 +224,9 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to WhatsApp Groups
             </a>

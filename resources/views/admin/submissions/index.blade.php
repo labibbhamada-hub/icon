@@ -42,9 +42,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-file-earmark-text me-2"></i>
@@ -53,12 +53,12 @@
 
             <div class="float-end d-flex gap-1">
 
-                <a href="{{ route('admin.submissions.export') }}" class="btn btn-dark btn-sm rounded-0">
+                <a href="{{ route('admin.submissions.export') }}" class="btn btn-dark btn-sm rounded-2">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
 
-                <a href="{{ route('admin.submissions.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.submissions.create') }}" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-plus-circle me-1"></i>
                     Add Submission
                 </a>
@@ -67,10 +67,9 @@
 
         </div>
 
-
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -130,7 +129,6 @@
 
                                 </td>
 
-
                                 {{-- Submission --}}
                                 <td class="align-top">
 
@@ -149,7 +147,6 @@
                                     @endif
 
                                 </td>
-
 
                                 {{-- Title --}}
                                 <td class="align-top">
@@ -170,7 +167,6 @@
 
                                 </td>
 
-
                                 {{-- Participant --}}
                                 <td class="align-top">
 
@@ -189,7 +185,6 @@
                                     @endif
 
                                 </td>
-
 
                                 {{-- Conference --}}
                                 <td class="align-top">
@@ -210,7 +205,6 @@
 
                                 </td>
 
-
                                 {{-- Topic --}}
                                 <td class="align-top">
 
@@ -225,7 +219,6 @@
                                     @endif
 
                                 </td>
-
 
                                 {{-- Presenter / Video --}}
                                 <td class="align-top">
@@ -253,67 +246,65 @@
 
                                 </td>
 
-
                                 {{-- Status --}}
                                 <td class="align-top">
 
                                     @switch($submission->status)
                                         @case('draft')
-                                            <span class="badge text-bg-secondary rounded-0">
+                                            <span class="badge text-bg-secondary rounded-pill">
                                                 Draft
                                             </span>
                                         @break
 
                                         @case('submitted')
-                                            <span class="badge text-bg-primary rounded-0">
+                                            <span class="badge text-bg-primary rounded-pill">
                                                 Submitted
                                             </span>
                                         @break
 
                                         @case('under_review')
-                                            <span class="badge text-bg-warning rounded-0">
+                                            <span class="badge text-bg-warning rounded-pill">
                                                 Under Review
                                             </span>
                                         @break
 
                                         @case('revision')
-                                            <span class="badge text-bg-warning rounded-0">
+                                            <span class="badge text-bg-warning rounded-pill">
                                                 Revision Required
                                             </span>
                                         @break
 
                                         @case('accepted')
-                                            <span class="badge text-bg-success rounded-0">
+                                            <span class="badge text-bg-success rounded-pill">
                                                 Accepted
                                             </span>
                                         @break
 
                                         @case('rejected')
-                                            <span class="badge text-bg-danger rounded-0">
+                                            <span class="badge text-bg-danger rounded-pill">
                                                 Rejected
                                             </span>
                                         @break
 
                                         @case('camera_ready')
-                                            <span class="badge text-bg-info rounded-0">
+                                            <span class="badge text-bg-info rounded-pill">
                                                 Camera Ready
                                             </span>
                                         @break
 
                                         @case('published')
-                                            <span class="badge text-bg-dark rounded-0">
+                                            <span class="badge text-bg-dark rounded-pill">
                                                 Published
                                             </span>
                                         @break
 
                                         @default
-                                            <span class="badge text-bg-secondary rounded-0">
+                                            <span class="badge text-bg-secondary rounded-pill">
                                                 {{ ucfirst(str_replace('_', ' ', $submission->status)) }}
                                             </span>
                                     @endswitch
 
                                 </td>
-
 
                                 {{-- Action --}}
                                 <td class="align-top">
@@ -321,13 +312,13 @@
                                     <div class="btn-group gap-1">
 
                                         <a href="{{ route('admin.submissions.show', $submission) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View Submission">
+                                            class="btn btn-info btn-sm rounded-2" title="View Submission">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         @if (!in_array($submission->status, ['published']))
                                             <a href="{{ route('admin.submissions.edit', $submission) }}"
-                                                class="btn btn-warning btn-sm rounded-0" title="Edit Submission">
+                                                class="btn btn-warning btn-sm rounded-2" title="Edit Submission">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                         @endif
@@ -339,7 +330,7 @@
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-0"
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-2"
                                                     title="Delete Submission">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -373,7 +364,7 @@
                                             There are no submissions available yet.
                                         </p>
 
-                                        <a href="{{ route('admin.submissions.create') }}" class="btn btn-success rounded-0">
+                                        <a href="{{ route('admin.submissions.create') }}" class="btn btn-success rounded-2">
                                             <i class="bi bi-plus-circle me-1"></i>
                                             Create First Submission
                                         </a>
@@ -391,9 +382,8 @@
 
             </div>
 
-
             @if ($submissions->hasPages())
-                <div class="card-footer">
+                <div class="card-footer rounded-bottom-3">
 
                     {{ $submissions->links() }}
 
@@ -403,7 +393,6 @@
         </div>
 
     @endsection
-
 
     @push('scripts')
         <script>

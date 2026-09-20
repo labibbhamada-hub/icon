@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.payments.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+                <a href="{{ route('admin.payments.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -67,13 +67,13 @@
     <div class="row">
 
         {{-- ============================================================
-            MAIN PAYMENT INFORMATION
-        ============================================================= --}}
+        MAIN PAYMENT INFORMATION
+    ============================================================= --}}
         <div class="col-lg-8">
 
-            <div class="card rounded-0">
+            <div class="card rounded-3 overflow-hidden">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-credit-card me-2"></i>
@@ -90,7 +90,7 @@
                         {{-- Amount --}}
                         <div class="col-md-4">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Payment Amount
@@ -111,7 +111,7 @@
                         {{-- Status --}}
                         <div class="col-md-4">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Payment Status
@@ -120,17 +120,17 @@
                                 <div class="mt-3">
 
                                     @if ($payment->status === 'verified')
-                                        <span class="badge text-bg-success rounded-0 fs-6">
+                                        <span class="badge text-bg-success rounded-pill fs-6">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Verified
                                         </span>
                                     @elseif ($payment->status === 'rejected')
-                                        <span class="badge text-bg-danger rounded-0 fs-6">
+                                        <span class="badge text-bg-danger rounded-pill fs-6">
                                             <i class="bi bi-x-circle me-1"></i>
                                             Rejected
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-0 fs-6">
+                                        <span class="badge text-bg-warning rounded-pill fs-6">
                                             <i class="bi bi-clock me-1"></i>
                                             Pending
                                         </span>
@@ -145,7 +145,7 @@
                         {{-- Payment Method --}}
                         <div class="col-md-4">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Payment Method
@@ -369,15 +369,15 @@
                             <div class="col-md-8">
 
                                 @if ($payment->participant->registration_status === 'confirmed')
-                                    <span class="badge text-bg-success rounded-0">
+                                    <span class="badge text-bg-success rounded-pill">
                                         Confirmed
                                     </span>
                                 @elseif ($payment->participant->registration_status === 'cancelled')
-                                    <span class="badge text-bg-danger rounded-0">
+                                    <span class="badge text-bg-danger rounded-pill">
                                         Cancelled
                                     </span>
                                 @else
-                                    <span class="badge text-bg-warning rounded-0">
+                                    <span class="badge text-bg-warning rounded-pill">
                                         Pending
                                     </span>
                                 @endif
@@ -407,9 +407,9 @@
                 @endif
 
 
-                <div class="card-footer">
+                <div class="card-footer rounded-bottom-3">
 
-                    <a href="{{ route('admin.payments.index') }}" class="btn btn-secondary btn-sm rounded-0">
+                    <a href="{{ route('admin.payments.index') }}" class="btn btn-secondary btn-sm rounded-2">
                         <i class="bi bi-arrow-left me-1"></i>
                         Back to Payments
                     </a>
@@ -422,14 +422,14 @@
 
 
         {{-- ============================================================
-            PAYMENT PROOF + ACTION
-        ============================================================= --}}
+        PAYMENT PROOF + ACTION
+    ============================================================= --}}
         <div class="col-lg-4">
 
             {{-- Payment Proof --}}
-            <div class="card rounded-0 mb-3">
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-file-earmark-check me-2"></i>
@@ -448,7 +448,7 @@
                         </div>
 
                         <a href="{{ route('admin.payments.proof.download', $payment) }}"
-                            class="btn btn-outline-danger rounded-0 w-100">
+                            class="btn btn-outline-danger rounded-2 w-100">
                             <i class="bi bi-download me-1"></i>
                             Download Payment Proof
                         </a>
@@ -468,9 +468,9 @@
 
 
             {{-- Verification --}}
-            <div class="card rounded-0">
+            <div class="card rounded-3 overflow-hidden">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-shield-check me-2"></i>
@@ -482,7 +482,7 @@
                 <div class="card-body">
 
                     @if ($payment->status === 'pending')
-                        <div class="alert alert-warning rounded-0">
+                        <div class="alert alert-warning rounded-3">
 
                             <i class="bi bi-exclamation-circle me-2"></i>
 
@@ -496,7 +496,7 @@
                             @csrf
                             @method('PATCH')
 
-                            <button type="submit" class="btn btn-success rounded-0 w-100">
+                            <button type="submit" class="btn btn-success rounded-2 w-100">
                                 <i class="bi bi-check-circle me-1"></i>
                                 Verify Payment
                             </button>
@@ -509,14 +509,14 @@
                             @csrf
                             @method('PATCH')
 
-                            <button type="submit" class="btn btn-danger rounded-0 w-100">
+                            <button type="submit" class="btn btn-danger rounded-2 w-100">
                                 <i class="bi bi-x-circle me-1"></i>
                                 Reject Payment
                             </button>
 
                         </form>
                     @elseif ($payment->status === 'verified')
-                        <div class="alert alert-success rounded-0 mb-0">
+                        <div class="alert alert-success rounded-3 mb-0">
 
                             <i class="bi bi-check-circle me-2"></i>
 
@@ -524,7 +524,7 @@
 
                         </div>
                     @elseif ($payment->status === 'rejected')
-                        <div class="alert alert-danger rounded-0 mb-0">
+                        <div class="alert alert-danger rounded-3 mb-0">
 
                             <i class="bi bi-x-circle me-2"></i>
 
@@ -542,7 +542,6 @@
     </div>
 
 @endsection
-
 
 @push('scripts')
     <script>

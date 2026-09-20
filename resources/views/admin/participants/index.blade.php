@@ -40,9 +40,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-people me-2"></i>
@@ -51,12 +51,12 @@
 
             <div class="float-end d-flex gap-1">
 
-                <a href="{{ route('admin.participants.export') }}" class="btn btn-dark btn-sm rounded-0">
+                <a href="{{ route('admin.participants.export') }}" class="btn btn-dark btn-sm rounded-2">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
 
-                <a href="{{ route('admin.participants.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.participants.create') }}" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-person-plus me-1"></i>
                     Add Participant
                 </a>
@@ -67,7 +67,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -198,7 +198,7 @@
                                         ];
                                     @endphp
 
-                                    <span class="badge text-bg-info rounded-0">
+                                    <span class="badge text-bg-info rounded-pill">
                                         {{ $attendanceTypes[$participant->attendance_type] ?? 'Other' }}
                                     </span>
 
@@ -207,15 +207,15 @@
                                 <td>
 
                                     @if ($participant->registration_status === 'confirmed')
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             Confirmed
                                         </span>
                                     @elseif ($participant->registration_status === 'cancelled')
-                                        <span class="badge text-bg-danger rounded-0">
+                                        <span class="badge text-bg-danger rounded-pill">
                                             Cancelled
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-0">
+                                        <span class="badge text-bg-warning rounded-pill">
                                             Pending
                                         </span>
                                     @endif
@@ -227,12 +227,12 @@
                                     <div class="btn-group gap-1">
 
                                         <a href="{{ route('admin.participants.show', $participant) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View">
+                                            class="btn btn-info btn-sm rounded-2" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         <a href="{{ route('admin.participants.edit', $participant) }}"
-                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
+                                            class="btn btn-warning btn-sm rounded-2" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
@@ -241,7 +241,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-2" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
 
@@ -271,7 +271,7 @@
                                         There are no participants registered yet.
                                     </p>
 
-                                    <a href="{{ route('admin.participants.create') }}" class="btn btn-success rounded-0">
+                                    <a href="{{ route('admin.participants.create') }}" class="btn btn-success rounded-2">
                                         <i class="bi bi-person-plus me-1"></i>
                                         Create First Participant
                                     </a>
@@ -290,7 +290,7 @@
         </div>
 
         @if ($participants->hasPages())
-            <div class="card-footer">
+            <div class="card-footer rounded-bottom-3">
                 {{ $participants->links() }}
             </div>
         @endif

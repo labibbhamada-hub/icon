@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-calendar-event me-2"></i>
@@ -64,7 +64,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.important-dates.edit', $importantDate) }}"
-                    class="btn btn-warning btn-sm rounded-0">
+                    class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Important Date
                 </a>
@@ -80,7 +80,7 @@
                 {{-- Event Date --}}
                 <div class="col-md-4 mb-3">
 
-                    <div class="border rounded-0 bg-light text-center p-4 h-100">
+                    <div class="border rounded-3 bg-light text-center p-4 h-100">
 
                         <div class="text-muted text-uppercase small">
                             Event Date
@@ -127,120 +127,124 @@
 
                     <div class="mb-3">
 
-                        <span class="badge text-bg-primary rounded-0">
+                        <span class="badge text-bg-primary rounded-pill">
                             {{ $typeLabels[$importantDate->type] ?? 'Other' }}
                         </span>
 
                         @if ($importantDate->is_active)
-                            <span class="badge text-bg-success rounded-0">
+                            <span class="badge text-bg-success rounded-pill">
                                 Active
                             </span>
                         @else
-                            <span class="badge text-bg-secondary rounded-0">
+                            <span class="badge text-bg-secondary rounded-pill">
                                 Inactive
                             </span>
                         @endif
 
                     </div>
 
-                    <table class="table table-borderless align-middle mb-0">
+                    <div class="table-responsive rounded-3">
 
-                        <tbody>
+                        <table class="table table-borderless align-middle mb-0">
 
-                            <tr>
+                            <tbody>
 
-                                <th width="180">
-                                    Conference
-                                </th>
+                                <tr>
 
-                                <td>
+                                    <th width="180">
+                                        Conference
+                                    </th>
 
-                                    @if ($importantDate->conference)
-                                        <strong>
-                                            {{ $importantDate->conference->name }}
-                                        </strong>
+                                    <td>
 
-                                        <small class="text-muted d-block">
-                                            {{ $importantDate->conference->short_name }}
-                                            ({{ $importantDate->conference->year }})
-                                        </small>
-                                    @else
-                                        -
-                                    @endif
+                                        @if ($importantDate->conference)
+                                            <strong>
+                                                {{ $importantDate->conference->name }}
+                                            </strong>
 
-                                </td>
+                                            <small class="text-muted d-block">
+                                                {{ $importantDate->conference->short_name }}
+                                                ({{ $importantDate->conference->year }})
+                                            </small>
+                                        @else
+                                            -
+                                        @endif
 
-                            </tr>
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Start Date
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $importantDate->date->format('d F Y') }}
-                                </td>
+                                    <th>
+                                        Start Date
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $importantDate->date->format('d F Y') }}
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    End Date
-                                </th>
+                                <tr>
 
-                                <td>
+                                    <th>
+                                        End Date
+                                    </th>
 
-                                    @if ($importantDate->end_date)
-                                        {{ $importantDate->end_date->format('d F Y') }}
-                                    @else
-                                        -
-                                    @endif
+                                    <td>
 
-                                </td>
+                                        @if ($importantDate->end_date)
+                                            {{ $importantDate->end_date->format('d F Y') }}
+                                        @else
+                                            -
+                                        @endif
 
-                            </tr>
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Sort Order
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $importantDate->sort_order }}
-                                </td>
+                                    <th>
+                                        Sort Order
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $importantDate->sort_order }}
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Created At
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $importantDate->created_at->format('d M Y H:i') }}
-                                </td>
+                                    <th>
+                                        Created At
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $importantDate->created_at->format('d M Y H:i') }}
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Last Updated
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $importantDate->updated_at->format('d M Y H:i') }}
-                                </td>
+                                    <th>
+                                        Last Updated
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $importantDate->updated_at->format('d M Y H:i') }}
+                                    </td>
 
-                        </tbody>
+                                </tr>
 
-                    </table>
+                            </tbody>
+
+                        </table>
+
+                    </div>
 
                 </div>
 
@@ -266,9 +270,9 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Important Dates
             </a>

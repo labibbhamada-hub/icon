@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+                <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -54,7 +54,6 @@
 
 @endsection
 
-
 @section('content')
 
     @php
@@ -69,12 +68,12 @@
 
 
     {{-- ============================================================
-        REVIEWER INFORMATION
-    ============================================================= --}}
+    REVIEWER INFORMATION
+============================================================= --}}
 
-    <div class="card rounded-0 mb-3">
+    <div class="card rounded-3 overflow-hidden mb-3">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -86,7 +85,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.reviewers.edit', $reviewer) }}" class="btn btn-warning btn-sm rounded-0">
+                <a href="{{ route('admin.reviewers.edit', $reviewer) }}" class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Reviewer
                 </a>
@@ -103,7 +102,7 @@
                 {{-- Identity --}}
                 <div class="col-lg-3 col-md-4 mb-3 mb-lg-0">
 
-                    <div class="border rounded-0 p-3 text-center h-100">
+                    <div class="border rounded-3 p-3 text-center h-100">
 
                         <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3"
                             style="width: 80px; height: 80px;">
@@ -131,12 +130,12 @@
                         <div class="mt-3">
 
                             @if ($reviewer->is_active)
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     <i class="bi bi-check-circle me-1"></i>
                                     Active
                                 </span>
                             @else
-                                <span class="badge text-bg-secondary rounded-0">
+                                <span class="badge text-bg-secondary rounded-pill">
                                     <i class="bi bi-pause-circle me-1"></i>
                                     Inactive
                                 </span>
@@ -222,7 +221,7 @@
                                 Account Role
                             </div>
 
-                            <span class="badge text-bg-primary rounded-0">
+                            <span class="badge text-bg-primary rounded-pill">
                                 Reviewer
                             </span>
 
@@ -236,11 +235,11 @@
                             </div>
 
                             @if ($reviewer->is_active)
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     Active
                                 </span>
                             @else
-                                <span class="badge text-bg-secondary rounded-0">
+                                <span class="badge text-bg-secondary rounded-pill">
                                     Inactive
                                 </span>
                             @endif
@@ -275,14 +274,14 @@
 
 
     {{-- ============================================================
-        REVIEW SUMMARY
-    ============================================================= --}}
+    REVIEW SUMMARY
+============================================================= --}}
 
     <div class="row mb-3">
 
         <div class="col-md-4 mb-3 mb-md-0">
 
-            <div class="border rounded-0 p-3 bg-primary text-white">
+            <div class="border rounded-3 p-3 bg-primary text-white">
 
                 <div class="d-flex justify-content-between align-items-center">
 
@@ -309,7 +308,7 @@
 
         <div class="col-md-4 mb-3 mb-md-0">
 
-            <div class="border rounded-0 p-3 bg-success text-white">
+            <div class="border rounded-3 p-3 bg-success text-white">
 
                 <div class="d-flex justify-content-between align-items-center">
 
@@ -336,7 +335,7 @@
 
         <div class="col-md-4">
 
-            <div class="border rounded-0 p-3 bg-warning text-dark">
+            <div class="border rounded-3 p-3 bg-warning text-dark">
 
                 <div class="d-flex justify-content-between align-items-center">
 
@@ -364,12 +363,12 @@
 
 
     {{-- ============================================================
-        REVIEW HISTORY
-    ============================================================= --}}
+    REVIEW HISTORY
+============================================================= --}}
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -384,7 +383,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -460,7 +459,7 @@
 
                                 <td>
 
-                                    <span class="badge text-bg-secondary rounded-0">
+                                    <span class="badge text-bg-secondary rounded-pill">
                                         Round {{ $review->review_round }}
                                     </span>
 
@@ -470,12 +469,12 @@
                                 <td>
 
                                     @if ($review->reviewed_at)
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Completed
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-0">
+                                        <span class="badge text-bg-warning rounded-pill">
                                             Pending
                                         </span>
                                     @endif

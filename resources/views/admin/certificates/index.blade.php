@@ -40,12 +40,11 @@
 
 @endsection
 
-
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -56,12 +55,12 @@
 
             <div class="float-end d-flex gap-1">
 
-                <a href="{{ route('admin.certificates.export') }}" class="btn btn-dark btn-sm rounded-0">
+                <a href="{{ route('admin.certificates.export') }}" class="btn btn-dark btn-sm rounded-2">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
 
-                <a href="{{ route('admin.certificates.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.certificates.create') }}" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-plus-circle me-1"></i>
                     Generate Certificate
                 </a>
@@ -73,7 +72,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -235,7 +234,7 @@
                                     @endphp
 
 
-                                    <span class="badge text-bg-secondary rounded-0">
+                                    <span class="badge text-bg-secondary rounded-pill">
                                         {{ $typeLabels[$certificate->type] ?? ucfirst(str_replace('_', ' ', $certificate->type)) }}
                                     </span>
 
@@ -270,7 +269,7 @@
                                 <td>
 
                                     <a href="{{ route('admin.certificates.show', $certificate) }}"
-                                        class="btn btn-info btn-sm rounded-0" title="View Certificate">
+                                        class="btn btn-info btn-sm rounded-2" title="View Certificate">
                                         <i class="bi bi-eye"></i>
                                     </a>
 
@@ -298,7 +297,7 @@
                                         No certificates have been generated yet.
                                     </p>
 
-                                    <a href="{{ route('admin.certificates.create') }}" class="btn btn-success rounded-0">
+                                    <a href="{{ route('admin.certificates.create') }}" class="btn btn-success rounded-2">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Generate Certificate
                                     </a>
@@ -319,7 +318,7 @@
 
 
         @if ($certificates->hasPages())
-            <div class="card-footer">
+            <div class="card-footer rounded-bottom-3">
 
                 {{ $certificates->links() }}
 

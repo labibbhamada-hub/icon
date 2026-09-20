@@ -11,7 +11,7 @@
             </label>
 
             <input type="text" name="name" id="name" value="{{ old('name', $user->name ?? '') }}"
-                class="form-control @error('name') is-invalid @enderror rounded-0" placeholder="Full name"
+                class="form-control @error('name') is-invalid @enderror rounded-2" placeholder="Full name"
                 autocomplete="name">
 
             @error('name')
@@ -32,7 +32,7 @@
             </label>
 
             <input type="email" name="email" id="email" value="{{ old('email', $user->email ?? '') }}"
-                class="form-control @error('email') is-invalid @enderror rounded-0" placeholder="user@example.com"
+                class="form-control @error('email') is-invalid @enderror rounded-2" placeholder="user@example.com"
                 autocomplete="email">
 
             @error('email')
@@ -57,7 +57,7 @@
             </label>
 
             <input type="password" name="password" id="password"
-                class="form-control @error('password') is-invalid @enderror rounded-0"
+                class="form-control @error('password') is-invalid @enderror rounded-2"
                 placeholder="{{ isset($user) ? 'Leave blank to keep current password' : 'Minimum 8 characters' }}"
                 autocomplete="{{ isset($user) ? 'new-password' : 'new-password' }}">
 
@@ -93,7 +93,7 @@
             </label>
 
             <input type="password" name="password_confirmation" id="password_confirmation"
-                class="form-control rounded-0" placeholder="Confirm password" autocomplete="new-password">
+                class="form-control rounded-2" placeholder="Confirm password" autocomplete="new-password">
 
         </div>
 
@@ -116,7 +116,7 @@
 
             @endphp
 
-            <select name="role" id="role" class="form-select @error('role') is-invalid @enderror rounded-0">
+            <select name="role" id="role" class="form-select @error('role') is-invalid @enderror rounded-2">
 
                 @foreach ($roles as $value => $label)
                     <option value="{{ $value }}" @selected(old('role', $user->role ?? 'participant') === $value)>
@@ -147,7 +147,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="status" id="status" class="form-select @error('status') is-invalid @enderror rounded-0">
+            <select name="status" id="status" class="form-select @error('status') is-invalid @enderror rounded-2">
 
                 <option value="active" @selected(old('status', $user->status ?? 'active') === 'active')>
                     Active

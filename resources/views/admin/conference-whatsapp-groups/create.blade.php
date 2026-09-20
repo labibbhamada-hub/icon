@@ -2,12 +2,10 @@
 
 @section('title', 'Create WhatsApp Group')
 
-@section('header')
-    <div class="row">
+@section('header') <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
-                Create WhatsApp Group
-            </h1>
+                Create WhatsApp Group </h1>
         </div>
 
         <div class="col-sm-6">
@@ -32,13 +30,14 @@
             </nav>
         </div>
     </div>
+
 @endsection
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
             <h3 class="card-title">
                 <i class="bi bi-whatsapp me-2"></i>
                 WhatsApp Group Information
@@ -51,14 +50,14 @@
 
             @include('admin.conference-whatsapp-groups._form')
 
-            <div class="card-footer">
+            <div class="card-footer rounded-bottom-3">
 
-                <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary rounded-0">
+                <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary rounded-2">
                     <i class="bi bi-arrow-left me-1"></i>
                     Back
                 </a>
 
-                <button type="submit" class="btn btn-success rounded-0">
+                <button type="submit" class="btn btn-success rounded-2">
                     <i class="bi bi-check-circle me-1"></i>
                     Save WhatsApp Group
                 </button>

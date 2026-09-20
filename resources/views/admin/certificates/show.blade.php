@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -59,7 +59,6 @@
 
 @endsection
 
-
 @section('content')
 
     @php
@@ -78,12 +77,12 @@
 
 
     {{-- ============================================================
-        CERTIFICATE
-    ============================================================= --}}
+    CERTIFICATE
+============================================================= --}}
 
-    <div class="card rounded-0 mb-3">
+    <div class="card rounded-3 overflow-hidden mb-3">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -98,7 +97,7 @@
 
                 @if ($certificate->file_path)
                     <a href="{{ route('admin.certificates.download', $certificate) }}"
-                        class="btn btn-success btn-sm rounded-0">
+                        class="btn btn-success btn-sm rounded-2">
                         <i class="bi bi-download me-1"></i>
                         Download PDF
                     </a>
@@ -110,7 +109,7 @@
 
                     @csrf
 
-                    <button type="submit" class="btn btn-warning btn-sm rounded-0">
+                    <button type="submit" class="btn btn-warning btn-sm rounded-2">
                         <i class="bi bi-arrow-repeat me-1"></i>
                         Regenerate PDF
                     </button>
@@ -129,7 +128,7 @@
                 {{-- Certificate Number --}}
                 <div class="col-md-6">
 
-                    <div class="border rounded-0 p-3 h-100">
+                    <div class="border rounded-3 p-3 h-100">
 
                         <div class="text-muted small mb-1">
                             Certificate Number
@@ -149,13 +148,13 @@
                 {{-- Type --}}
                 <div class="col-md-3">
 
-                    <div class="border rounded-0 p-3 h-100">
+                    <div class="border rounded-3 p-3 h-100">
 
                         <div class="text-muted small mb-1">
                             Certificate Type
                         </div>
 
-                        <span class="badge text-bg-primary rounded-0">
+                        <span class="badge text-bg-primary rounded-pill">
                             {{ $typeLabel }}
                         </span>
 
@@ -167,19 +166,19 @@
                 {{-- PDF Status --}}
                 <div class="col-md-3">
 
-                    <div class="border rounded-0 p-3 h-100">
+                    <div class="border rounded-3 p-3 h-100">
 
                         <div class="text-muted small mb-1">
                             PDF Status
                         </div>
 
                         @if ($certificate->file_path)
-                            <span class="badge text-bg-success rounded-0">
+                            <span class="badge text-bg-success rounded-pill">
                                 <i class="bi bi-check-circle me-1"></i>
                                 Available
                             </span>
                         @else
-                            <span class="badge text-bg-danger rounded-0">
+                            <span class="badge text-bg-danger rounded-pill">
                                 <i class="bi bi-x-circle me-1"></i>
                                 Missing
                             </span>
@@ -197,12 +196,12 @@
 
 
     {{-- ============================================================
-        PARTICIPANT & CONFERENCE
-    ============================================================= --}}
+    PARTICIPANT & CONFERENCE
+============================================================= --}}
 
-    <div class="card rounded-0 mb-3">
+    <div class="card rounded-3 overflow-hidden mb-3">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -305,7 +304,7 @@
 
                     <div>
 
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             {{ $typeLabel }}
                         </span>
 
@@ -321,13 +320,13 @@
 
 
     {{-- ============================================================
-        RELATED SUBMISSION
-    ============================================================= --}}
+    RELATED SUBMISSION
+============================================================= --}}
 
     @if ($certificate->submission)
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
 
@@ -340,7 +339,7 @@
                 <div class="float-end">
 
                     <a href="{{ route('admin.submissions.show', $certificate->submission) }}"
-                        class="btn btn-info btn-sm rounded-0">
+                        class="btn btn-info btn-sm rounded-2">
                         <i class="bi bi-eye me-1"></i>
                         View Submission
                     </a>
@@ -407,7 +406,7 @@
                         @endphp
 
 
-                        <span class="badge text-bg-{{ $submissionStatusClass }} rounded-0">
+                        <span class="badge text-bg-{{ $submissionStatusClass }} rounded-pill">
                             {{ ucfirst(str_replace('_', ' ', $certificate->submission->status)) }}
                         </span>
 
@@ -422,12 +421,12 @@
 
 
     {{-- ============================================================
-        PDF INFORMATION
-    ============================================================= --}}
+    PDF INFORMATION
+============================================================= --}}
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -445,7 +444,7 @@
             @if ($certificate->file_path)
                 <div class="d-flex align-items-center">
 
-                    <div class="border rounded-0 d-flex align-items-center justify-content-center me-3"
+                    <div class="border rounded-3 d-flex align-items-center justify-content-center me-3"
                         style="width: 64px; height: 64px;">
 
                         <i class="bi bi-file-earmark-pdf text-danger fs-2"></i>
@@ -471,7 +470,7 @@
                 <div class="mt-3">
 
                     <a href="{{ route('admin.certificates.download', $certificate) }}"
-                        class="btn btn-outline-danger btn-sm rounded-0">
+                        class="btn btn-outline-danger btn-sm rounded-2">
                         <i class="bi bi-download me-1"></i>
                         Download Certificate PDF
                     </a>
@@ -495,7 +494,7 @@
 
                         @csrf
 
-                        <button type="submit" class="btn btn-warning btn-sm rounded-0">
+                        <button type="submit" class="btn btn-warning btn-sm rounded-2">
                             <i class="bi bi-arrow-repeat me-1"></i>
                             Generate PDF
                         </button>
@@ -510,7 +509,6 @@
     </div>
 
 @endsection
-
 
 @push('scripts')
     <script>

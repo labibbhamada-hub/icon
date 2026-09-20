@@ -6,8 +6,7 @@
     <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
-                WhatsApp Groups Management
-            </h1>
+                WhatsApp Groups Management </h1>
         </div>
 
         <div class="col-sm-6">
@@ -26,13 +25,14 @@
             </nav>
         </div>
     </div>
+
 @endsection
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-whatsapp me-2"></i>
@@ -40,7 +40,7 @@
             </h3>
 
             <div class="float-end">
-                <a href="{{ route('admin.conference-whatsapp-groups.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.conference-whatsapp-groups.create') }}" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-plus-circle me-1"></i>
                     Add WhatsApp Group
                 </a>
@@ -50,7 +50,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -141,11 +141,11 @@
 
                                 <td>
                                     @if ($group->is_active)
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             Active
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-0">
+                                        <span class="badge text-bg-secondary rounded-pill">
                                             Inactive
                                         </span>
                                     @endif
@@ -156,12 +156,12 @@
                                     <div class="btn-group gap-1">
 
                                         <a href="{{ route('admin.conference-whatsapp-groups.show', $group) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View">
+                                            class="btn btn-info btn-sm rounded-2" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         <a href="{{ route('admin.conference-whatsapp-groups.edit', $group) }}"
-                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
+                                            class="btn btn-warning btn-sm rounded-2" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
@@ -171,7 +171,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-2" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
 
@@ -202,7 +202,7 @@
                                     </p>
 
                                     <a href="{{ route('admin.conference-whatsapp-groups.create') }}"
-                                        class="btn btn-success rounded-0">
+                                        class="btn btn-success rounded-2">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Create First WhatsApp Group
                                     </a>
@@ -221,7 +221,7 @@
         </div>
 
         @if ($groups->hasPages())
-            <div class="card-footer">
+            <div class="card-footer rounded-bottom-3">
                 {{ $groups->links() }}
             </div>
         @endif

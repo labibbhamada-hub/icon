@@ -1,8 +1,8 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
 
     {{-- ============================================================
-        BRAND
-    ============================================================= --}}
+    BRAND
+============================================================= --}}
     <div class="sidebar-brand">
         <a href="{{ route('admin.dashboard') }}" class="brand-link">
             <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="brand-image opacity-75 shadow"
@@ -21,16 +21,16 @@
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
 
                 {{-- ========================================================
-                    MAIN
-                ========================================================= --}}
+                MAIN
+            ========================================================= --}}
                 <li class="nav-header">
                     MAIN
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}"
-                        class="nav-link rounded-0
-                            {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-speedometer2"></i>
                         <p>Dashboard</p>
                     </a>
@@ -38,8 +38,8 @@
 
 
                 {{-- ========================================================
-                    CONFERENCE MANAGEMENT
-                ========================================================= --}}
+                CONFERENCE MANAGEMENT
+            ========================================================= --}}
                 @php
                     $conferenceMenuOpen =
                         request()->routeIs('admin.conferences.*') ||
@@ -52,10 +52,10 @@
                 </li>
 
                 <li class="nav-item
-                        {{ $conferenceMenuOpen ? 'menu-open' : '' }}">
+                    {{ $conferenceMenuOpen ? 'menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link rounded-0
-                            {{ $conferenceMenuOpen ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ $conferenceMenuOpen ? 'active' : '' }}">
                         <i class="nav-icon bi bi-calendar-event"></i>
 
                         <p>
@@ -69,8 +69,8 @@
                         {{-- Conference List --}}
                         <li class="nav-item">
                             <a href="{{ route('admin.conferences.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.conferences.index') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.conferences.index') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-list-ul"></i>
                                 <p>Conference List</p>
                             </a>
@@ -79,8 +79,8 @@
                         {{-- Create Conference --}}
                         <li class="nav-item">
                             <a href="{{ route('admin.conferences.create') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.conferences.create') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.conferences.create') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-plus-circle"></i>
                                 <p>Create Conference</p>
                             </a>
@@ -90,8 +90,8 @@
                         @if ($activeConference)
                             <li class="nav-item">
                                 <a href="{{ route('admin.conferences.configuration.edit', $activeConference) }}"
-                                    class="nav-link rounded-0
-                                        {{ request()->routeIs('admin.conferences.configuration.*') ? 'active' : '' }}">
+                                    class="nav-link rounded-2
+                                    {{ request()->routeIs('admin.conferences.configuration.*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-palette"></i>
                                     <p>Configuration</p>
                                 </a>
@@ -100,8 +100,8 @@
                             {{-- Settings --}}
                             <li class="nav-item">
                                 <a href="{{ route('admin.conferences.settings.edit', $activeConference) }}"
-                                    class="nav-link rounded-0
-                                        {{ request()->routeIs('admin.conferences.settings.*') ? 'active' : '' }}">
+                                    class="nav-link rounded-2
+                                    {{ request()->routeIs('admin.conferences.settings.*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-sliders"></i>
                                     <p>Settings</p>
                                 </a>
@@ -110,8 +110,8 @@
                             {{-- Online Meetings --}}
                             <li class="nav-item">
                                 <a href="{{ route('admin.conference-online-meetings.index') }}"
-                                    class="nav-link rounded-0
-                                        {{ request()->routeIs('admin.conference-online-meetings.*') ? 'active' : '' }}">
+                                    class="nav-link rounded-2
+                                    {{ request()->routeIs('admin.conference-online-meetings.*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-camera-video"></i>
                                     <p>Online Meetings</p>
                                 </a>
@@ -120,7 +120,8 @@
                             {{-- WhatsApp Groups --}}
                             <li class="nav-item">
                                 <a href="{{ route('admin.conference-whatsapp-groups.index') }}"
-                                    class="nav-link rounded-0 {{ request()->routeIs('admin.conference-whatsapp-groups.*') ? 'active' : '' }}">
+                                    class="nav-link rounded-2
+                                    {{ request()->routeIs('admin.conference-whatsapp-groups.*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-whatsapp"></i>
                                     <p>WhatsApp Groups</p>
                                 </a>
@@ -129,8 +130,8 @@
                             {{-- Payment Methods --}}
                             <li class="nav-item">
                                 <a href="{{ route('admin.conferences.payment-methods.index', $activeConference) }}"
-                                    class="nav-link rounded-0
-                                        {{ request()->routeIs('admin.conferences.payment-methods.*') ? 'active' : '' }}">
+                                    class="nav-link rounded-2
+                                    {{ request()->routeIs('admin.conferences.payment-methods.*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-bank"></i>
                                     <p>Payment Methods</p>
                                 </a>
@@ -142,8 +143,8 @@
 
 
                 {{-- ========================================================
-                    CONTENT MANAGEMENT
-                ========================================================= --}}
+                CONTENT MANAGEMENT
+            ========================================================= --}}
                 @php
                     $contentMenuOpen =
                         request()->routeIs('admin.topics.*') ||
@@ -157,10 +158,10 @@
                 </li>
 
                 <li class="nav-item
-                        {{ $contentMenuOpen ? 'menu-open' : '' }}">
+                    {{ $contentMenuOpen ? 'menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link rounded-0
-                            {{ $contentMenuOpen ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ $contentMenuOpen ? 'active' : '' }}">
                         <i class="nav-icon bi bi-collection"></i>
 
                         <p>
@@ -173,8 +174,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.topics.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-diagram-3"></i>
                                 <p>Topics</p>
                             </a>
@@ -182,8 +183,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.speakers.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-mic"></i>
                                 <p>Speakers</p>
                             </a>
@@ -191,8 +192,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.partners.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.partners.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.partners.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-buildings"></i>
                                 <p>Partners</p>
                             </a>
@@ -200,8 +201,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.important-dates.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.important-dates.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.important-dates.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-calendar-week"></i>
                                 <p>Important Dates</p>
                             </a>
@@ -212,8 +213,8 @@
 
 
                 {{-- ========================================================
-                    REGISTRATION MANAGEMENT
-                ========================================================= --}}
+                REGISTRATION MANAGEMENT
+            ========================================================= --}}
                 @php
                     $registrationMenuOpen =
                         request()->routeIs('admin.participants.*') || request()->routeIs('admin.registration-types.*');
@@ -224,10 +225,10 @@
                 </li>
 
                 <li class="nav-item
-                        {{ $registrationMenuOpen ? 'menu-open' : '' }}">
+                    {{ $registrationMenuOpen ? 'menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link rounded-0
-                            {{ $registrationMenuOpen ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ $registrationMenuOpen ? 'active' : '' }}">
                         <i class="nav-icon bi bi-person-vcard"></i>
 
                         <p>
@@ -240,8 +241,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.participants.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.participants.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.participants.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-people"></i>
                                 <p>Participants</p>
                             </a>
@@ -249,8 +250,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.registration-types.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.registration-types.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.registration-types.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-tags"></i>
                                 <p>Registration Types</p>
                             </a>
@@ -261,16 +262,16 @@
 
 
                 {{-- ========================================================
-                    SUBMISSION MANAGEMENT
-                ========================================================= --}}
+                SUBMISSION MANAGEMENT
+            ========================================================= --}}
                 <li class="nav-header">
                     SUBMISSION MANAGEMENT
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.submissions.index') }}"
-                        class="nav-link rounded-0
-                            {{ request()->routeIs('admin.submissions.*') ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ request()->routeIs('admin.submissions.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-file-earmark-text"></i>
                         <p>Submissions</p>
                     </a>
@@ -278,8 +279,8 @@
 
 
                 {{-- ========================================================
-                    REVIEW MANAGEMENT
-                ========================================================= --}}
+                REVIEW MANAGEMENT
+            ========================================================= --}}
                 @php
                     $reviewMenuOpen = request()->routeIs('admin.reviewers.*') || request()->routeIs('admin.reviews.*');
                 @endphp
@@ -289,10 +290,10 @@
                 </li>
 
                 <li class="nav-item
-                        {{ $reviewMenuOpen ? 'menu-open' : '' }}">
+                    {{ $reviewMenuOpen ? 'menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link rounded-0
-                            {{ $reviewMenuOpen ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ $reviewMenuOpen ? 'active' : '' }}">
                         <i class="nav-icon bi bi-clipboard-check"></i>
 
                         <p>
@@ -305,8 +306,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.reviewers.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.reviewers.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.reviewers.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-person-check"></i>
                                 <p>Reviewers</p>
                             </a>
@@ -314,8 +315,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.reviews.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-file-earmark-check"></i>
                                 <p>Reviews</p>
                             </a>
@@ -326,8 +327,8 @@
 
 
                 {{-- ========================================================
-                    PAYMENT MANAGEMENT
-                ========================================================= --}}
+                PAYMENT MANAGEMENT
+            ========================================================= --}}
                 @php
                     $paymentMenuOpen =
                         request()->routeIs('admin.payments.*') ||
@@ -339,10 +340,10 @@
                 </li>
 
                 <li class="nav-item
-                    {{ $paymentMenuOpen ? 'menu-open' : '' }}">
+                {{ $paymentMenuOpen ? 'menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link rounded-0
-                            {{ $paymentMenuOpen ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ $paymentMenuOpen ? 'active' : '' }}">
                         <i class="nav-icon bi bi-credit-card"></i>
 
                         <p>
@@ -355,8 +356,8 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.payments.index') }}"
-                                class="nav-link rounded-0
-                                    {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+                                class="nav-link rounded-2
+                                {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-wallet2"></i>
                                 <p>Payments</p>
                             </a>
@@ -365,8 +366,8 @@
                         @if ($activeConference)
                             <li class="nav-item">
                                 <a href="{{ route('admin.conferences.payment-methods.index', $activeConference) }}"
-                                    class="nav-link rounded-0
-                                        {{ request()->routeIs('admin.conferences.payment-methods.*') ? 'active' : '' }}">
+                                    class="nav-link rounded-2
+                                    {{ request()->routeIs('admin.conferences.payment-methods.*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-bank"></i>
                                     <p>Payment Methods</p>
                                 </a>
@@ -378,16 +379,16 @@
 
 
                 {{-- ========================================================
-                    CERTIFICATE
-                ========================================================= --}}
+                CERTIFICATE
+            ========================================================= --}}
                 <li class="nav-header">
                     CERTIFICATE
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.certificates.index') }}"
-                        class="nav-link rounded-0
-                            {{ request()->routeIs('admin.certificates.*') ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ request()->routeIs('admin.certificates.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-award"></i>
                         <p>Certificates</p>
                     </a>
@@ -395,16 +396,16 @@
 
 
                 {{-- ========================================================
-                    REPORTS
-                ========================================================= --}}
+                REPORTS
+            ========================================================= --}}
                 <li class="nav-header">
                     REPORTS
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.reports.index') }}"
-                        class="nav-link rounded-0
-                            {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-bar-chart-line"></i>
                         <p>Reports</p>
                     </a>
@@ -412,16 +413,16 @@
 
 
                 {{-- ========================================================
-                    SYSTEM
-                ========================================================= --}}
+                SYSTEM
+            ========================================================= --}}
                 <li class="nav-header">
                     SYSTEM
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.users.index') }}"
-                        class="nav-link rounded-0
-                            {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        class="nav-link rounded-2
+                        {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-people-fill"></i>
                         <p>Users</p>
                     </a>
@@ -431,4 +432,5 @@
         </nav>
 
     </div>
+
 </aside>

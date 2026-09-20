@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.reviews.show', $review) }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+                <a href="{{ route('admin.reviews.show', $review) }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -69,7 +69,6 @@
 
 @endsection
 
-
 @section('content')
 
     @php
@@ -91,12 +90,12 @@
 
 
         {{-- ============================================================
-            SUBMISSION CONTEXT
-        ============================================================= --}}
+        SUBMISSION CONTEXT
+    ============================================================= --}}
 
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
 
@@ -110,7 +109,7 @@
 
                     @if ($review->submission)
                         <a href="{{ route('admin.submissions.show', $review->submission) }}"
-                            class="btn btn-info btn-sm rounded-0">
+                            class="btn btn-info btn-sm rounded-2">
                             <i class="bi bi-eye me-1"></i>
                             View Submission
                         </a>
@@ -151,7 +150,7 @@
                             </div>
 
                             @if ($review->submission->topic)
-                                <span class="badge text-bg-primary rounded-0">
+                                <span class="badge text-bg-primary rounded-pill">
                                     {{ $review->submission->topic->name }}
                                 </span>
                             @else
@@ -176,12 +175,12 @@
 
 
         {{-- ============================================================
-            REVIEWER INFORMATION
-        ============================================================= --}}
+        REVIEWER INFORMATION
+    ============================================================= --}}
 
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
 
@@ -240,7 +239,7 @@
                             Review Round
                         </div>
 
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             Round {{ $review->review_round }}
                         </span>
 
@@ -254,12 +253,12 @@
 
 
         {{-- ============================================================
-            REVIEW EVALUATION
-        ============================================================= --}}
+        REVIEW EVALUATION
+    ============================================================= --}}
 
-        <div class="card rounded-0">
+        <div class="card rounded-3 overflow-hidden">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
 
@@ -288,9 +287,10 @@
 
                             <input type="number" name="score" id="score" min="0" max="100" step="0.01"
                                 value="{{ old('score', $review->score) }}"
-                                class="form-control @error('score') is-invalid @enderror rounded-0" placeholder="0 - 100">
+                                class="form-control @error('score') is-invalid @enderror rounded-start-2"
+                                placeholder="0 - 100">
 
-                            <span class="input-group-text rounded-0">
+                            <span class="input-group-text rounded-end-2">
                                 / 100
                             </span>
 
@@ -318,7 +318,7 @@
                         </label>
 
                         <select name="recommendation" id="recommendation"
-                            class="form-select @error('recommendation') is-invalid @enderror rounded-0">
+                            class="form-select @error('recommendation') is-invalid @enderror rounded-2">
 
                             <option value="">
                                 Select Recommendation
@@ -358,7 +358,7 @@
                         </label>
 
                         <textarea name="comment" id="comment" rows="10"
-                            class="form-control @error('comment') is-invalid @enderror rounded-0"
+                            class="form-control @error('comment') is-invalid @enderror rounded-2"
                             placeholder="Write detailed feedback for this submission...">{{ old('comment', $review->comment) }}</textarea>
 
                         <div class="form-text">
@@ -380,17 +380,17 @@
 
 
             {{-- ========================================================
-                FOOTER
-            ========================================================= --}}
+            FOOTER
+        ========================================================= --}}
 
-            <div class="card-footer d-flex justify-content-end gap-2">
+            <div class="card-footer rounded-bottom-3 d-flex justify-content-end gap-2">
 
-                <a href="{{ route('admin.reviews.show', $review) }}" class="btn btn-secondary btn-sm rounded-0">
+                <a href="{{ route('admin.reviews.show', $review) }}" class="btn btn-secondary btn-sm rounded-2">
                     <i class="bi bi-x-circle me-1"></i>
                     Cancel
                 </a>
 
-                <button type="submit" class="btn btn-success btn-sm rounded-0">
+                <button type="submit" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-check-circle me-1"></i>
                     Submit Review
                 </button>
@@ -402,7 +402,6 @@
     </form>
 
 @endsection
-
 
 @push('scripts')
     <script>

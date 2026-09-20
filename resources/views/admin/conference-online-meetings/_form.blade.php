@@ -10,7 +10,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-0">
+            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-2">
 
                 <option value="">
                     Select Conference
@@ -42,7 +42,7 @@
             </label>
 
             <input type="text" name="title" value="{{ old('title', $conferenceOnlineMeeting->title ?? '') }}"
-                class="form-control @error('title') is-invalid @enderror rounded-0"
+                class="form-control @error('title') is-invalid @enderror rounded-2"
                 placeholder="e.g. BHAMADA ICON 2026 Main Conference">
 
             @error('title')
@@ -63,7 +63,7 @@
 
             <input type="url" name="meeting_url"
                 value="{{ old('meeting_url', $conferenceOnlineMeeting->meeting_url ?? '') }}"
-                class="form-control @error('meeting_url') is-invalid @enderror rounded-0"
+                class="form-control @error('meeting_url') is-invalid @enderror rounded-2"
                 placeholder="https://zoom.us/j/...">
 
             @error('meeting_url')
@@ -90,7 +90,7 @@
 
             <input type="text" name="meeting_id"
                 value="{{ old('meeting_id', $conferenceOnlineMeeting->meeting_id ?? '') }}"
-                class="form-control @error('meeting_id') is-invalid @enderror rounded-0" placeholder="e.g. 123 456 789">
+                class="form-control @error('meeting_id') is-invalid @enderror rounded-2" placeholder="e.g. 123 456 789">
 
             @error('meeting_id')
                 <div class="invalid-feedback">
@@ -112,7 +112,7 @@
 
             <input type="text" name="passcode"
                 value="{{ old('passcode', $conferenceOnlineMeeting->passcode ?? '') }}"
-                class="form-control @error('passcode') is-invalid @enderror rounded-0" placeholder="e.g. ICON2026">
+                class="form-control @error('passcode') is-invalid @enderror rounded-2" placeholder="e.g. ICON2026">
 
             @error('passcode')
                 <div class="invalid-feedback">
@@ -132,7 +132,7 @@
                 </small>
             </label>
 
-            <textarea name="instructions" rows="4" class="form-control @error('instructions') is-invalid @enderror rounded-0"
+            <textarea name="instructions" rows="4" class="form-control @error('instructions') is-invalid @enderror rounded-2"
                 placeholder="Write instructions for participants...">{{ old('instructions', $conferenceOnlineMeeting->instructions ?? '') }}</textarea>
 
             @error('instructions')

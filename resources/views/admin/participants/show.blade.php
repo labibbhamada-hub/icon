@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -53,9 +53,9 @@
 @section('content')
 
     {{-- Participant Summary --}}
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-person-vcard me-2"></i>
@@ -64,7 +64,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.participants.edit', $participant) }}" class="btn btn-warning btn-sm rounded-0">
+                <a href="{{ route('admin.participants.edit', $participant) }}" class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Participant
                 </a>
@@ -79,7 +79,7 @@
 
                 <div class="col-lg-6">
 
-                    <div class="border rounded-0 p-3 h-100">
+                    <div class="border rounded-3 p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Registration
@@ -151,15 +151,15 @@
                             <dd class="col-sm-7">
 
                                 @if ($participant->registration_status === 'confirmed')
-                                    <span class="badge text-bg-success rounded-0">
+                                    <span class="badge text-bg-success rounded-pill">
                                         Confirmed
                                     </span>
                                 @elseif ($participant->registration_status === 'cancelled')
-                                    <span class="badge text-bg-danger rounded-0">
+                                    <span class="badge text-bg-danger rounded-pill">
                                         Cancelled
                                     </span>
                                 @else
-                                    <span class="badge text-bg-warning rounded-0">
+                                    <span class="badge text-bg-warning rounded-pill">
                                         Pending
                                     </span>
                                 @endif
@@ -182,7 +182,7 @@
 
                 <div class="col-lg-6 mt-3 mt-lg-0">
 
-                    <div class="border rounded-0 p-3 h-100">
+                    <div class="border rounded-3 p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Personal Information
@@ -271,7 +271,7 @@
 
         <div class="col-md-4">
 
-            <div class="small-box text-bg-primary rounded-0">
+            <div class="small-box text-bg-primary rounded-3">
 
                 <div class="inner">
 
@@ -295,7 +295,7 @@
 
         <div class="col-md-4">
 
-            <div class="small-box text-bg-success rounded-0">
+            <div class="small-box text-bg-success rounded-3">
 
                 <div class="inner">
 
@@ -319,7 +319,7 @@
 
         <div class="col-md-4">
 
-            <div class="small-box text-bg-warning rounded-0">
+            <div class="small-box text-bg-warning rounded-3">
 
                 <div class="inner">
 
@@ -346,9 +346,9 @@
 
     {{-- Notes --}}
     @if ($participant->notes)
-        <div class="card rounded-0">
+        <div class="card rounded-3 overflow-hidden">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
                     <i class="bi bi-sticky me-2"></i>
@@ -365,11 +365,11 @@
     @endif
 
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Participants
             </a>

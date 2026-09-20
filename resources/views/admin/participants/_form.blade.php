@@ -11,7 +11,7 @@
             </label>
 
             <select name="conference_id" id="conference_id"
-                class="form-select @error('conference_id') is-invalid @enderror rounded-0">
+                class="form-select @error('conference_id') is-invalid @enderror rounded-2">
                 <option value="">
                     Select Conference
                 </option>
@@ -42,7 +42,7 @@
             </label>
 
             <select name="registration_type_id" id="registration_type_id"
-                class="form-select @error('registration_type_id') is-invalid @enderror rounded-0">
+                class="form-select @error('registration_type_id') is-invalid @enderror rounded-2">
                 <option value="">
                     Select Registration Type
                 </option>
@@ -88,7 +88,7 @@
 
             <input type="text" name="registration_number"
                 value="{{ old('registration_number', $participant->registration_number ?? '') }}"
-                class="form-control @error('registration_number') is-invalid @enderror rounded-0"
+                class="form-control @error('registration_number') is-invalid @enderror rounded-2"
                 placeholder="e.g. ICON2026-0001">
 
             @error('registration_number')
@@ -117,7 +117,7 @@
             @endphp
 
             <select name="participant_type"
-                class="form-select @error('participant_type') is-invalid @enderror rounded-0">
+                class="form-select @error('participant_type') is-invalid @enderror rounded-2">
 
                 @foreach ($participantTypes as $value => $label)
                     <option value="{{ $value }}" @selected(old('participant_type', $participant->participant_type ?? 'regular') === $value)>
@@ -151,7 +151,7 @@
                 ];
             @endphp
 
-            <select name="attendance_type" class="form-select @error('attendance_type') is-invalid @enderror rounded-0">
+            <select name="attendance_type" class="form-select @error('attendance_type') is-invalid @enderror rounded-2">
 
                 @foreach ($attendanceTypes as $value => $label)
                     <option value="{{ $value }}" @selected(old('attendance_type', $participant->attendance_type ?? 'offline') === $value)>
@@ -186,7 +186,7 @@
             @endphp
 
             <select name="registration_status"
-                class="form-select @error('registration_status') is-invalid @enderror rounded-0">
+                class="form-select @error('registration_status') is-invalid @enderror rounded-2">
 
                 @foreach ($registrationStatuses as $value => $label)
                     <option value="{{ $value }}" @selected(old('registration_status', $participant->registration_status ?? 'pending') === $value)>
@@ -216,7 +216,7 @@
                     'registered_at',
                     isset($participant->registered_at) ? $participant->registered_at->format('Y-m-d\TH:i') : '',
                 ) }}"
-                class="form-control @error('registered_at') is-invalid @enderror rounded-0">
+                class="form-control @error('registered_at') is-invalid @enderror rounded-2">
 
             @error('registered_at')
                 <div class="invalid-feedback">
@@ -229,7 +229,6 @@
     </div>
 
 </div>
-
 
 <div class="card-body border-top">
 
@@ -244,7 +243,7 @@
             </label>
 
             <input type="text" name="full_name" value="{{ old('full_name', $participant->full_name ?? '') }}"
-                class="form-control @error('full_name') is-invalid @enderror rounded-0" placeholder="Full name">
+                class="form-control @error('full_name') is-invalid @enderror rounded-2" placeholder="Full name">
 
             @error('full_name')
                 <div class="invalid-feedback">
@@ -263,7 +262,7 @@
             </label>
 
             <input type="email" name="email" value="{{ old('email', $participant->email ?? '') }}"
-                class="form-control @error('email') is-invalid @enderror rounded-0" placeholder="name@example.com">
+                class="form-control @error('email') is-invalid @enderror rounded-2" placeholder="name@example.com">
 
             @error('email')
                 <div class="invalid-feedback">
@@ -281,7 +280,7 @@
             </label>
 
             <input type="text" name="phone" value="{{ old('phone', $participant->phone ?? '') }}"
-                class="form-control @error('phone') is-invalid @enderror rounded-0" placeholder="+62 812 3456 7890">
+                class="form-control @error('phone') is-invalid @enderror rounded-2" placeholder="+62 812 3456 7890">
 
             @error('phone')
                 <div class="invalid-feedback">
@@ -300,7 +299,7 @@
             </label>
 
             <input type="text" name="country" value="{{ old('country', $participant->country ?? 'Indonesia') }}"
-                class="form-control @error('country') is-invalid @enderror rounded-0">
+                class="form-control @error('country') is-invalid @enderror rounded-2">
 
             @error('country')
                 <div class="invalid-feedback">
@@ -318,7 +317,7 @@
             </label>
 
             <input type="text" name="city" value="{{ old('city', $participant->city ?? '') }}"
-                class="form-control @error('city') is-invalid @enderror rounded-0">
+                class="form-control @error('city') is-invalid @enderror rounded-2">
 
             @error('city')
                 <div class="invalid-feedback">
@@ -331,7 +330,6 @@
     </div>
 
 </div>
-
 
 <div class="card-body border-top">
 
@@ -346,7 +344,7 @@
 
             <input type="text" name="institution"
                 value="{{ old('institution', $participant->institution ?? '') }}"
-                class="form-control @error('institution') is-invalid @enderror rounded-0"
+                class="form-control @error('institution') is-invalid @enderror rounded-2"
                 placeholder="University / Institution">
 
             @error('institution')
@@ -365,7 +363,7 @@
             </label>
 
             <input type="text" name="department" value="{{ old('department', $participant->department ?? '') }}"
-                class="form-control @error('department') is-invalid @enderror rounded-0"
+                class="form-control @error('department') is-invalid @enderror rounded-2"
                 placeholder="Department / Faculty">
 
             @error('department')
@@ -380,7 +378,6 @@
 
 </div>
 
-
 <div class="card-body border-top">
 
     <div class="row">
@@ -391,7 +388,7 @@
                 Notes
             </label>
 
-            <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror rounded-0"
+            <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror rounded-2"
                 placeholder="Additional notes about this participant...">{{ old('notes', $participant->notes ?? '') }}</textarea>
 
             @error('notes')
@@ -405,7 +402,6 @@
     </div>
 
 </div>
-
 
 @push('scripts')
     <script>

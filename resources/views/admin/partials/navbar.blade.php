@@ -2,13 +2,13 @@
     <div class="container-fluid">
 
         {{-- ============================================================
-            LEFT
-        ============================================================= --}}
+        LEFT
+    ============================================================= --}}
         <ul class="navbar-nav align-items-center">
 
             {{-- Sidebar Toggle --}}
             <li class="nav-item">
-                <a class="nav-link rounded-0" data-lte-toggle="sidebar" href="#" aria-label="Toggle sidebar">
+                <a class="nav-link rounded-2" data-lte-toggle="sidebar" href="#" aria-label="Toggle sidebar">
                     <i class="bi bi-list"></i>
                 </a>
             </li>
@@ -40,14 +40,14 @@
 
 
         {{-- ============================================================
-            RIGHT
-        ============================================================= --}}
+        RIGHT
+    ============================================================= --}}
         <ul class="navbar-nav ms-auto align-items-center">
 
             {{-- Theme --}}
             <li class="nav-item dropdown">
 
-                <a class="nav-link rounded-0" href="#" id="bd-theme" aria-label="Toggle color scheme"
+                <a class="nav-link rounded-2" href="#" id="bd-theme" aria-label="Toggle color scheme"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-sun-fill" data-lte-theme-icon="light"></i>
 
@@ -56,10 +56,10 @@
                     <i class="bi bi-circle-half d-none" data-lte-theme-icon="auto"></i>
                 </a>
 
-                <ul class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="bd-theme"
+                <ul class="dropdown-menu dropdown-menu-end rounded-2" aria-labelledby="bd-theme"
                     style="--bs-dropdown-min-width: 8rem">
                     <li>
-                        <button type="button" class="dropdown-item d-flex align-items-center"
+                        <button type="button" class="dropdown-item d-flex align-items-center rounded-2"
                             data-bs-theme-value="light" aria-pressed="false">
                             <i class="bi bi-sun-fill me-2"></i>
                             Light
@@ -68,7 +68,7 @@
                     </li>
 
                     <li>
-                        <button type="button" class="dropdown-item d-flex align-items-center"
+                        <button type="button" class="dropdown-item d-flex align-items-center rounded-2"
                             data-bs-theme-value="dark" aria-pressed="false">
                             <i class="bi bi-moon-fill me-2"></i>
                             Dark
@@ -77,7 +77,7 @@
                     </li>
 
                     <li>
-                        <button type="button" class="dropdown-item d-flex align-items-center active"
+                        <button type="button" class="dropdown-item d-flex align-items-center active rounded-2"
                             data-bs-theme-value="auto" aria-pressed="true">
                             <i class="bi bi-circle-half me-2"></i>
                             Auto
@@ -92,7 +92,7 @@
             {{-- User --}}
             <li class="nav-item dropdown user-menu">
 
-                <a href="#" class="nav-link dropdown-toggle rounded-0" data-bs-toggle="dropdown"
+                <a href="#" class="nav-link dropdown-toggle rounded-2" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}"
                         class="user-image rounded-circle shadow" alt="{{ auth()->user()->name }}">
@@ -103,7 +103,7 @@
                 </a>
 
 
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-0">
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-3">
 
                     {{-- User Header --}}
                     <li class="user-header text-bg-primary text-center">
@@ -150,7 +150,7 @@
                         <form action="{{ route('logout') }}" method="POST" class="d-flex justify-content-end">
                             @csrf
 
-                            <button type="submit" class="btn btn-outline-danger rounded-0">
+                            <button type="submit" class="btn btn-outline-danger rounded-2">
                                 <i class="bi bi-box-arrow-right me-1"></i>
                                 Logout
                             </button>
@@ -166,4 +166,5 @@
         </ul>
 
     </div>
+
 </nav>

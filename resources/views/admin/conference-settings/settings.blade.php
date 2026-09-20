@@ -6,18 +6,21 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.conferences.show', $conference) }}" class="btn btn-secondary btn-sm rounded-0"
+                <a href="{{ route('admin.conferences.show', $conference) }}" class="btn btn-secondary btn-sm rounded-2"
                     title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
+
                 <h1 class="mb-0 fs-3">
                     Conference Settings
                 </h1>
             </div>
+
             <p class="text-muted mb-0">
                 Manage conference workflow and feature access.
             </p>
         </div>
+
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end mb-0">
                 <li class="breadcrumb-item">
@@ -25,30 +28,33 @@
                         Dashboard
                     </a>
                 </li>
+
                 <li class="breadcrumb-item">
                     <a href="{{ route('admin.conferences.index') }}">
                         Conferences
                     </a>
                 </li>
+
                 <li class="breadcrumb-item">
                     <a href="{{ route('admin.conferences.show', $conference) }}">
                         Detail
                     </a>
                 </li>
+
                 <li class="breadcrumb-item active">
                     Settings
                 </li>
             </ol>
         </div>
     </div>
+
 @endsection
 
 @section('content')
     @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>
-                Please correct the following:
-            </strong>
+        <div class="alert alert-danger rounded-3"> <strong>
+                Please correct the following: </strong>
+
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>
@@ -59,32 +65,35 @@
         </div>
     @endif
 
-
     <form action="{{ route('admin.conferences.settings.update', $conference) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-calendar-event me-2"></i>
                     Conference
                 </h3>
             </div>
+
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-8">
                         <small class="text-muted d-block">
                             Conference Name
                         </small>
+
                         <strong>
                             {{ $conference->name }}
                         </strong>
                     </div>
+
                     <div class="col-md-4">
                         <small class="text-muted d-block">
                             Short Name
                         </small>
+
                         <strong>
                             {{ $conference->short_name }}
                         </strong>
@@ -92,96 +101,113 @@
                 </div>
             </div>
         </div>
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-toggles me-2"></i>
                     General Settings
                 </h3>
             </div>
+
             <div class="card-body">
                 <div class="row g-4">
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="is_active" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="is_active" name="is_active"
                                     value="1" @checked(old('is_active', $settings->is_active))>
+
                                 <label class="form-check-label fw-semibold" for="is_active">
                                     Conference Active
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Enable or disable this conference
                                 from the system.
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="published" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="published" name="published"
                                     value="1" @checked(old('published', $settings->published))>
+
                                 <label class="form-check-label fw-semibold" for="published">
                                     Published
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Make this conference visible
                                 publicly.
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-12">
-                        <div class="border border-warning bg-warning-subtle rounded-0 p-3">
+                        <div class="border border-warning bg-warning-subtle rounded-3 p-3">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="maintenance_mode" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="maintenance_mode"
                                     name="maintenance_mode" value="1" @checked(old('maintenance_mode', $settings->maintenance_mode))>
+
                                 <label class="form-check-label fw-semibold" for="maintenance_mode">
                                     Maintenance Mode
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Temporarily disable conference
                                 access while maintenance is in progress.
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-globe2 me-2"></i>
                     Attendance Options
                 </h3>
             </div>
+
             <div class="card-body">
-                <div class="alert alert-info rounded-0">
+                <div class="alert alert-info rounded-3">
                     <i class="bi bi-info-circle me-2"></i>
                     Select how participants can attend this conference.
                     At least one option must be enabled.
                 </div>
+
                 @php
                     $selectedAttendanceTypes = old('attendance_types', $attendanceOptions ?? []);
                 @endphp
+
                 <div class="row g-3">
 
                     <div class="col-md-4">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
 
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_online"
+                                <input type="checkbox" class="form-check-input" id="attendance_online"
                                     name="attendance_types[]" value="online" @checked(in_array('online', $selectedAttendanceTypes, true))>
 
                                 <label class="form-check-label fw-semibold" for="attendance_online">
-
                                     <i class="bi bi-camera-video me-1"></i>
                                     Online
-
                                 </label>
                             </div>
 
@@ -193,17 +219,15 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
 
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_offline"
+                                <input type="checkbox" class="form-check-input" id="attendance_offline"
                                     name="attendance_types[]" value="offline" @checked(in_array('offline', $selectedAttendanceTypes, true))>
 
                                 <label class="form-check-label fw-semibold" for="attendance_offline">
-
                                     <i class="bi bi-building me-1"></i>
                                     Offline
-
                                 </label>
                             </div>
 
@@ -215,17 +239,15 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
 
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_hybrid"
+                                <input type="checkbox" class="form-check-input" id="attendance_hybrid"
                                     name="attendance_types[]" value="hybrid" @checked(in_array('hybrid', $selectedAttendanceTypes, true))>
 
                                 <label class="form-check-label fw-semibold" for="attendance_hybrid">
-
                                     <i class="bi bi-diagram-3 me-1"></i>
                                     Hybrid
-
                                 </label>
                             </div>
 
@@ -252,102 +274,127 @@
 
             </div>
         </div>
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-diagram-3 me-2"></i>
                     Conference Workflow
                 </h3>
             </div>
+
             <div class="card-body">
                 <div class="row g-4">
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="registration_enabled" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="registration_enabled"
                                     name="registration_enabled" value="1" @checked(old('registration_enabled', $settings->registration_enabled))>
+
                                 <label class="form-check-label fw-semibold" for="registration_enabled">
                                     Registration
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Allow participants to register
                                 for this conference.
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="submission_enabled" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="submission_enabled"
                                     name="submission_enabled" value="1" @checked(old('submission_enabled', $settings->submission_enabled))>
+
                                 <label class="form-check-label fw-semibold" for="submission_enabled">
                                     Submission
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Allow registered participants
                                 to submit papers.
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="payment_enabled" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="payment_enabled"
                                     name="payment_enabled" value="1" @checked(old('payment_enabled', $settings->payment_enabled))>
+
                                 <label class="form-check-label fw-semibold" for="payment_enabled">
                                     Payment
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Allow participants to submit
                                 payment proof.
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="review_enabled" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="review_enabled"
                                     name="review_enabled" value="1" @checked(old('review_enabled', $settings->review_enabled))>
+
                                 <label class="form-check-label fw-semibold" for="review_enabled">
                                     Review
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Enable peer review workflow.
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
-                        <div class="border rounded-0 p-3 h-100">
+                        <div class="border rounded-3 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="certificate_enabled" value="0">
+
                                 <input type="checkbox" class="form-check-input" id="certificate_enabled"
                                     name="certificate_enabled" value="1" @checked(old('certificate_enabled', $settings->certificate_enabled))>
+
                                 <label class="form-check-label fw-semibold" for="certificate_enabled">
                                     Certificate
                                 </label>
                             </div>
+
                             <div class="form-text">
                                 Enable certificate generation
                                 and access.
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
         <div class="text-end mb-3">
-            <button type="submit" class="btn btn-success btn-sm rounded-0">
+            <button type="submit" class="btn btn-success btn-sm rounded-2">
                 <i class="bi bi-check-circle me-1"></i>
                 Save Settings
             </button>
         </div>
     </form>
+
 @endsection

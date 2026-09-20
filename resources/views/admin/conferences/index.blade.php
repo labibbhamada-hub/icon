@@ -2,17 +2,14 @@
 
 @section('title', 'Conferences Management')
 
-@section('header')
-    <div class="row">
+@section('header') <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">Conferences Management</h1>
         </div>
         <div class="col-sm-6">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-                    </li>
+                    <li class="breadcrumb-item"> <a href="{{ route('admin.dashboard') }}">Dashboard</a> </li>
                     <li class="breadcrumb-item active" aria-current="page">Conferences</li>
                 </ol>
             </nav>
@@ -20,21 +17,17 @@
     </div>
 @endsection
 
-@section('content')
-    <div class="card rounded-0">
-        <div class="card-header">
+@section('content') <div class="card rounded-3 overflow-hidden">
+        <div class="card-header rounded-top-3">
             <h3 class="card-title">
-                Conferences List
-            </h3>
-            <div class="float-end">
-                <a href="{{ route('admin.conferences.create') }}" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-plus-circle"></i>
-                    Add Conferences
-                </a>
-            </div>
+                Conferences List </h3>
+            <div class="float-end"> <a href="{{ route('admin.conferences.create') }}"
+                    class="btn btn-success btn-sm rounded-2"> <i class="bi bi-plus-circle"></i>
+                    Add Conferences </a> </div>
         </div>
+
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
@@ -69,18 +62,20 @@
                                     <td class="align-top">
                                         <div class="btn-group gap-1">
                                             <a href="{{ route('admin.conferences.show', $conference) }}"
-                                                class="btn btn-info btn-sm rounded-0">
+                                                class="btn btn-info btn-sm rounded-2">
                                                 <i class="bi bi-eye"></i>
                                             </a>
+
                                             <a href="{{ route('admin.conferences.edit', $conference) }}"
-                                                class="btn btn-warning btn-sm rounded-0">
+                                                class="btn btn-warning btn-sm rounded-2">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+
                                             <form action="{{ route('admin.conferences.destroy', $conference) }}"
                                                 method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-0">
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-2">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -95,11 +90,13 @@
                                         <div class="mb-2">
                                             <i class="bi bi-calendar-event display-4 text-secondary"></i>
                                         </div>
+
                                         <div class="mb-2">
                                             <h5>No Conferences Found</h5>
                                             <p class="text-muted">There is no conferences data yet.</p>
                                         </div>
-                                        <a href="{{ route('admin.conferences.create') }}" class="btn btn-success rounded-0">
+
+                                        <a href="{{ route('admin.conferences.create') }}" class="btn btn-success rounded-2">
                                             <i class="bi bi-plus-circle me-1"></i>
                                             Create First Conferences
                                         </a>
@@ -111,12 +108,14 @@
                 </table>
             </div>
         </div>
+
         @if ($conferences->hasPages())
-            <div class="card-footer clearfix">
+            <div class="card-footer rounded-bottom-3 clearfix">
                 {{ $conferences->links() }}
             </div>
         @endif
     </div>
+
 @endsection
 
 @push('scripts')
@@ -124,6 +123,7 @@
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+
                 Swal.fire({
                     title: 'Delete Conference?',
                     text: 'This action cannot be undone.',

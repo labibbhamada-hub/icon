@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -50,16 +50,15 @@
 
 @endsection
 
-
 @section('content')
 
     <form action="{{ route('admin.submissions.store') }}" method="POST" enctype="multipart/form-data">
 
         @csrf
 
-        <div class="card rounded-0">
+        <div class="card rounded-3 overflow-hidden">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-plus me-2"></i>
@@ -70,14 +69,14 @@
 
             @include('admin.submissions._form')
 
-            <div class="card-footer d-flex justify-content-end gap-2">
+            <div class="card-footer rounded-bottom-3 d-flex justify-content-end gap-2">
 
-                <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0">
+                <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-2">
                     <i class="bi bi-x-circle me-1"></i>
                     Cancel
                 </a>
 
-                <button type="submit" class="btn btn-success btn-sm rounded-0">
+                <button type="submit" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-check-circle me-1"></i>
                     Save Submission
                 </button>

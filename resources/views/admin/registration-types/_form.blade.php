@@ -10,7 +10,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-0">
+            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-2">
                 <option value="">
                     Select Conference
                 </option>
@@ -41,7 +41,7 @@
             </label>
 
             <input type="text" name="name" value="{{ old('name', $conferenceRegistrationType->name ?? '') }}"
-                class="form-control @error('name') is-invalid @enderror rounded-0"
+                class="form-control @error('name') is-invalid @enderror rounded-2"
                 placeholder="e.g. General Participant">
 
             @error('name')
@@ -61,7 +61,7 @@
             </label>
 
             <input type="text" name="code" value="{{ old('code', $conferenceRegistrationType->code ?? '') }}"
-                class="form-control @error('code') is-invalid @enderror rounded-0"
+                class="form-control @error('code') is-invalid @enderror rounded-2"
                 placeholder="e.g. general_participant">
 
             @error('code')
@@ -84,7 +84,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="category" class="form-select @error('category') is-invalid @enderror rounded-0">
+            <select name="category" class="form-select @error('category') is-invalid @enderror rounded-2">
                 <option value="participant" @selected(old('category', $conferenceRegistrationType->category ?? 'participant') === 'participant')>
                     Participant
                 </option>
@@ -113,7 +113,7 @@
 
             <input type="hidden" name="payment_timing" value="immediate">
 
-            <input type="text" class="form-control rounded-0" value="Pay during registration" readonly>
+            <input type="text" class="form-control rounded-2" value="Pay during registration" readonly>
 
             @error('payment_timing')
                 <div class="invalid-feedback d-block">
@@ -130,7 +130,7 @@
         {{-- Registration information --}}
         <div class="col-md-6 mb-3">
 
-            <div class="border border-info rounded-0 p-3 h-100 bg-info-subtle">
+            <div class="border border-info rounded-3 p-3 h-100 bg-info-subtle">
 
                 <div class="small">
 
@@ -152,7 +152,7 @@
         {{-- Pricing --}}
         <div class="col-12 mb-3">
 
-            <div class="border rounded-0 p-3">
+            <div class="border rounded-3 p-3">
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
 
@@ -169,7 +169,7 @@
 
                     </div>
 
-                    <span class="badge text-bg-primary rounded-0">
+                    <span class="badge text-bg-primary rounded-pill">
                         Registration
                     </span>
 
@@ -181,7 +181,7 @@
 
                         <input type="number" name="fee" min="0" step="0.01"
                             value="{{ old('fee', $conferenceRegistrationType->fee ?? 0) }}"
-                            class="form-control @error('fee') is-invalid @enderror rounded-0" placeholder="250000">
+                            class="form-control @error('fee') is-invalid @enderror rounded-2" placeholder="250000">
 
                         @error('fee')
                             <div class="invalid-feedback">
@@ -193,7 +193,7 @@
 
                     <div class="col-md-6">
 
-                        <input type="text" class="form-control rounded-0"
+                        <input type="text" class="form-control rounded-2"
                             value="{{ strtoupper(old('currency', $conferenceRegistrationType->currency ?? 'IDR')) }}"
                             readonly>
 
@@ -219,7 +219,7 @@
 
             <input type="number" name="included_papers" min="0"
                 value="{{ old('included_papers', $conferenceRegistrationType->included_papers ?? 0) }}"
-                class="form-control @error('included_papers') is-invalid @enderror rounded-0">
+                class="form-control @error('included_papers') is-invalid @enderror rounded-2">
 
             @error('included_papers')
                 <div class="invalid-feedback">
@@ -243,7 +243,7 @@
 
             <input type="number" name="additional_paper_fee" min="0" step="0.01"
                 value="{{ old('additional_paper_fee', $conferenceRegistrationType->additional_paper_fee ?? 0) }}"
-                class="form-control @error('additional_paper_fee') is-invalid @enderror rounded-0">
+                class="form-control @error('additional_paper_fee') is-invalid @enderror rounded-2">
 
             @error('additional_paper_fee')
                 <div class="invalid-feedback">
@@ -267,7 +267,7 @@
 
             <input type="text" name="currency"
                 value="{{ old('currency', $conferenceRegistrationType->currency ?? 'IDR') }}"
-                class="form-control @error('currency') is-invalid @enderror rounded-0" placeholder="IDR">
+                class="form-control @error('currency') is-invalid @enderror rounded-2" placeholder="IDR">
 
             @error('currency')
                 <div class="invalid-feedback">
@@ -286,7 +286,7 @@
 
             <input type="number" name="sort_order" min="0"
                 value="{{ old('sort_order', $conferenceRegistrationType->sort_order ?? 0) }}"
-                class="form-control @error('sort_order') is-invalid @enderror rounded-0">
+                class="form-control @error('sort_order') is-invalid @enderror rounded-2">
 
             @error('sort_order')
                 <div class="invalid-feedback">
@@ -303,7 +303,7 @@
                 Description
             </label>
 
-            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-0"
+            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-2"
                 placeholder="Explain who this registration type is for...">{{ old('description', $conferenceRegistrationType->description ?? '') }}</textarea>
 
             @error('description')
@@ -321,7 +321,7 @@
                 Benefits
             </label>
 
-            <textarea name="benefits" rows="5" class="form-control @error('benefits') is-invalid @enderror rounded-0"
+            <textarea name="benefits" rows="5" class="form-control @error('benefits') is-invalid @enderror rounded-2"
                 placeholder="One benefit per line...">{{ old('benefits', $conferenceRegistrationType->benefits ?? '') }}</textarea>
 
             @error('benefits')

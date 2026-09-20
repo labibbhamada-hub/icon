@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -54,7 +54,6 @@
 
 @endsection
 
-
 @section('content')
 
     @php
@@ -79,12 +78,12 @@
 
 
     {{-- ============================================================
-        ACCOUNT INFORMATION
-    ============================================================= --}}
+    ACCOUNT INFORMATION
+============================================================= --}}
 
-    <div class="card rounded-0 mb-3">
+    <div class="card rounded-3 overflow-hidden mb-3">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -96,7 +95,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-warning btn-sm rounded-0">
+                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit User
                 </a>
@@ -113,7 +112,7 @@
                 {{-- Identity --}}
                 <div class="col-lg-3 col-md-4 mb-3 mb-lg-0">
 
-                    <div class="border rounded-0 p-3 text-center h-100">
+                    <div class="border rounded-3 p-3 text-center h-100">
 
                         <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3"
                             style="width: 80px; height: 80px;">
@@ -137,17 +136,17 @@
 
                         <div class="d-flex justify-content-center flex-wrap gap-1">
 
-                            <span class="badge text-bg-{{ $roleClass }} rounded-0">
+                            <span class="badge text-bg-{{ $roleClass }} rounded-pill">
                                 {{ $roleLabel }}
                             </span>
 
 
                             @if ($user->status === 'active')
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     Active
                                 </span>
                             @else
-                                <span class="badge text-bg-secondary rounded-0">
+                                <span class="badge text-bg-secondary rounded-pill">
                                     Inactive
                                 </span>
                             @endif
@@ -196,7 +195,7 @@
                                 Role
                             </div>
 
-                            <span class="badge text-bg-{{ $roleClass }} rounded-0">
+                            <span class="badge text-bg-{{ $roleClass }} rounded-pill">
                                 {{ $roleLabel }}
                             </span>
 
@@ -210,11 +209,11 @@
                             </div>
 
                             @if ($user->status === 'active')
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     Active
                                 </span>
                             @else
-                                <span class="badge text-bg-secondary rounded-0">
+                                <span class="badge text-bg-secondary rounded-pill">
                                     Inactive
                                 </span>
                             @endif
@@ -259,14 +258,14 @@
 
 
     {{-- ============================================================
-        REVIEWER ASSIGNMENTS
-    ============================================================= --}}
+    REVIEWER ASSIGNMENTS
+============================================================= --}}
 
     @if ($user->role === 'reviewer' && $user->reviewers->count())
 
-        <div class="card rounded-0">
+        <div class="card rounded-3 overflow-hidden">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
 
@@ -281,7 +280,7 @@
 
             <div class="card-body p-0">
 
-                <div class="table-responsive">
+                <div class="table-responsive rounded-3">
 
                     <table class="table table-hover align-middle mb-0">
 
@@ -349,12 +348,12 @@
                                     <td>
 
                                         @if ($reviewer->is_active)
-                                            <span class="badge text-bg-success rounded-0">
+                                            <span class="badge text-bg-success rounded-pill">
                                                 <i class="bi bi-check-circle me-1"></i>
                                                 Active
                                             </span>
                                         @else
-                                            <span class="badge text-bg-secondary rounded-0">
+                                            <span class="badge text-bg-secondary rounded-pill">
                                                 <i class="bi bi-pause-circle me-1"></i>
                                                 Inactive
                                             </span>
@@ -375,9 +374,9 @@
 
         </div>
     @elseif ($user->role === 'reviewer')
-        <div class="card rounded-0">
+        <div class="card rounded-3 overflow-hidden">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
 

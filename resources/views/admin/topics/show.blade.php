@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-info-circle me-2"></i>
@@ -63,7 +63,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.topics.edit', $topic) }}" class="btn btn-warning btn-sm rounded-0">
+                <a href="{{ route('admin.topics.edit', $topic) }}" class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Topic
                 </a>
@@ -74,7 +74,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-bordered align-middle mb-0">
 
@@ -147,7 +147,7 @@
                             </th>
 
                             <td>
-                                <span class="badge text-bg-{{ $topic->color }} rounded-0">
+                                <span class="badge text-bg-{{ $topic->color }} rounded-pill">
                                     {{ ucfirst($topic->color) }}
                                 </span>
                             </td>
@@ -171,11 +171,11 @@
                             <td>
 
                                 @if ($topic->is_active)
-                                    <span class="badge text-bg-success rounded-0">
+                                    <span class="badge text-bg-success rounded-pill">
                                         Active
                                     </span>
                                 @else
-                                    <span class="badge text-bg-secondary rounded-0">
+                                    <span class="badge text-bg-secondary rounded-pill">
                                         Inactive
                                     </span>
                                 @endif
@@ -211,9 +211,9 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Topics
             </a>

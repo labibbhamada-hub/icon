@@ -40,12 +40,11 @@
 
 @endsection
 
-
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
 
@@ -56,7 +55,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.reviews.export') }}" class="btn btn-dark btn-sm rounded-0">
+                <a href="{{ route('admin.reviews.export') }}" class="btn btn-dark btn-sm rounded-2">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -68,7 +67,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -177,7 +176,7 @@
                                 {{-- Round --}}
                                 <td class="align-top">
 
-                                    <span class="badge text-bg-secondary rounded-0">
+                                    <span class="badge text-bg-secondary rounded-pill">
                                         Round {{ $review->review_round }}
                                     </span>
 
@@ -234,7 +233,7 @@
                                         @endphp
 
 
-                                        <span class="badge text-bg-{{ $recommendationClass }} rounded-0">
+                                        <span class="badge text-bg-{{ $recommendationClass }} rounded-pill">
                                             {{ $recommendations[$review->recommendation] ?? ucfirst(str_replace('_', ' ', $review->recommendation)) }}
                                         </span>
                                     @else
@@ -250,7 +249,7 @@
                                 <td class="align-top">
 
                                     @if ($review->reviewed_at)
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Completed
                                         </span>
@@ -259,7 +258,7 @@
                                             {{ $review->reviewed_at->format('d M Y') }}
                                         </small>
                                     @else
-                                        <span class="badge text-bg-warning rounded-0">
+                                        <span class="badge text-bg-warning rounded-pill">
                                             <i class="bi bi-hourglass-split me-1"></i>
                                             Pending
                                         </span>
@@ -272,7 +271,7 @@
                                 <td class="align-top">
 
                                     <a href="{{ route('admin.reviews.show', $review) }}"
-                                        class="btn btn-info btn-sm rounded-0" title="View Review">
+                                        class="btn btn-info btn-sm rounded-2" title="View Review">
                                         <i class="bi bi-eye"></i>
                                     </a>
 
@@ -315,7 +314,7 @@
 
 
         @if ($reviews->hasPages())
-            <div class="card-footer">
+            <div class="card-footer rounded-bottom-3">
 
                 {{ $reviews->links() }}
 

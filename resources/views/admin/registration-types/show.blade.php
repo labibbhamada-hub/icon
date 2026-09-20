@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-tags me-2"></i>
@@ -64,7 +64,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.registration-types.edit', $conferenceRegistrationType) }}"
-                    class="btn btn-warning btn-sm rounded-0">
+                    class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Registration Type
                 </a>
@@ -122,11 +122,11 @@
                     </small>
 
                     @if ($conferenceRegistrationType->category === 'presenter')
-                        <span class="badge text-bg-primary rounded-0">
+                        <span class="badge text-bg-primary rounded-pill">
                             Presenter
                         </span>
                     @else
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             Participant
                         </span>
                     @endif
@@ -214,11 +214,11 @@
                     </small>
 
                     @if ($conferenceRegistrationType->is_active)
-                        <span class="badge text-bg-success rounded-0">
+                        <span class="badge text-bg-success rounded-pill">
                             Active
                         </span>
                     @else
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             Inactive
                         </span>
                     @endif
@@ -290,9 +290,9 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Registration Types
             </a>

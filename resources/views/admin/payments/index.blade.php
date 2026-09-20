@@ -42,9 +42,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-credit-card me-2"></i>
@@ -53,7 +53,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.payments.export') }}" class="btn btn-dark btn-sm rounded-0">
+                <a href="{{ route('admin.payments.export') }}" class="btn btn-dark btn-sm rounded-2">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -64,7 +64,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -244,17 +244,17 @@
                                 <td>
 
                                     @if ($payment->status === 'verified')
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Verified
                                         </span>
                                     @elseif ($payment->status === 'rejected')
-                                        <span class="badge text-bg-danger rounded-0">
+                                        <span class="badge text-bg-danger rounded-pill">
                                             <i class="bi bi-x-circle me-1"></i>
                                             Rejected
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-0">
+                                        <span class="badge text-bg-warning rounded-pill">
                                             <i class="bi bi-clock me-1"></i>
                                             Pending
                                         </span>
@@ -266,7 +266,7 @@
                                 <td>
 
                                     <a href="{{ route('admin.payments.show', $payment) }}"
-                                        class="btn btn-info btn-sm rounded-0" title="View Payment">
+                                        class="btn btn-info btn-sm rounded-2" title="View Payment">
                                         <i class="bi bi-eye"></i>
                                     </a>
 
@@ -309,7 +309,7 @@
         </div>
 
         @if ($payments->hasPages())
-            <div class="card-footer">
+            <div class="card-footer rounded-bottom-3">
                 {{ $payments->links() }}
             </div>
         @endif

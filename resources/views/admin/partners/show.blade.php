@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.partners.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.partners.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-buildings me-2"></i>
@@ -63,7 +63,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.partners.edit', $partner) }}" class="btn btn-warning btn-sm rounded-0">
+                <a href="{{ route('admin.partners.edit', $partner) }}" class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Partner
                 </a>
@@ -80,9 +80,9 @@
 
                     @if ($partner->logo)
                         <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name }}"
-                            class="img-thumbnail rounded-0 w-100" style="aspect-ratio: 1 / 1; object-fit: contain;">
+                            class="img-thumbnail rounded-3 w-100" style="aspect-ratio: 1 / 1; object-fit: contain;">
                     @else
-                        <div class="border rounded-0 d-flex align-items-center justify-content-center bg-light w-100"
+                        <div class="border rounded-3 d-flex align-items-center justify-content-center bg-light w-100"
                             style="aspect-ratio: 1 / 1;">
                             <div class="text-center text-muted">
 
@@ -106,112 +106,116 @@
 
                     <div class="mb-3">
 
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             {{ ucwords(str_replace('_', ' ', $partner->type)) }}
                         </span>
 
                         @if ($partner->is_active)
-                            <span class="badge text-bg-success rounded-0">
+                            <span class="badge text-bg-success rounded-pill">
                                 Active
                             </span>
                         @else
-                            <span class="badge text-bg-secondary rounded-0">
+                            <span class="badge text-bg-secondary rounded-pill">
                                 Inactive
                             </span>
                         @endif
 
                     </div>
 
-                    <table class="table table-borderless align-middle mb-0">
+                    <div class="table-responsive rounded-3">
 
-                        <tbody>
+                        <table class="table table-borderless align-middle mb-0">
 
-                            <tr>
+                            <tbody>
 
-                                <th width="180">
-                                    Conference
-                                </th>
+                                <tr>
 
-                                <td>
+                                    <th width="180">
+                                        Conference
+                                    </th>
 
-                                    @if ($partner->conference)
-                                        <strong>
-                                            {{ $partner->conference->name }}
-                                        </strong>
+                                    <td>
 
-                                        <small class="text-muted d-block">
-                                            {{ $partner->conference->short_name }}
-                                            ({{ $partner->conference->year }})
-                                        </small>
-                                    @else
-                                        -
-                                    @endif
+                                        @if ($partner->conference)
+                                            <strong>
+                                                {{ $partner->conference->name }}
+                                            </strong>
 
-                                </td>
+                                            <small class="text-muted d-block">
+                                                {{ $partner->conference->short_name }}
+                                                ({{ $partner->conference->year }})
+                                            </small>
+                                        @else
+                                            -
+                                        @endif
 
-                            </tr>
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Website
-                                </th>
+                                <tr>
 
-                                <td>
+                                    <th>
+                                        Website
+                                    </th>
 
-                                    @if ($partner->website)
-                                        <a href="{{ $partner->website }}" target="_blank" rel="noopener noreferrer">
-                                            {{ $partner->website }}
+                                    <td>
 
-                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
+                                        @if ($partner->website)
+                                            <a href="{{ $partner->website }}" target="_blank" rel="noopener noreferrer">
+                                                {{ $partner->website }}
 
-                                </td>
+                                                <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
 
-                            </tr>
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Sort Order
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $partner->sort_order }}
-                                </td>
+                                    <th>
+                                        Sort Order
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $partner->sort_order }}
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Created At
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $partner->created_at->format('d M Y H:i') }}
-                                </td>
+                                    <th>
+                                        Created At
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $partner->created_at->format('d M Y H:i') }}
+                                    </td>
 
-                            <tr>
+                                </tr>
 
-                                <th>
-                                    Last Updated
-                                </th>
+                                <tr>
 
-                                <td>
-                                    {{ $partner->updated_at->format('d M Y H:i') }}
-                                </td>
+                                    <th>
+                                        Last Updated
+                                    </th>
 
-                            </tr>
+                                    <td>
+                                        {{ $partner->updated_at->format('d M Y H:i') }}
+                                    </td>
 
-                        </tbody>
+                                </tr>
 
-                    </table>
+                            </tbody>
+
+                        </table>
+
+                    </div>
 
                 </div>
 
@@ -237,9 +241,9 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.partners.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.partners.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Partners
             </a>

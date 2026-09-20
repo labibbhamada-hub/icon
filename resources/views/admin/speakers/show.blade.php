@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-0">
+    <div class="card rounded-3 overflow-hidden">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
 
             <h3 class="card-title">
                 <i class="bi bi-mic me-2"></i>
@@ -63,7 +63,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.speakers.edit', $speaker) }}" class="btn btn-warning btn-sm rounded-0">
+                <a href="{{ route('admin.speakers.edit', $speaker) }}" class="btn btn-warning btn-sm rounded-2">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Speaker
                 </a>
@@ -80,9 +80,9 @@
 
                     @if ($speaker->photo)
                         <img src="{{ asset('storage/' . $speaker->photo) }}" alt="{{ $speaker->name }}"
-                            class="img-thumbnail rounded-0 w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                            class="img-thumbnail rounded-3 w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
                     @else
-                        <div class="border rounded-0 d-flex align-items-center justify-content-center bg-light w-100"
+                        <div class="border rounded-3 d-flex align-items-center justify-content-center bg-light w-100"
                             style="aspect-ratio: 1 / 1;">
                             <div class="text-center text-muted">
 
@@ -110,142 +110,146 @@
                         </div>
                     @endif
 
-                    <table class="table table-borderless align-middle mb-0">
+                    <div class="table-responsive rounded-3">
 
-                        <tbody>
+                        <table class="table table-borderless align-middle mb-0">
 
-                            <tr>
-                                <th width="180">
-                                    Conference
-                                </th>
+                            <tbody>
 
-                                <td>
+                                <tr>
+                                    <th width="180">
+                                        Conference
+                                    </th>
 
-                                    @if ($speaker->conference)
-                                        <strong>
-                                            {{ $speaker->conference->name }}
-                                        </strong>
+                                    <td>
 
-                                        <small class="text-muted d-block">
-                                            {{ $speaker->conference->short_name }}
-                                            ({{ $speaker->conference->year }})
-                                        </small>
-                                    @else
-                                        -
-                                    @endif
+                                        @if ($speaker->conference)
+                                            <strong>
+                                                {{ $speaker->conference->name }}
+                                            </strong>
 
-                                </td>
-                            </tr>
+                                            <small class="text-muted d-block">
+                                                {{ $speaker->conference->short_name }}
+                                                ({{ $speaker->conference->year }})
+                                            </small>
+                                        @else
+                                            -
+                                        @endif
 
-                            <tr>
-                                <th>
-                                    Institution
-                                </th>
+                                    </td>
+                                </tr>
 
-                                <td>
-                                    {{ $speaker->institution ?: '-' }}
-                                </td>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        Institution
+                                    </th>
 
-                            <tr>
-                                <th>
-                                    Position
-                                </th>
+                                    <td>
+                                        {{ $speaker->institution ?: '-' }}
+                                    </td>
+                                </tr>
 
-                                <td>
-                                    {{ $speaker->position ?: '-' }}
-                                </td>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        Position
+                                    </th>
 
-                            <tr>
-                                <th>
-                                    Email
-                                </th>
+                                    <td>
+                                        {{ $speaker->position ?: '-' }}
+                                    </td>
+                                </tr>
 
-                                <td>
+                                <tr>
+                                    <th>
+                                        Email
+                                    </th>
 
-                                    @if ($speaker->email)
-                                        <a href="mailto:{{ $speaker->email }}">
-                                            {{ $speaker->email }}
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
+                                    <td>
 
-                                </td>
-                            </tr>
+                                        @if ($speaker->email)
+                                            <a href="mailto:{{ $speaker->email }}">
+                                                {{ $speaker->email }}
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
 
-                            <tr>
-                                <th>
-                                    LinkedIn
-                                </th>
+                                    </td>
+                                </tr>
 
-                                <td>
+                                <tr>
+                                    <th>
+                                        LinkedIn
+                                    </th>
 
-                                    @if ($speaker->linkedin)
-                                        <a href="{{ $speaker->linkedin }}" target="_blank" rel="noopener noreferrer">
-                                            {{ $speaker->linkedin }}
-                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
+                                    <td>
 
-                                </td>
-                            </tr>
+                                        @if ($speaker->linkedin)
+                                            <a href="{{ $speaker->linkedin }}" target="_blank" rel="noopener noreferrer">
+                                                {{ $speaker->linkedin }}
+                                                <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
 
-                            <tr>
-                                <th>
-                                    Website
-                                </th>
+                                    </td>
+                                </tr>
 
-                                <td>
+                                <tr>
+                                    <th>
+                                        Website
+                                    </th>
 
-                                    @if ($speaker->website)
-                                        <a href="{{ $speaker->website }}" target="_blank" rel="noopener noreferrer">
-                                            {{ $speaker->website }}
-                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
+                                    <td>
 
-                                </td>
-                            </tr>
+                                        @if ($speaker->website)
+                                            <a href="{{ $speaker->website }}" target="_blank" rel="noopener noreferrer">
+                                                {{ $speaker->website }}
+                                                <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
 
-                            <tr>
-                                <th>
-                                    Sort Order
-                                </th>
+                                    </td>
+                                </tr>
 
-                                <td>
-                                    {{ $speaker->sort_order }}
-                                </td>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        Sort Order
+                                    </th>
 
-                            <tr>
-                                <th>
-                                    Status
-                                </th>
+                                    <td>
+                                        {{ $speaker->sort_order }}
+                                    </td>
+                                </tr>
 
-                                <td>
+                                <tr>
+                                    <th>
+                                        Status
+                                    </th>
 
-                                    @if ($speaker->is_active)
-                                        <span class="badge text-bg-success rounded-0">
-                                            Active
-                                        </span>
-                                    @else
-                                        <span class="badge text-bg-secondary rounded-0">
-                                            Inactive
-                                        </span>
-                                    @endif
+                                    <td>
 
-                                </td>
-                            </tr>
+                                        @if ($speaker->is_active)
+                                            <span class="badge text-bg-success rounded-pill">
+                                                Active
+                                            </span>
+                                        @else
+                                            <span class="badge text-bg-secondary rounded-pill">
+                                                Inactive
+                                            </span>
+                                        @endif
 
-                        </tbody>
+                                    </td>
+                                </tr>
 
-                    </table>
+                            </tbody>
+
+                        </table>
+
+                    </div>
 
                 </div>
 
@@ -271,9 +275,9 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer rounded-bottom-3">
 
-            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-0">
+            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-2">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Speakers
             </a>
