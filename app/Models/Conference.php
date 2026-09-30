@@ -96,4 +96,9 @@ class Conference extends Model
             ConferenceWhatsappGroup::class
         );
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(ConferenceAttendance::class);
+    }
 }

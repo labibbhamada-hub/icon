@@ -148,4 +148,9 @@ Route::middleware(['auth', 'role:participant', 'verified'])
         Route::get('/certificates', [App\Http\Controllers\Participant\CertificateController::class, 'index'])->name('certificates.index');
         Route::get('/certificates/{certificate}', [App\Http\Controllers\Participant\CertificateController::class, 'show'])->name('certificates.show');
         Route::get('/certificates/{certificate}/download', [App\Http\Controllers\Participant\CertificateController::class, 'download'])->name('certificates.download');
+
+        Route::post(
+            '/attendance/{participant}/check-in',
+            [App\Http\Controllers\Participant\AttendanceController::class, 'checkIn']
+        )->name('attendance.check-in');
     });

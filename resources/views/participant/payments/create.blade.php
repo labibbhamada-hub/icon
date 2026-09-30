@@ -2,14 +2,13 @@
 
 @section('title', 'Complete Payment')
 
-@section('header')
-    <div class="row align-items-center">
+@section('header') <div class="row align-items-center">
 
         <div class="col-sm-6">
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary btn-sm rounded-0">
+                <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary btn-sm rounded-2">
 
                     <i class="bi bi-arrow-left"></i>
 
@@ -52,13 +51,14 @@
         </div>
 
     </div>
+
 @endsection
 
 @section('content')
 
     @if ($participants->isEmpty())
 
-        <div class="alert alert-info rounded-0">
+        <div class="alert alert-info rounded-3">
 
             <div class="d-flex align-items-start gap-2">
 
@@ -81,7 +81,7 @@
 
         </div>
 
-        <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-0">
+        <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-2">
 
             <i class="bi bi-arrow-left me-1"></i>
             Back to Registration
@@ -103,11 +103,11 @@
             @csrf
 
             {{-- =========================================================
-                 REGISTRATION
-            ========================================================== --}}
-            <div class="card rounded-0 mb-3">
+             REGISTRATION
+        ========================================================== --}}
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-person-check me-2"></i>
@@ -130,7 +130,7 @@
                             </label>
 
                             <select name="participant_id" id="participant_id"
-                                class="form-select @error('participant_id') is-invalid @enderror rounded-0">
+                                class="form-select @error('participant_id') is-invalid @enderror rounded-2">
 
                                 @foreach ($participants as $participant)
                                     <option value="{{ $participant->id }}" @selected($oldParticipantId == $participant->id)>
@@ -164,7 +164,7 @@
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Conference
@@ -187,7 +187,7 @@
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Registration Number
@@ -203,7 +203,7 @@
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Registration Type
@@ -229,7 +229,7 @@
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Attendance
@@ -260,11 +260,11 @@
             </div>
 
             {{-- =========================================================
-                 PAYMENT SUMMARY
-            ========================================================== --}}
-            <div class="card rounded-0 mb-3">
+             PAYMENT SUMMARY
+        ========================================================== --}}
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-receipt me-2"></i>
@@ -279,7 +279,7 @@
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Base Registration Fee
@@ -298,7 +298,7 @@
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Accepted Papers
@@ -316,7 +316,7 @@
 
                         <div class="col-md-4">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Included Papers
@@ -334,7 +334,7 @@
 
                         <div class="col-md-4">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Additional Papers
@@ -352,7 +352,7 @@
 
                         <div class="col-md-4">
 
-                            <div class="border rounded-0 p-3 h-100">
+                            <div class="border rounded-3 p-3 h-100">
 
                                 <small class="text-muted d-block">
                                     Additional Fee
@@ -370,13 +370,14 @@
                         </div>
 
                     </div>
+
                     <div class="border-top mt-4 pt-3">
 
                         <div class="row g-3">
 
                             <div class="col-md-6">
 
-                                <div class="border rounded-0 p-3 h-100">
+                                <div class="border rounded-3 p-3 h-100">
 
                                     <small class="text-muted d-block">
                                         Total Obligation
@@ -399,7 +400,7 @@
 
                             <div class="col-md-6">
 
-                                <div class="border rounded-0 p-3 h-100">
+                                <div class="border rounded-3 p-3 h-100">
 
                                     <small class="text-muted d-block">
                                         Already Paid
@@ -422,7 +423,7 @@
 
                         </div>
 
-                        <div class="border rounded-0 p-3 mt-3">
+                        <div class="border rounded-3 p-3 mt-3">
 
                             <div class="d-flex justify-content-between align-items-center">
 
@@ -454,22 +455,26 @@
                         </div>
 
                     </div>
+
                     @if ($defaultParticipant->registrationType?->payment_timing === 'after_acceptance')
-                        <div class="alert alert-info rounded-0 mt-3 mb-0">
+                        <div class="alert alert-info rounded-3 mt-3 mb-0">
                             <i class="bi bi-info-circle me-2"></i>
                             Your payment is calculated from your accepted papers.
                             Additional accepted papers may increase your total obligation.
                             Any previous verified payment is deducted from the amount due now.
                         </div>
                     @endif
-                </div>
-            </div>
-            {{-- =========================================================
-                 PAYMENT METHOD
-            ========================================================== --}}
-            <div class="card rounded-0 mb-3">
 
-                <div class="card-header">
+                </div>
+
+            </div>
+
+            {{-- =========================================================
+             PAYMENT METHOD
+        ========================================================== --}}
+            <div class="card rounded-3 overflow-hidden mb-3">
+
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-credit-card me-2"></i>
@@ -490,7 +495,7 @@
                     @if ($paymentMethods && $paymentMethods->isNotEmpty())
 
                         @error('payment_method_id')
-                            <div class="alert alert-danger rounded-0 mb-3">
+                            <div class="alert alert-danger rounded-3 mb-3">
 
                                 <div class="d-flex align-items-start gap-2">
 
@@ -523,7 +528,7 @@
                                         <input type="radio" name="payment_method_id" value="{{ $paymentMethod->id }}"
                                             class="btn-check payment-method-option" @checked(old('payment_method_id', $paymentMethods->first()->id) == $paymentMethod->id)>
 
-                                        <div class="border rounded-0 p-3 h-100 payment-method-card">
+                                        <div class="border rounded-3 p-3 h-100 payment-method-card">
 
                                             <div class="d-flex justify-content-between align-items-start gap-3">
 
@@ -594,8 +599,8 @@
                                                     </small>
 
                                                     <img src="{{ asset('storage/' . $paymentMethod->qr_code_file) }}"
-                                                        alt="{{ $paymentMethod->name }}" class="img-fluid border"
-                                                        style="max-width: 220px;">
+                                                        alt="{{ $paymentMethod->name }}"
+                                                        class="img-fluid border rounded-3" style="max-width: 220px;">
 
                                                 </div>
                                             @endif
@@ -623,7 +628,7 @@
 
                         </div>
                     @else
-                        <div class="alert alert-warning rounded-0 mb-0">
+                        <div class="alert alert-warning rounded-3 mb-0">
 
                             <div class="d-flex align-items-start gap-2">
 
@@ -653,11 +658,11 @@
             </div>
 
             {{-- =========================================================
-                 PAYMENT PROOF
-            ========================================================== --}}
-            <div class="card rounded-0 mb-3">
+             PAYMENT PROOF
+        ========================================================== --}}
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
 
                     <h3 class="card-title">
                         <i class="bi bi-file-earmark-arrow-up me-2"></i>
@@ -681,7 +686,7 @@
 
                             <input type="datetime-local" name="paid_at" id="paid_at"
                                 value="{{ old('paid_at', now()->format('Y-m-d\TH:i')) }}"
-                                class="form-control @error('paid_at') is-invalid @enderror rounded-0">
+                                class="form-control @error('paid_at') is-invalid @enderror rounded-2">
 
                             @error('paid_at')
                                 <div class="invalid-feedback">
@@ -705,7 +710,7 @@
                             </label>
 
                             <input type="file" name="proof_file" id="proof_file" accept=".jpg,.jpeg,.png,.webp,.pdf"
-                                class="form-control @error('proof_file') is-invalid @enderror rounded-0">
+                                class="form-control @error('proof_file') is-invalid @enderror rounded-2">
 
                             @error('proof_file')
                                 <div class="invalid-feedback">
@@ -727,7 +732,7 @@
                             </label>
 
                             <textarea name="notes" id="notes" rows="4"
-                                class="form-control @error('notes') is-invalid @enderror rounded-0" placeholder="Optional payment information...">{{ old('notes') }}</textarea>
+                                class="form-control @error('notes') is-invalid @enderror rounded-2" placeholder="Optional payment information...">{{ old('notes') }}</textarea>
 
                             @error('notes')
                                 <div class="invalid-feedback">
@@ -741,7 +746,7 @@
 
                 </div>
 
-                <div class="card-footer">
+                <div class="card-footer rounded-bottom-3">
 
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
@@ -753,7 +758,7 @@
 
                         </div>
 
-                        <button type="submit" class="btn btn-success rounded-0" @disabled(!$paymentMethods || $paymentMethods->isEmpty())>
+                        <button type="submit" class="btn btn-success rounded-2" @disabled(!$paymentMethods || $paymentMethods->isEmpty())>
 
                             <i class="bi bi-check-circle me-1"></i>
                             Submit Payment Proof

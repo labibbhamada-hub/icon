@@ -2,14 +2,13 @@
 
 @section('title', 'Registration')
 
-@section('header')
-    <div class="row align-items-top">
+@section('header') <div class="row align-items-top">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
-                My Registration
-            </h1>
+                My Registration </h1>
             <p class="text-muted mb-0">View your conference registrations.</p>
         </div>
+
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item">
@@ -19,23 +18,24 @@
             </ol>
         </div>
     </div>
+
 @endsection
 
-@section('content')
-    <div class="card rounded-0">
-        <div class="card-header">
+@section('content') <div class="card rounded-3 overflow-hidden">
+        <div class="card-header rounded-top-3">
             <h3 class="card-title">
-                Conference Registrations
-            </h3>
+                Conference Registrations </h3>
+
             <div class="float-end">
-                <a href="{{ route('participant.registration.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('participant.registration.create') }}" class="btn btn-success btn-sm rounded-2">
                     <i class="bi bi-plus-circle me-1"></i>
                     Register Conference
                 </a>
             </div>
         </div>
+
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive rounded-3">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
@@ -48,6 +48,7 @@
                             <th class="align-top">Registered</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @forelse ($registrations as $registration)
                             <tr>
@@ -56,11 +57,13 @@
                                         {{ $registration->registration_number }}
                                     </strong>
                                 </td>
+
                                 <td class="align-top">
                                     @if ($registration->conference)
                                         <strong>
                                             {{ $registration->conference->name }}
                                         </strong>
+
                                         <small class="text-muted d-block">
                                             {{ $registration->conference->short_name }}
                                             ({{ $registration->conference->year }})
@@ -69,48 +72,53 @@
                                         —
                                     @endif
                                 </td>
+
                                 <td class="align-top">
                                     {{ ucwords(str_replace('_', ' ', $registration->participant_type)) }}
                                 </td>
+
                                 <td class="align-top">
                                     {{ ucfirst($registration->attendance_type) }}
                                 </td>
+
                                 <td class="align-top">
                                     @if ($registration->registration_status === 'confirmed')
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             Confirmed
                                         </span>
                                     @elseif ($registration->registration_status === 'cancelled')
-                                        <span class="badge text-bg-danger rounded-0">
+                                        <span class="badge text-bg-danger rounded-pill">
                                             Cancelled
                                         </span>
                                     @elseif ($registration->registration_status === 'pending')
-                                        <span class="badge text-bg-warning rounded-0">
+                                        <span class="badge text-bg-warning rounded-pill">
                                             Pending
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-0">
+                                        <span class="badge text-bg-secondary rounded-pill">
                                             {{ ucwords(str_replace('_', ' ', $registration->registration_status)) }}
                                         </span>
                                     @endif
                                 </td>
+
                                 <td class="align-top">
                                     @if (
                                         $registration->registration_status === 'pending' &&
                                             $registration->registrationType?->payment_timing === 'immediate')
                                         <a href="{{ route('participant.payments.create') }}"
-                                            class="btn btn-warning btn-sm rounded-0">
+                                            class="btn btn-warning btn-sm rounded-2">
                                             <i class="bi bi-credit-card me-1"></i>
                                             Pay Now
                                         </a>
                                     @elseif ($registration->registration_status === 'confirmed')
-                                        <span class="badge text-bg-success rounded-0">
+                                        <span class="badge text-bg-success rounded-pill">
                                             Paid / Confirmed
                                         </span>
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif
                                 </td>
+
                                 <td class="align-top">
                                     {{ $registration->registered_at?->format('d M Y H:i') ?? '—' }}
                                 </td>
@@ -119,14 +127,17 @@
                             <tr>
                                 <td colspan="7" class="text-center py-5">
                                     <i class="bi bi-calendar-x display-5 text-muted"></i>
+
                                     <h5 class="mt-3">
                                         No Registrations
                                     </h5>
+
                                     <p class="text-muted mb-3">
                                         You have not registered for any conference yet.
                                     </p>
+
                                     <a href="{{ route('participant.registration.create') }}"
-                                        class="btn btn-success rounded-0">
+                                        class="btn btn-success rounded-2">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Register Conference
                                     </a>
@@ -138,4 +149,5 @@
             </div>
         </div>
     </div>
+
 @endsection

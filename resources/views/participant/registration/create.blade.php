@@ -2,17 +2,16 @@
 
 @section('title', 'Register for ICON 2026')
 
-@section('header')
-    <div class="row align-items-top">
+@section('header') <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
+            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.registration.index') }}"
+                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+
                 <h1 class="mb-0 fs-3">
                     Register for {{ $conference?->short_name ?? 'Conference' }}
                 </h1>
             </div>
+
             <p class="text-muted mb-0">
                 Complete your conference registration.
             </p>
@@ -38,13 +37,14 @@
             </ol>
         </div>
     </div>
+
 @endsection
 
 @section('content')
 
     @if (!$conference)
 
-        <div class="alert alert-info rounded-0">
+        <div class="alert alert-info rounded-3">
             <i class="bi bi-info-circle me-2"></i>
             There is currently no conference open for registration.
         </div>
@@ -65,25 +65,28 @@
             <input type="hidden" name="conference_id" value="{{ $conference->id }}">
 
             {{-- =========================================================
-                 REGISTRATION TYPE
-            ========================================================== --}}
-            <div class="card rounded-0 mb-3">
+             REGISTRATION TYPE
+        ========================================================== --}}
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
                     <h3 class="card-title">
                         <i class="bi bi-person-check me-2"></i>
                         How will you participate?
                     </h3>
                 </div>
+
                 <div class="card-body">
                     @error('registration_type_id')
-                        <div class="alert alert-danger rounded-0 mb-3">
+                        <div class="alert alert-danger rounded-3 mb-3">
                             <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-exclamation-circle fs-5"></i>
+
                                 <div>
                                     <strong>
                                         Registration Type Required
                                     </strong>
+
                                     <div class="small mt-1">
                                         Please choose how you would like to participate
                                         in this conference.
@@ -92,13 +95,15 @@
                             </div>
                         </div>
                     @enderror
+
                     <div class="row g-3">
                         @foreach ($conference->registrationTypes as $registrationType)
                             <div class="col-md-6">
                                 <label class="d-block h-100">
                                     <input type="radio" name="registration_type_id" value="{{ $registrationType->id }}"
                                         class="btn-check registration-type-option" @checked(old('registration_type_id') == $registrationType->id)>
-                                    <div class="border rounded-0 p-3 h-100 registration-type-card">
+
+                                    <div class="border rounded-3 p-3 h-100 registration-type-card">
                                         <div class="d-flex justify-content-between align-items-start gap-3">
                                             <div>
                                                 <h5 class="fw-bold mb-0">
@@ -178,11 +183,11 @@
             </div>
 
             {{-- =========================================================
-                 YOUR INFORMATION
-            ========================================================== --}}
-            <div class="card rounded-0 mb-3">
+             YOUR INFORMATION
+        ========================================================== --}}
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
                     <h3 class="card-title">
                         <i class="bi bi-person-lines-fill me-2"></i>
                         Your Information
@@ -191,7 +196,7 @@
 
                 <div class="card-body">
 
-                    <div class="alert alert-info rounded-0">
+                    <div class="alert alert-info rounded-3">
 
                         <i class="bi bi-info-circle me-2"></i>
 
@@ -209,7 +214,7 @@
                             </label>
 
                             <input type="text" id="title_prefix" name="title_prefix" value="{{ old('title_prefix') }}"
-                                class="form-control rounded-0 @error('title_prefix') is-invalid @enderror"
+                                class="form-control rounded-2 @error('title_prefix') is-invalid @enderror"
                                 placeholder="e.g. Dr.">
 
                             @error('title_prefix')
@@ -226,7 +231,7 @@
                                 Full Name
                             </label>
 
-                            <input type="text" value="{{ auth()->user()->name }}" class="form-control rounded-0"
+                            <input type="text" value="{{ auth()->user()->name }}" class="form-control rounded-2"
                                 readonly>
 
                         </div>
@@ -238,7 +243,7 @@
                             </label>
 
                             <input type="text" id="title_suffix" name="title_suffix" value="{{ old('title_suffix') }}"
-                                class="form-control rounded-0 @error('title_suffix') is-invalid @enderror"
+                                class="form-control rounded-2 @error('title_suffix') is-invalid @enderror"
                                 placeholder="e.g. S.Kom., M.Kom.">
 
                             @error('title_suffix')
@@ -255,7 +260,7 @@
                                 Email
                             </label>
 
-                            <input type="email" value="{{ auth()->user()->email }}" class="form-control rounded-0"
+                            <input type="email" value="{{ auth()->user()->email }}" class="form-control rounded-2"
                                 readonly>
 
                         </div>
@@ -267,7 +272,7 @@
                             </label>
 
                             <input type="text" id="orcid" name="orcid" value="{{ old('orcid') }}"
-                                class="form-control rounded-0 @error('orcid') is-invalid @enderror"
+                                class="form-control rounded-2 @error('orcid') is-invalid @enderror"
                                 placeholder="e.g. 0000-0002-1825-0097" maxlength="19">
 
                             @error('orcid')
@@ -289,7 +294,7 @@
                             </label>
 
                             <input type="text" id="phone" name="phone" value="{{ old('phone') }}"
-                                class="form-control rounded-0 @error('phone') is-invalid @enderror"
+                                class="form-control rounded-2 @error('phone') is-invalid @enderror"
                                 placeholder="e.g. 081234567890">
 
                             @error('phone')
@@ -312,7 +317,7 @@
                             </label>
 
                             <input type="text" id="institution" name="institution" value="{{ old('institution') }}"
-                                class="form-control rounded-0 @error('institution') is-invalid @enderror"
+                                class="form-control rounded-2 @error('institution') is-invalid @enderror"
                                 placeholder="University / Institution">
 
                             @error('institution')
@@ -331,7 +336,7 @@
                             </label>
 
                             <input type="text" id="department" name="department" value="{{ old('department') }}"
-                                class="form-control rounded-0 @error('department') is-invalid @enderror"
+                                class="form-control rounded-2 @error('department') is-invalid @enderror"
                                 placeholder="Department / Faculty">
 
                             @error('department')
@@ -352,7 +357,7 @@
 
                             <input type="text" id="country" name="country"
                                 value="{{ old('country', 'Indonesia') }}"
-                                class="form-control rounded-0 @error('country') is-invalid @enderror">
+                                class="form-control rounded-2 @error('country') is-invalid @enderror">
 
                             @error('country')
                                 <div class="invalid-feedback">
@@ -368,21 +373,26 @@
                             <label for="city" class="form-label">
                                 City
                             </label>
+
                             <input type="text" id="city" name="city" value="{{ old('city') }}"
-                                class="form-control rounded-0 @error('city') is-invalid @enderror" placeholder="City">
+                                class="form-control rounded-2 @error('city') is-invalid @enderror" placeholder="City">
+
                             @error('city')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
+
                         </div>
+
                         <div class="col-md-12 mb-2">
                             <label class="form-label">
                                 Attendance
                                 <span class="text-danger">*</span>
                             </label>
+
                             @if ($attendanceOptions->isEmpty())
-                                <div class="alert alert-warning rounded-0 mb-0">
+                                <div class="alert alert-warning rounded-3 mb-0">
                                     <i class="bi bi-exclamation-triangle me-2"></i>
                                     Attendance options have not been configured
                                     for this conference.
@@ -391,8 +401,10 @@
                                 @php
                                     $attendance = $attendanceOptions->first();
                                 @endphp
+
                                 <input type="hidden" name="attendance_type" value="{{ $attendance->type }}">
-                                <div class="border rounded-0 p-3 bg-light">
+
+                                <div class="border rounded-3 p-3 bg-light">
                                     <div class="d-flex align-items-center gap-3">
                                         @if ($attendance->type === 'online')
                                             <i class="bi bi-camera-video fs-4 text-success"></i>
@@ -401,13 +413,16 @@
                                         @else
                                             <i class="bi bi-diagram-3 fs-4 text-warning"></i>
                                         @endif
+
                                         <div>
                                             <small class="text-muted d-block">
                                                 Conference Attendance
                                             </small>
+
                                             <strong>
                                                 {{ ucfirst($attendance->type) }}
                                             </strong>
+
                                             <div class="small text-muted mt-1">
                                                 This conference currently supports
                                                 {{ $attendance->type }} attendance.
@@ -417,13 +432,15 @@
                                 </div>
                             @else
                                 @error('attendance_type')
-                                    <div class="alert alert-danger rounded-0 mt-3 mb-0">
+                                    <div class="alert alert-danger rounded-3 mt-3 mb-0">
                                         <div class="d-flex align-items-start gap-2">
                                             <i class="bi bi-exclamation-circle fs-5"></i>
+
                                             <div>
                                                 <strong>
                                                     Attendance Required
                                                 </strong>
+
                                                 <div class="small mt-1">
                                                     {{ $message }}
                                                 </div>
@@ -431,6 +448,7 @@
                                         </div>
                                     </div>
                                 @enderror
+
                                 <div class="row g-2">
                                     @foreach ($attendanceOptions as $attendance)
                                         <div class="col-md-4">
@@ -438,7 +456,8 @@
                                                 <input type="radio" name="attendance_type"
                                                     value="{{ $attendance->type }}" class="btn-check"
                                                     @checked($selectedAttendance === $attendance->type)>
-                                                <span class="btn btn-outline-secondary w-100 h-100 rounded-0 p-3">
+
+                                                <span class="btn btn-outline-secondary w-100 h-100 rounded-2 p-3">
                                                     @if ($attendance->type === 'online')
                                                         <i class="bi bi-camera-video me-1"></i>
                                                     @elseif ($attendance->type === 'offline')
@@ -446,6 +465,7 @@
                                                     @else
                                                         <i class="bi bi-diagram-3 me-1"></i>
                                                     @endif
+
                                                     {{ ucfirst($attendance->type) }}
                                                 </span>
                                             </label>
@@ -456,8 +476,9 @@
                         </div>
                     </div>
                 </div>
+
                 {{-- Footer --}}
-                <div class="card-footer">
+                <div class="card-footer rounded-bottom-3">
 
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
@@ -469,7 +490,7 @@
 
                         </div>
 
-                        <button type="submit" class="btn btn-success rounded-0">
+                        <button type="submit" class="btn btn-success rounded-2">
 
                             <i class="bi bi-check-circle me-1"></i>
                             Complete Registration

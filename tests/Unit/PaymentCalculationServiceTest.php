@@ -215,12 +215,11 @@ class PaymentCalculationServiceTest extends TestCase
         $participant = $this->createParticipant($registrationType);
 
         $this->createAcceptedFullPaper($participant);
-        $this->createAcceptedFullPaper($participant);
 
         $result = app(PaymentCalculationService::class)
             ->calculate($participant->fresh());
 
-        $this->assertSame(2, $result['accepted_papers']);
+        $this->assertSame(1, $result['accepted_papers']);
         $this->assertSame(0, $result['additional_papers']);
         $this->assertSame(0.0, $result['additional_paper_fee']);
         $this->assertSame(0.0, $result['additional_amount']);

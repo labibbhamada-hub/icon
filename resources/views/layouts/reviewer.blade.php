@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -14,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
 
     @stack('styles')
+
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -30,6 +32,7 @@
                     @yield('header')
                 </div>
             </div>
+
             <div class="app-content">
                 <div class="container-fluid">
                     @yield('content')
@@ -44,6 +47,7 @@
     @include('admin.partials.scripts')
 
     @stack('scripts')
+
 </body>
 
 </html>

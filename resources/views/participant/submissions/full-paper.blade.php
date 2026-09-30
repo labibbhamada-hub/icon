@@ -2,13 +2,10 @@
 
 @section('title', 'Submit Full Paper')
 
-@section('header')
-    <div class="row align-items-top">
+@section('header') <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
+            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.show', $submission) }}"
+                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
 
                 <h1 class="mb-0 fs-3">
                     Submit Full Paper
@@ -40,12 +37,13 @@
             </ol>
         </div>
     </div>
+
 @endsection
 
 @section('content')
 
     @if ($errors->any())
-        <div class="alert alert-danger rounded-0">
+        <div class="alert alert-danger rounded-3">
             <strong>
                 Please correct the following:
             </strong>
@@ -59,9 +57,9 @@
     @endif
 
     {{-- Submission Information --}}
-    <div class="card rounded-0 mb-3">
+    <div class="card rounded-3 overflow-hidden mb-3">
 
-        <div class="card-header">
+        <div class="card-header rounded-top-3">
             <h3 class="card-title">
                 <i class="bi bi-file-earmark-text me-2"></i>
                 Submission Information
@@ -70,7 +68,7 @@
 
         <div class="card-body">
 
-            <div class="border rounded-0 p-3 bg-light">
+            <div class="border rounded-3 p-3 bg-light">
 
                 <div class="mb-3">
                     <small class="text-muted d-block">
@@ -104,7 +102,7 @@
 
             </div>
 
-            <div class="alert alert-success rounded-0 mt-3 mb-0">
+            <div class="alert alert-success rounded-3 mt-3 mb-0">
 
                 <div class="d-flex align-items-start gap-2">
 
@@ -130,7 +128,7 @@
 
     {{-- Full Paper Deadline --}}
     @if ($fullPaperDeadline)
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
             <div class="card-body">
 
@@ -174,9 +172,9 @@
 
         @csrf
 
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-upload me-2"></i>
                     Full Paper File
@@ -185,7 +183,7 @@
 
             <div class="card-body">
 
-                <div class="alert alert-info rounded-0">
+                <div class="alert alert-info rounded-3">
                     <div class="d-flex align-items-start gap-2">
 
                         <i class="bi bi-info-circle fs-5"></i>
@@ -211,7 +209,7 @@
                     </label>
 
                     <input type="file" name="paper_file" accept="application/pdf"
-                        class="form-control @error('paper_file') is-invalid @enderror rounded-0">
+                        class="form-control @error('paper_file') is-invalid @enderror rounded-2">
 
                     <div class="form-text">
                         PDF only. Maximum 10 MB.
@@ -236,7 +234,7 @@
                 Please make sure you upload the correct full paper before submitting.
             </div>
 
-            <button type="submit" class="btn btn-success rounded-0">
+            <button type="submit" class="btn btn-success rounded-2">
                 <i class="bi bi-send me-1"></i>
                 Submit Full Paper
             </button>

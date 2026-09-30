@@ -64,4 +64,9 @@ class Participant extends Model
     {
         return $this->hasMany(Certificate::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(ConferenceAttendance::class);
+    }
 }

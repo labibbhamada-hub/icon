@@ -1915,6 +1915,22 @@ class SubmissionTest extends TestCase
             'registered_at' => now(),
         ]);
 
+        $otherUser = User::factory()->create();
+
+        $otherParticipant = Participant::create([
+            'user_id' => $otherUser->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => 'REG-VIDEO-OTHER-PARTICIPANT',
+            'full_name' => 'Other Presenter Test',
+            'email' => $otherUser->email,
+            'institution' => 'Other Test Institution',
+            'participant_type' => 'presenter',
+            'attendance_type' => 'online',
+            'registration_status' => 'confirmed',
+            'registered_at' => now(),
+        ]);
+
         $topic = $this->createTopic($conference);
 
         $submission = $this->createSubmission(
@@ -1929,7 +1945,7 @@ class SubmissionTest extends TestCase
 
         $otherSubmission = $this->createSubmission(
             $conference,
-            $participant,
+            $otherParticipant,
             $topic,
             [
                 'submission_stage' => 'full_paper',
@@ -1940,7 +1956,7 @@ class SubmissionTest extends TestCase
         $author = \App\Models\SubmissionAuthor::create([
             'submission_id' => $otherSubmission->id,
             'name' => 'Presenter From Another Paper',
-            'email' => $participant->email,
+            'email' => $otherParticipant->email,
             'institution' => 'Test University',
             'is_corresponding' => true,
             'sort_order' => 1,

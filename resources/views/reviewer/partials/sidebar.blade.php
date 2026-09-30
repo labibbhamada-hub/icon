@@ -1,7 +1,7 @@
 <aside class="app-sidebar shadow" data-bs-theme="dark">
     <div class="sidebar-brand">
         <a href="{{ route('reviewer.dashboard') }}" class="brand-link">
-            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON Logo" class="brand-image">
+            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON Logo" class="brand-image rounded-2">
             <div class="brand-text">
                 <span class="brand-text fw-semibold">
                     ICON 2026
@@ -12,24 +12,27 @@
             </div>
         </a>
     </div>
+
     <div class="sidebar-wrapper">
         <nav class="mt-3">
             <ul class="nav sidebar-menu flex-column" role="menu">
                 <li class="nav-item">
                     <a href="{{ route('reviewer.dashboard') }}"
-                        class="nav-link {{ request()->routeIs('reviewer.dashboard') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('reviewer.dashboard') ? 'active' : '' }} rounded-2">
                         <i class="nav-icon bi bi-speedometer2"></i>
                         <p>
                             Dashboard
                         </p>
                     </a>
                 </li>
+
                 <li class="nav-header">
                     REVIEW
                 </li>
+
                 <li class="nav-item">
                     <a href="{{ route('reviewer.reviews.index') }}"
-                        class="nav-link {{ request()->routeIs('reviewer.reviews.*') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('reviewer.reviews.*') ? 'active' : '' }} rounded-2">
                         <i class="nav-icon bi bi-clipboard-check"></i>
                         <p>
                             My Reviews
@@ -39,29 +42,34 @@
             </ul>
         </nav>
     </div>
+
 </aside>
 
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
     <div class="sidebar-brand">
         <a href="{{ route('admin.dashboard') }}" class="brand-link">
-            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="brand-image opacity-75 shadow">
+            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}"
+                class="brand-image opacity-75 shadow rounded-2">
             <span class="brand-text fw-bold">BHAMADA ICON</span>
         </a>
     </div>
+
     <div class="sidebar-wrapper">
         <nav class="mt-2">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
                     <a href="{{ route('reviewer.dashboard') }}"
-                        class="nav-link {{ request()->routeIs('reviewer.dashboard') ? 'active' : '' }} rounded-0">
+                        class="nav-link {{ request()->routeIs('reviewer.dashboard') ? 'active' : '' }} rounded-2">
                         <i class="nav-icon bi bi-speedometer2"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
+
                 <li class="nav-header">REVIEW</li>
+
                 <li class="nav-item">
                     <a href="{{ route('reviewer.reviews.index') }}"
-                        class="nav-link {{ request()->routeIs('reviewer.reviews.*') ? 'active' : '' }} rounded-0">
+                        class="nav-link {{ request()->routeIs('reviewer.reviews.*') ? 'active' : '' }} rounded-2">
                         <i class="nav-icon bi bi-clipboard-check"></i>
                         <p>My Reviews</p>
                     </a>
@@ -69,4 +77,5 @@
             </ul>
         </nav>
     </div>
+
 </aside>

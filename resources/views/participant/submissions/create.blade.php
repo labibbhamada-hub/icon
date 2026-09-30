@@ -2,13 +2,10 @@
 
 @section('title', 'Abstract Submission')
 
-@section('header')
-    <div class="row align-items-top">
+@section('header') <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('participant.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
+            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.index') }}"
+                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
 
                 <h1 class="mb-0 fs-3">
                     Abstract Submission
@@ -40,12 +37,13 @@
             </ol>
         </div>
     </div>
+
 @endsection
 
 @section('content')
 
     @if ($errors->any())
-        <div class="alert alert-danger rounded-0">
+        <div class="alert alert-danger rounded-3">
             <strong>
                 Please correct the following:
             </strong>
@@ -66,9 +64,9 @@
         <input type="hidden" name="participant_id" value="{{ $participant->id }}">
 
         {{-- Conference Registration --}}
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-calendar-check me-2"></i>
                     Conference Registration
@@ -77,7 +75,7 @@
 
             <div class="card-body">
 
-                <div class="border rounded-0 p-3 bg-light">
+                <div class="border rounded-3 p-3 bg-light">
 
                     <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
 
@@ -145,7 +143,7 @@
 
                 </div>
 
-                <div class="alert alert-info rounded-0 mt-3 mb-0">
+                <div class="alert alert-info rounded-3 mt-3 mb-0">
 
                     <div class="d-flex align-items-start gap-2">
 
@@ -173,7 +171,7 @@
 
         {{-- Submission Deadline --}}
         @if ($submissionDeadline)
-            <div class="card rounded-0 mb-3">
+            <div class="card rounded-3 overflow-hidden mb-3">
 
                 <div class="card-body">
 
@@ -213,7 +211,7 @@
             </div>
         @endif
 
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
             <div class="card-body">
 
@@ -238,7 +236,7 @@
                     </div>
 
                     <a href="{{ asset('storage/conference-templates/' . $participant->conference_id . '/abstract-template.docx') }}"
-                        class="btn btn-outline-primary btn-sm rounded-0" target="_blank" rel="noopener">
+                        class="btn btn-outline-primary btn-sm rounded-2" target="_blank" rel="noopener">
                         <i class="bi bi-download me-1"></i>
                         Download Template
                     </a>
@@ -250,9 +248,9 @@
         </div>
 
         {{-- Abstract Information --}}
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-text me-2"></i>
@@ -270,7 +268,7 @@
                         <span class="text-danger">*</span>
                     </label>
 
-                    <select name="topic_id" class="form-select @error('topic_id') is-invalid @enderror rounded-0">
+                    <select name="topic_id" class="form-select @error('topic_id') is-invalid @enderror rounded-2">
 
                         <option value="">
                             Select Topic
@@ -300,7 +298,7 @@
                     </label>
 
                     <input type="text" name="title" value="{{ old('title') }}"
-                        class="form-control @error('title') is-invalid @enderror rounded-0"
+                        class="form-control @error('title') is-invalid @enderror rounded-2"
                         placeholder="Enter the title of your research paper">
 
                     @error('title')
@@ -318,8 +316,9 @@
                         <span class="text-danger">*</span>
                     </label>
 
-                    <textarea name="abstract" rows="8" class="form-control @error('abstract') is-invalid @enderror rounded-0"
+                    <textarea name="abstract" rows="8" class="form-control @error('abstract') is-invalid @enderror rounded-2"
                         placeholder="Write your abstract (150–250 words)...">{{ old('abstract') }}</textarea>
+
                     <div class="form-text">
                         Write one paragraph containing 150–250 words.
                     </div>
@@ -340,7 +339,7 @@
                     </label>
 
                     <input type="text" name="keywords" value="{{ old('keywords') }}"
-                        class="form-control @error('keywords') is-invalid @enderror rounded-0"
+                        class="form-control @error('keywords') is-invalid @enderror rounded-2"
                         placeholder="artificial intelligence; machine learning; smart campus">
 
                     <div class="form-text">
@@ -360,9 +359,9 @@
         </div>
 
         {{-- Authors --}}
-        <div class="card rounded-0 mb-3">
+        <div class="card rounded-3 overflow-hidden mb-3">
 
-            <div class="card-header">
+            <div class="card-header rounded-top-3">
 
                 <h3 class="card-title">
                     <i class="bi bi-people me-2"></i>
@@ -371,7 +370,7 @@
 
                 <div class="float-end">
 
-                    <button type="button" id="add-author" class="btn btn-success btn-sm rounded-0">
+                    <button type="button" id="add-author" class="btn btn-success btn-sm rounded-2">
 
                         <i class="bi bi-plus-circle me-1"></i>
                         Add Author
@@ -384,7 +383,7 @@
 
             <div class="card-body">
 
-                <div class="alert alert-info rounded-0">
+                <div class="alert alert-info rounded-3">
 
                     <div class="d-flex align-items-start gap-2">
 
@@ -394,6 +393,7 @@
                             <strong>
                                 Author Information
                             </strong>
+
                             <div class="small mt-1">
                                 Add all authors who contributed to this paper.
                                 Exactly one author must be marked as the corresponding author.
@@ -401,9 +401,11 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="authors-container">
                     @php
                         $formAuthors = old('authors');
+
                         if (!$formAuthors) {
                             $formAuthors = [
                                 [
@@ -417,70 +419,94 @@
                             ];
                         }
                     @endphp
+
                     @foreach ($formAuthors as $index => $author)
-                        <div class="author-item border rounded-0 p-3 mb-2">
+                        <div class="author-item border rounded-3 p-3 mb-2">
+
                             <div class="d-flex justify-content-between align-items-center mb-2">
+
                                 <strong>
                                     Author {{ $index + 1 }}
                                 </strong>
+
                                 @if ($index > 0)
-                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-0 remove-author">
+                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-2 remove-author">
                                         <i class="bi bi-trash"></i>
                                         Remove
                                     </button>
                                 @endif
+
                             </div>
+
                             <div class="row">
+
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label">
                                         Name
                                         <span class="text-danger">*</span>
                                     </label>
+
                                     <input type="text" name="authors[{{ $index }}][name]"
-                                        value="{{ $author['name'] ?? '' }}" class="form-control rounded-0"
+                                        value="{{ $author['name'] ?? '' }}" class="form-control rounded-2"
                                         placeholder="Author name">
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label">
                                         Email
                                     </label>
+
                                     <input type="email" name="authors[{{ $index }}][email]"
-                                        value="{{ $author['email'] ?? '' }}" class="form-control rounded-0"
+                                        value="{{ $author['email'] ?? '' }}" class="form-control rounded-2"
                                         placeholder="author@example.com">
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label">
                                         Institution
                                     </label>
+
                                     <input type="text" name="authors[{{ $index }}][institution]"
-                                        value="{{ $author['institution'] ?? '' }}" class="form-control rounded-0">
+                                        value="{{ $author['institution'] ?? '' }}" class="form-control rounded-2">
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label">
                                         Department
                                     </label>
+
                                     <input type="text" name="authors[{{ $index }}][department]"
-                                        value="{{ $author['department'] ?? '' }}" class="form-control rounded-0">
+                                        value="{{ $author['department'] ?? '' }}" class="form-control rounded-2">
                                 </div>
+
                                 <div class="col-md-4 mb-2">
+
                                     <input type="hidden" name="authors[{{ $index }}][is_corresponding]"
                                         value="0">
+
                                     <div class="form-check form-switch mt-2">
+
                                         <input type="checkbox" name="authors[{{ $index }}][is_corresponding]"
                                             value="1" class="form-check-input" @checked(!empty($author['is_corresponding']))>
+
                                         <label class="form-check-label">
                                             Corresponding Author
                                         </label>
+
                                     </div>
+
                                 </div>
+
                                 <div class="col-md-2 mb-2">
                                     <label class="form-label">
                                         Order
                                     </label>
+
                                     <input type="number" name="authors[{{ $index }}][sort_order]"
                                         value="{{ $author['sort_order'] ?? $index + 1 }}" min="1"
-                                        class="form-control rounded-0">
+                                        class="form-control rounded-2">
                                 </div>
+
                             </div>
                         </div>
                     @endforeach
@@ -501,7 +527,7 @@
 
             </div>
 
-            <button type="submit" class="btn btn-success rounded-0">
+            <button type="submit" class="btn btn-success rounded-2">
 
                 <i class="bi bi-send me-1"></i>
                 Submit Abstract
@@ -511,6 +537,7 @@
         </div>
 
     </form>
+
 @endsection
 
 @push('styles')
@@ -534,107 +561,116 @@
                 document.getElementById('add-author');
             let authorIndex =
                 container.querySelectorAll('.author-item').length;
+
             addButton.addEventListener('click', function() {
                 const wrapper =
                     document.createElement('div');
+
                 wrapper.className =
-                    'author-item border rounded-0 p-3 mb-2';
+                    'author-item border rounded-3 p-3 mb-2';
+
                 wrapper.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>
-                            Author ${authorIndex + 1}
-                        </strong>
-                        <button
-                            type="button"
-                            class="btn btn-outline-danger btn-sm rounded-0 remove-author">
-                            <i class="bi bi-trash"></i>
-                            Remove
-                        </button>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>
+                        Author ${authorIndex + 1}
+                    </strong>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm rounded-2 remove-author">
+                        <i class="bi bi-trash"></i>
+                        Remove
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">
+                            Name
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="authors[${authorIndex}][name]"
+                            class="form-control rounded-2"
+                            placeholder="Author name">
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">
-                                Name
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="authors[${authorIndex}][name]"
-                                class="form-control rounded-0"
-                                placeholder="Author name">
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                name="authors[${authorIndex}][email]"
-                                class="form-control rounded-0"
-                                placeholder="author@example.com">
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">
-                                Institution
-                            </label>
+
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="authors[${authorIndex}][email]"
+                            class="form-control rounded-2"
+                            placeholder="author@example.com">
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">
+                            Institution
+                        </label>
+
+                        <input
+                            type="text"
+                            name="authors[${authorIndex}][institution]"
+                            class="form-control rounded-2">
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            name="authors[${authorIndex}][department]"
+                            class="form-control rounded-2">
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+
+                        <input
+                            type="hidden"
+                            name="authors[${authorIndex}][is_corresponding]"
+                            value="0">
+
+                        <div class="form-check form-switch mb-2">
 
                             <input
-                                type="text"
-                                name="authors[${authorIndex}][institution]"
-                                class="form-control rounded-0">
-                        </div>
-
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">
-                                Department
-                            </label>
-
-                            <input
-                                type="text"
-                                name="authors[${authorIndex}][department]"
-                                class="form-control rounded-0">
-                        </div>
-
-                        <div class="col-md-4 mb-2">
-
-                            <input
-                                type="hidden"
+                                type="checkbox"
                                 name="authors[${authorIndex}][is_corresponding]"
-                                value="0">
+                                value="1"
+                                class="form-check-input">
 
-                            <div class="form-check form-switch mb-2">
-
-                                <input
-                                    type="checkbox"
-                                    name="authors[${authorIndex}][is_corresponding]"
-                                    value="1"
-                                    class="form-check-input">
-
-                                <label class="form-check-label">
-                                    Corresponding Author
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-2 mb-2">
-
-                            <label class="form-label">
-                                Order
+                            <label class="form-check-label">
+                                Corresponding Author
                             </label>
-
-                            <input
-                                type="number"
-                                name="authors[${authorIndex}][sort_order]"
-                                value="${authorIndex + 1}"
-                                min="1"
-                                class="form-control rounded-0">
 
                         </div>
 
                     </div>
-                `;
+
+                    <div class="col-md-2 mb-2">
+
+                        <label class="form-label">
+                            Order
+                        </label>
+
+                        <input
+                            type="number"
+                            name="authors[${authorIndex}][sort_order]"
+                            value="${authorIndex + 1}"
+                            min="1"
+                            class="form-control rounded-2">
+
+                    </div>
+
+                </div>
+            `;
 
                 container.appendChild(wrapper);
 

@@ -2,21 +2,21 @@
 
 @section('title', 'Review Submission')
 
-@section('header')
-    <div class="row align-items-center">
+@section('header') <div class="row align-items-center">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('reviewer.reviews.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
+            <div class="d-flex align-items-center gap-2"> <a href="{{ route('reviewer.reviews.index') }}"
+                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+
                 <h1 class="mb-0 fs-3">
                     Review Submission
                 </h1>
             </div>
+
             <p class="text-muted mb-0 mt-1">
                 Evaluate the assigned conference submission.
             </p>
         </div>
+
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end mb-0">
                 <li class="breadcrumb-item">
@@ -24,25 +24,27 @@
                         Dashboard
                     </a>
                 </li>
+
                 <li class="breadcrumb-item">
                     <a href="{{ route('reviewer.reviews.index') }}">
                         My Reviews
                     </a>
                 </li>
+
                 <li class="breadcrumb-item active">
                     Review
                 </li>
             </ol>
         </div>
     </div>
+
 @endsection
 
 @section('content')
     @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>
-                Please correct the following:
-            </strong>
+        <div class="alert alert-danger rounded-3"> <strong>
+                Please correct the following: </strong>
+
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>
@@ -56,71 +58,83 @@
     <form action="{{ route('reviewer.reviews.update', $review) }}" method="POST">
         @csrf
         @method('PUT')
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-text me-2"></i>
                     Submission Information
                 </h3>
+
                 <div class="float-end">
                     @if ($review->submission?->paper_file)
                         <a href="{{ route('reviewer.reviews.paper.download', $review) }}" target="_blank"
-                            class="btn btn-danger btn-sm rounded-0">
+                            class="btn btn-danger btn-sm rounded-2">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper
                         </a>
                     @endif
                 </div>
             </div>
+
             <div class="card-body">
                 <h4 class="fw-bold mb-2">
                     {{ $review->submission->title }}
                 </h4>
+
                 <div>
-                    <span class="badge text-bg-primary rounded-0">
+                    <span class="badge text-bg-primary rounded-pill">
                         {{ $review->submission->submission_code }}
                     </span>
+
                     @if ($review->submission->topic)
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             {{ $review->submission->topic->name }}
                         </span>
                     @endif
+
                     @if ($review->review_stage === 'abstract')
-                        <span class="badge text-bg-secondary rounded-0">
+                        <span class="badge text-bg-secondary rounded-pill">
                             Abstract Review
                         </span>
                     @elseif ($review->review_stage === 'full_paper')
-                        <span class="badge text-bg-primary rounded-0">
+                        <span class="badge text-bg-primary rounded-pill">
                             Full Paper Review
                         </span>
                     @endif
 
-                    <span class="badge text-bg-light border rounded-0">
+                    <span class="badge text-bg-light border rounded-pill">
                         Round {{ $review->review_round }}
                     </span>
                 </div>
             </div>
+
             <div class="card-body border-top">
                 <h5 class="fw-semibold mb-2">
                     Abstract
                 </h5>
+
                 <div>{!! nl2br(e($review->submission->abstract)) !!}</div>
             </div>
+
             <div class="card-body border-top">
                 <h5 class="fw-semibold mb-2">
                     Authors
                 </h5>
+
                 <ol>
                     @foreach ($review->submission->authors as $author)
                         <li class="mb-2">
                             <strong>
                                 {{ $author->name }}
                             </strong>
+
                             @if ($author->is_corresponding)
-                                <span class="badge text-bg-success rounded-0 ms-1">
+                                <span class="badge text-bg-success rounded-pill ms-1">
                                     Corresponding
                                 </span>
                             @endif
+
                             @if ($author->institution)
                                 <small class="text-muted d-block">
                                     {{ $author->institution }}
@@ -131,13 +145,15 @@
                 </ol>
             </div>
         </div>
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-clipboard-check me-2"></i>
                     Evaluation
                 </h3>
             </div>
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 mb-2">
@@ -145,55 +161,68 @@
                             Score
                             <span class="text-danger">*</span>
                         </label>
+
                         <input type="number" name="score" min="0" max="100" step="0.01"
                             value="{{ old('score', $review->score) }}"
-                            class="form-control form-control-lg @error('score') is-invalid @enderror rounded-0"
+                            class="form-control form-control-lg @error('score') is-invalid @enderror rounded-2"
                             placeholder="0 - 100">
+
                         <div class="form-text">
                             Enter a score between 0 and 100.
                         </div>
+
                         @error('score')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
+
                     <div class="col-md-8 mb-2">
                         <label class="form-label">
                             Recommendation
                             <span class="text-danger">*</span>
                         </label>
+
                         <select name="recommendation"
-                            class="form-select form-select-lg @error('recommendation') is-invalid @enderror rounded-0">
+                            class="form-select form-select-lg @error('recommendation') is-invalid @enderror rounded-2">
                             <option value="">
                                 Select Recommendation
                             </option>
+
                             <option value="accept" @selected(old('recommendation', $review->recommendation) === 'accept')>
                                 Accept
                             </option>
+
                             <option value="minor_revision" @selected(old('recommendation', $review->recommendation) === 'minor_revision')>
                                 Minor Revision
                             </option>
+
                             <option value="major_revision" @selected(old('recommendation', $review->recommendation) === 'major_revision')>
                                 Major Revision
                             </option>
+
                             <option value="reject" @selected(old('recommendation', $review->recommendation) === 'reject')>
                                 Reject
                             </option>
                         </select>
+
                         @error('recommendation')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
+
                     <div class="col-12 mb-2">
                         <label class="form-label">
                             Review Comment
                             <span class="text-danger">*</span>
                         </label>
-                        <textarea name="comment" rows="10" class="form-control @error('comment') is-invalid @enderror rounded-0"
+
+                        <textarea name="comment" rows="10" class="form-control @error('comment') is-invalid @enderror rounded-2"
                             placeholder="Write your evaluation, findings, suggestions, and recommendation...">{{ old('comment', $review->comment) }}</textarea>
+
                         @error('comment')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -202,12 +231,14 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer text-end">
-                <button type="submit" class="btn btn-primary rounded-0">
+
+            <div class="card-footer rounded-bottom-3 text-end">
+                <button type="submit" class="btn btn-primary rounded-2">
                     <i class="bi bi-check-circle me-1"></i>
                     Submit Review
                 </button>
             </div>
         </div>
     </form>
+
 @endsection

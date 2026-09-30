@@ -1,14 +1,14 @@
 @extends('layouts.participant')
+
 @section('title', 'Dashboard')
-@section('header')
-    <div class="row">
+
+@section('header') <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3 fw-bold">Dashboard</h1>
             <p class="text-muted mb-0">
-                Welcome back,
-                <strong>{{ auth()->user()->name }}</strong>
-            </p>
+                Welcome back, <strong>{{ auth()->user()->name }}</strong> </p>
         </div>
+
         <div class="col-sm-6 text-end">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb float-sm-end">
@@ -17,23 +17,28 @@
             </nav>
         </div>
     </div>
+
 @endsection
+
 @section('content')
     @if ($participants->isEmpty())
         <div class="row">
             <div class="col-12">
-                <div class="card rounded-0">
+                <div class="card rounded-3 overflow-hidden">
                     <div class="card-body text-center py-5">
                         <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center mx-auto mb-2"
-                            style="width: 100px; height: 100px;">
-                            <i class="bi bi-person-exclamation display-5 text-warning"></i>
-                        </div>
+                            style="width: 100px; height: 100px;"> <i
+                                class="bi bi-person-exclamation display-5 text-warning"></i> </div>
+
                         <div class="mb-2">
                             <h4 class="fw-bold">Welcome to ICON 2026</h4>
-                            <p class="text-muted">Your account is active, but you have not registered for any conference
-                                yet.</p>
+                            <p class="text-muted">
+                                Your account is active, but you have not registered for any conference
+                                yet.
+                            </p>
                         </div>
-                        <a href="{{ route('participant.registration.create') }}" class="btn btn-success rounded-0">
+
+                        <a href="{{ route('participant.registration.create') }}" class="btn btn-success rounded-2">
                             <i class="bi bi-calendar-plus me-2"></i>
                             Register Conference
                         </a>
@@ -52,60 +57,70 @@
                 fn($participant) => $participant->submissions->where('status', 'accepted')->count(),
             );
         @endphp
+
         <div class="row mb-2">
             <div class="col-lg-3 col-md-6">
-                <div class="small-box text-bg-primary rounded-0 mb-2">
+                <div class="small-box text-bg-primary rounded-3 mb-2">
                     <div class="inner">
                         <h3>{{ $totalRegistrations }}</h3>
                         <p>Registrations</p>
                     </div>
+
                     <div class="small-box-icon">
                         <i class="bi bi-calendar-check"></i>
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-3 col-md-6">
-                <div class="small-box text-bg-success rounded-0 mb-2">
+                <div class="small-box text-bg-success rounded-3 mb-2">
                     <div class="inner">
                         <h3>{{ $confirmedRegistrations }}</h3>
                         <p>Confirmed</p>
                     </div>
+
                     <div class="small-box-icon">
                         <i class="bi bi-check-circle"></i>
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-3 col-md-6">
-                <div class="small-box text-bg-warning rounded-0 mb-2">
+                <div class="small-box text-bg-warning rounded-3 mb-2">
                     <div class="inner">
                         <h3>{{ $pendingRegistrations }}</h3>
                         <p>Pending</p>
                     </div>
+
                     <div class="small-box-icon">
                         <i class="bi bi-clock"></i>
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-3 col-md-6">
-                <div class="small-box text-bg-info rounded-0 mb-2">
+                <div class="small-box text-bg-info rounded-3 mb-2">
                     <div class="inner">
                         <h3>{{ $totalSubmissions }}</h3>
                         <p>My Submissions</p>
                     </div>
+
                     <div class="small-box-icon">
                         <i class="bi bi-file-earmark-text"></i>
                     </div>
                 </div>
             </div>
         </div>
+
         @if ($nextAction)
-            <div class="card rounded-0 mb-3 border-start border-4 border-{{ $nextAction['type'] }}">
-                <div class="card-header">
+            <div class="card rounded-3 overflow-hidden mb-3 border-start border-4 border-{{ $nextAction['type'] }}">
+                <div class="card-header rounded-top-3">
                     <h3 class="card-title">
                         <i class="bi {{ $nextAction['icon'] }} me-2"></i>
                         Next Action
                     </h3>
                 </div>
+
                 <div class="card-body">
                     <div class="d-flex align-items-start gap-3">
                         <div class="flex-shrink-0">
@@ -114,20 +129,23 @@
                                 <i class="bi {{ $nextAction['icon'] }} fs-4 text-{{ $nextAction['type'] }}"></i>
                             </div>
                         </div>
+
                         <div class="flex-grow-1">
                             <h5 class="fw-bold mb-1">
                                 {{ $nextAction['title'] }}
                             </h5>
+
                             <p class="text-muted mb-3">
                                 {{ $nextAction['description'] }}
                             </p>
+
                             @if ($nextAction['button'] && $nextAction['route'])
-                                <a href="{{ $nextAction['route'] }}" class="btn btn-{{ $nextAction['type'] }} rounded-0">
+                                <a href="{{ $nextAction['route'] }}" class="btn btn-{{ $nextAction['type'] }} rounded-2">
                                     <i class="bi bi-arrow-right me-1"></i>
                                     {{ $nextAction['button'] }}
                                 </a>
                             @else
-                                <span class="badge text-bg-secondary rounded-0">
+                                <span class="badge text-bg-secondary rounded-pill">
                                     No action required
                                 </span>
                             @endif
@@ -136,6 +154,7 @@
                 </div>
             </div>
         @endif
+
         @php
             $eligibleMeetings = collect();
 
@@ -152,9 +171,9 @@
         @endphp
 
         @if ($eligibleMeetings->isNotEmpty())
-            <div class="card rounded-0 mb-3">
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
                     <h3 class="card-title">
                         <i class="bi bi-camera-video me-2"></i>
                         Online Meeting
@@ -169,7 +188,7 @@
                             $meeting = $item['meeting'];
                         @endphp
 
-                        <div class="border rounded-0 p-3 mb-3">
+                        <div class="border rounded-3 p-3 mb-3">
 
                             <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
 
@@ -187,7 +206,7 @@
                                     </small>
                                 </div>
 
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     Active
                                 </span>
 
@@ -237,7 +256,7 @@
 
                             <div class="mt-3">
                                 <a href="{{ $meeting->meeting_url }}" target="_blank" rel="noopener noreferrer"
-                                    class="btn btn-primary rounded-0">
+                                    class="btn btn-primary rounded-2">
                                     <i class="bi bi-box-arrow-up-right me-1"></i>
                                     Join Zoom Meeting
                                 </a>
@@ -267,9 +286,9 @@
         @endphp
 
         @if ($eligibleWhatsappGroups->isNotEmpty())
-            <div class="card rounded-0 mb-3">
+            <div class="card rounded-3 overflow-hidden mb-3">
 
-                <div class="card-header">
+                <div class="card-header rounded-top-3">
                     <h3 class="card-title">
                         <i class="bi bi-whatsapp me-2"></i>
                         WhatsApp Group
@@ -284,7 +303,7 @@
                             $group = $item['group'];
                         @endphp
 
-                        <div class="border rounded-0 p-3 mb-3">
+                        <div class="border rounded-3 p-3 mb-3">
 
                             <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
 
@@ -302,7 +321,7 @@
                                     </small>
                                 </div>
 
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     Active
                                 </span>
 
@@ -324,7 +343,7 @@
 
                             <div>
                                 <a href="{{ $group->group_url }}" target="_blank" rel="noopener noreferrer"
-                                    class="btn btn-success rounded-0">
+                                    class="btn btn-success rounded-2">
                                     <i class="bi bi-whatsapp me-1"></i>
                                     Join WhatsApp Group
                                 </a>
@@ -343,8 +362,8 @@
                 $conferenceIds = $participants->pluck('conference_id')->unique()->values();
             @endphp
 
-            <div class="card rounded-0 mb-3">
-                <div class="card-header">
+            <div class="card rounded-3 overflow-hidden mb-3">
+                <div class="card-header rounded-top-3">
                     <h3 class="card-title">
                         <i class="bi bi-calendar-event me-2"></i>
                         Important Dates
@@ -361,7 +380,7 @@
 
                             @if ($participant && $conferenceDates->isNotEmpty())
                                 <div class="col-lg-6 mb-3">
-                                    <div class="border rounded-0 h-100 p-3">
+                                    <div class="border rounded-3 h-100 p-3">
 
                                         <h6 class="fw-bold mb-1">
                                             {{ $participant->conference?->name ?? 'Conference' }}
@@ -377,7 +396,7 @@
 
                                         <div class="list-group list-group-flush">
                                             @foreach ($conferenceDates as $importantDate)
-                                                <div class="list-group-item px-0">
+                                                <div class="list-group-item rounded-2 px-0">
                                                     <div class="d-flex justify-content-between align-items-start gap-3">
 
                                                         <div>
@@ -418,38 +437,43 @@
             </div>
         @endif
 
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-person-vcard me-2"></i>
                     Account Information
                 </h3>
+
                 <div class="float-end">
-                    <a href="{{ route('participant.profile.edit') }}" class="btn btn-warning btn-sm rounded-0">
+                    <a href="{{ route('participant.profile.edit') }}" class="btn btn-warning btn-sm rounded-2">
                         <i class="bi bi-pencil"></i>
                         Edit Profile
                     </a>
                 </div>
             </div>
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 mb-2">
                         <small class="text-muted d-block">Name</small>
                         <div class="fw-semibold">{{ auth()->user()->name }}</div>
                     </div>
+
                     <div class="col-md-4 mb-2">
                         <small class="text-muted d-block">Email</small>
                         <div class="fw-semibold">{{ auth()->user()->email }}</div>
                     </div>
+
                     <div class="col-md-4 mb-2">
                         <small class="text-muted d-block">Account Status</small>
+
                         <div>
                             @if (auth()->user()->status === 'active')
-                                <span class="badge text-bg-success rounded-0">
+                                <span class="badge text-bg-success rounded-pill">
                                     Active
                                 </span>
                             @else
-                                <span class="badge text-bg-secondary rounded-0">
+                                <span class="badge text-bg-secondary rounded-pill">
                                     Inactive
                                 </span>
                             @endif
@@ -458,24 +482,27 @@
                 </div>
             </div>
         </div>
-        <div class="card rounded-0 mb-3">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-calendar-event me-2"></i>
                     My Conference Registrations
                 </h3>
+
                 <div class="float-end">
-                    <a href="{{ route('participant.registration.create') }}" class="btn btn-success btn-sm rounded-0">
+                    <a href="{{ route('participant.registration.create') }}" class="btn btn-success btn-sm rounded-2">
                         <i class="bi bi-plus-circle me-1"></i>
                         Register Conference
                     </a>
                 </div>
             </div>
+
             <div class="card-body">
                 <div class="row">
                     @foreach ($participants as $participant)
                         <div class="col-12 mb-3">
-                            <div class="border rounded-0 p-3">
+                            <div class="border rounded-3 p-3">
 
                                 <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                     <div>
@@ -494,15 +521,15 @@
 
                                     <div>
                                         @if ($participant->registration_status === 'confirmed')
-                                            <span class="badge text-bg-success rounded-0">
+                                            <span class="badge text-bg-success rounded-pill">
                                                 Confirmed
                                             </span>
                                         @elseif ($participant->registration_status === 'cancelled')
-                                            <span class="badge text-bg-danger rounded-0">
+                                            <span class="badge text-bg-danger rounded-pill">
                                                 Cancelled
                                             </span>
                                         @else
-                                            <span class="badge text-bg-warning rounded-0">
+                                            <span class="badge text-bg-warning rounded-pill">
                                                 Pending
                                             </span>
                                         @endif
@@ -563,7 +590,7 @@
 
                                         <div class="list-group">
                                             @foreach ($participant->submissions->sortByDesc('created_at')->take(3) as $submission)
-                                                <div class="list-group-item rounded-0 px-3 py-3">
+                                                <div class="list-group-item rounded-2 px-3 py-3">
                                                     <div class="d-flex justify-content-between align-items-start gap-3">
                                                         <div>
                                                             <strong>
@@ -577,35 +604,35 @@
 
                                                         <div class="text-nowrap">
                                                             @if ($submission->status === 'submitted')
-                                                                <span class="badge text-bg-primary rounded-0">
+                                                                <span class="badge text-bg-primary rounded-pill">
                                                                     Submitted
                                                                 </span>
                                                             @elseif ($submission->status === 'under_review')
-                                                                <span class="badge text-bg-warning rounded-0">
+                                                                <span class="badge text-bg-warning rounded-pill">
                                                                     Under Review
                                                                 </span>
                                                             @elseif ($submission->status === 'revision')
-                                                                <span class="badge text-bg-warning rounded-0">
+                                                                <span class="badge text-bg-warning rounded-pill">
                                                                     Revision Required
                                                                 </span>
                                                             @elseif ($submission->status === 'accepted')
-                                                                <span class="badge text-bg-success rounded-0">
+                                                                <span class="badge text-bg-success rounded-pill">
                                                                     Accepted
                                                                 </span>
                                                             @elseif ($submission->status === 'camera_ready')
-                                                                <span class="badge text-bg-info rounded-0">
+                                                                <span class="badge text-bg-info rounded-pill">
                                                                     Camera Ready
                                                                 </span>
                                                             @elseif ($submission->status === 'published')
-                                                                <span class="badge text-bg-dark rounded-0">
+                                                                <span class="badge text-bg-dark rounded-pill">
                                                                     Published
                                                                 </span>
                                                             @elseif ($submission->status === 'rejected')
-                                                                <span class="badge text-bg-danger rounded-0">
+                                                                <span class="badge text-bg-danger rounded-pill">
                                                                     Rejected
                                                                 </span>
                                                             @else
-                                                                <span class="badge text-bg-secondary rounded-0">
+                                                                <span class="badge text-bg-secondary rounded-pill">
                                                                     {{ ucfirst($submission->status) }}
                                                                 </span>
                                                             @endif
@@ -616,7 +643,7 @@
                                                     <div class="mt-3">
 
                                                         <a href="{{ route('participant.submissions.show', $submission) }}"
-                                                            class="btn btn-outline-primary btn-sm rounded-0">
+                                                            class="btn btn-outline-primary btn-sm rounded-2">
 
                                                             <i class="bi bi-eye me-1"></i>
                                                             View Submission
@@ -638,19 +665,22 @@
                 </div>
             </div>
         </div>
-        <div class="card rounded-0">
-            <div class="card-header">
+
+        <div class="card rounded-3 overflow-hidden">
+            <div class="card-header rounded-top-3">
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-check me-2"></i>
                     Recent Submissions
                 </h3>
+
                 <div class="float-end">
                     <a href="{{ route('participant.submissions.index') }}"
-                        class="btn btn-outline-primary btn-sm rounded-0">
+                        class="btn btn-outline-primary btn-sm rounded-2">
                         View All
                     </a>
                 </div>
             </div>
+
             <div class="card-body p-0">
                 @php
                     $recentSubmissions = $participants
@@ -658,7 +688,8 @@
                         ->sortByDesc('created_at')
                         ->take(5);
                 @endphp
-                <div class="table-responsive">
+
+                <div class="table-responsive rounded-3">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
@@ -670,6 +701,7 @@
                                 <th width="40" class="text-center">Action</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse ($recentSubmissions as $submission)
                                 <tr>
@@ -677,61 +709,67 @@
                                         <strong>
                                             {{ $submission->submission_code }}
                                         </strong>
+
                                         <small class="text-muted d-block">
                                             {{ \Illuminate\Support\Str::limit($submission->title, 55) }}
                                         </small>
                                     </td>
+
                                     <td class="align-top">
                                         {{ $submission->conference?->short_name ?? '—' }}
                                     </td>
+
                                     <td class="align-top">
                                         {{ $submission->topic?->name ?? '—' }}
                                     </td>
+
                                     <td class="align-top">
                                         @if ($submission->status === 'draft')
-                                            <span class="badge text-bg-secondary rounded-0">
+                                            <span class="badge text-bg-secondary rounded-pill">
                                                 Draft
                                             </span>
                                         @elseif ($submission->status === 'submitted')
-                                            <span class="badge text-bg-primary rounded-0">
+                                            <span class="badge text-bg-primary rounded-pill">
                                                 Submitted
                                             </span>
                                         @elseif ($submission->status === 'under_review')
-                                            <span class="badge text-bg-warning rounded-0">
+                                            <span class="badge text-bg-warning rounded-pill">
                                                 Under Review
                                             </span>
                                         @elseif ($submission->status === 'revision')
-                                            <span class="badge text-bg-warning rounded-0">
+                                            <span class="badge text-bg-warning rounded-pill">
                                                 Revision
                                             </span>
                                         @elseif ($submission->status === 'accepted')
-                                            <span class="badge text-bg-success rounded-0">
+                                            <span class="badge text-bg-success rounded-pill">
                                                 Accepted
                                             </span>
                                         @elseif ($submission->status === 'rejected')
-                                            <span class="badge text-bg-danger rounded-0">
+                                            <span class="badge text-bg-danger rounded-pill">
                                                 Rejected
                                             </span>
                                         @elseif ($submission->status === 'camera_ready')
-                                            <span class="badge text-bg-info rounded-0">
+                                            <span class="badge text-bg-info rounded-pill">
                                                 Camera Ready
                                             </span>
                                         @elseif ($submission->status === 'published')
-                                            <span class="badge text-bg-dark rounded-0">
+                                            <span class="badge text-bg-dark rounded-pill">
                                                 Published
                                             </span>
                                         @else
-                                            <span class="badge text-bg-secondary rounded-0">
+                                            <span class="badge text-bg-secondary rounded-pill">
                                                 Unknown
                                             </span>
                                         @endif
                                     </td>
+
                                     <td class="align-top">
                                         {{ $submission->submitted_at?->format('d M Y') ?? '—' }}
                                     </td>
+
                                     <td class="align-top">
                                         <a href="{{ route('participant.submissions.show', $submission) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View">
+                                            class="btn btn-info btn-sm rounded-2" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     </td>
@@ -740,9 +778,11 @@
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
                                         <i class="bi bi-file-earmark-x display-5 text-muted"></i>
+
                                         <h5 class="mt-3">
                                             No Submissions Yet
                                         </h5>
+
                                         <p class="text-muted mb-0">
                                             Your submitted papers will appear here.
                                         </p>
@@ -755,4 +795,5 @@
             </div>
         </div>
     @endif
+
 @endsection
