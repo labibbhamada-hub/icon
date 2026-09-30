@@ -6,7 +6,7 @@
 
     <div class="row">
         <div class="col-sm-6 d-flex align-items-center gap-2">
-            <a href="{{ route('admin.conferences.index') }}" class="btn btn-secondary btn-sm rounded-2">
+            <a href="{{ route('admin.conferences.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -37,8 +37,8 @@
     <form action="{{ route('admin.conferences.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div class="card rounded-3 overflow-hidden">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     Form Conference
                 </h3>
@@ -46,8 +46,8 @@
 
             @include('admin.conferences._form')
 
-            <div class="card-footer rounded-bottom-3 text-end">
-                <button type="submit" class="btn btn-success btn-sm rounded-2">
+            <div class="card-footer rounded-0 text-end">
+                <button type="submit" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-check-circle"></i>
                     Save Conference
                 </button>

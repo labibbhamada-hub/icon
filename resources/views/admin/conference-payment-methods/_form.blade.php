@@ -14,7 +14,7 @@
             <span class="text-danger">*</span>
         </label>
 
-        <select name="type" id="payment_type" class="form-select @error('type') is-invalid @enderror rounded-2"
+        <select name="type" id="payment_type" class="form-select @error('type') is-invalid @enderror rounded-0"
             required>
             <option value="">
                 Select Payment Type
@@ -55,7 +55,7 @@
         </label>
 
         <input type="text" name="name" value="{{ old('name', $paymentMethod->name ?? '') }}"
-            class="form-control @error('name') is-invalid @enderror rounded-2" placeholder="e.g. BRI Bhamada" required>
+            class="form-control @error('name') is-invalid @enderror rounded-0" placeholder="e.g. BRI Bhamada" required>
 
         @error('name')
             <div class="invalid-feedback">
@@ -74,7 +74,7 @@
         </label>
 
         <input type="text" name="provider" value="{{ old('provider', $paymentMethod->provider ?? '') }}"
-            class="form-control @error('provider') is-invalid @enderror rounded-2"
+            class="form-control @error('provider') is-invalid @enderror rounded-0"
             placeholder="e.g. BRI, BCA, PayPal, QRIS">
 
         @error('provider')
@@ -91,7 +91,7 @@
 
         <input type="text" name="account_number"
             value="{{ old('account_number', $paymentMethod->account_number ?? '') }}"
-            class="form-control @error('account_number') is-invalid @enderror rounded-2" placeholder="e.g. 1234567890">
+            class="form-control @error('account_number') is-invalid @enderror rounded-0" placeholder="e.g. 1234567890">
 
         @error('account_number')
             <div class="invalid-feedback">
@@ -106,7 +106,7 @@
         </label>
 
         <input type="text" name="account_name" value="{{ old('account_name', $paymentMethod->account_name ?? '') }}"
-            class="form-control @error('account_name') is-invalid @enderror rounded-2"
+            class="form-control @error('account_name') is-invalid @enderror rounded-0"
             placeholder="e.g. Universitas Bhamada">
 
         @error('account_name')
@@ -123,7 +123,7 @@
         </label>
 
         <input type="text" name="currency" value="{{ old('currency', $paymentMethod->currency ?? 'IDR') }}"
-            maxlength="3" class="form-control text-uppercase @error('currency') is-invalid @enderror rounded-2"
+            maxlength="3" class="form-control text-uppercase @error('currency') is-invalid @enderror rounded-0"
             placeholder="IDR" required>
 
         @error('currency')
@@ -139,7 +139,7 @@
         </label>
 
         <input type="file" name="qr_code_file" accept=".jpg,.jpeg,.png,.webp"
-            class="form-control @error('qr_code_file') is-invalid @enderror rounded-2">
+            class="form-control @error('qr_code_file') is-invalid @enderror rounded-0">
 
         <div class="form-text">
             JPG, JPEG, PNG, or WebP. Maximum 2 MB.
@@ -152,12 +152,12 @@
         @enderror
 
         @if (!empty($paymentMethod?->qr_code_file))
-            <div class="border rounded-3 p-3 mt-2">
+            <div class="border rounded-0 p-3 mt-2">
                 <small class="text-muted d-block mb-2">
                     Current QR Code
                 </small>
 
-                <img src="{{ asset('storage/' . $paymentMethod->qr_code_file) }}" alt="QR Code" class="rounded-2"
+                <img src="{{ asset('storage/' . $paymentMethod->qr_code_file) }}" alt="QR Code" class="rounded-0"
                     style="max-width: 220px; max-height: 220px; object-fit: contain;">
             </div>
         @endif
@@ -168,7 +168,7 @@
             Instructions
         </label>
 
-        <textarea name="instructions" rows="4" class="form-control @error('instructions') is-invalid @enderror rounded-2"
+        <textarea name="instructions" rows="4" class="form-control @error('instructions') is-invalid @enderror rounded-0"
             placeholder="Instructions for participants...">{{ old('instructions', $paymentMethod->instructions ?? '') }}</textarea>
 
         @error('instructions')
@@ -190,7 +190,7 @@
 
         <input type="number" name="sort_order" min="0" max="255"
             value="{{ old('sort_order', $paymentMethod->sort_order ?? 0) }}"
-            class="form-control @error('sort_order') is-invalid @enderror rounded-2" required>
+            class="form-control @error('sort_order') is-invalid @enderror rounded-0" required>
 
         @error('sort_order')
             <div class="invalid-feedback">
@@ -207,8 +207,8 @@
         <input type="hidden" name="is_active" value="0">
 
         <div class="form-check form-switch mt-2">
-            <input type="checkbox" name="is_active" value="1" class="form-check-input" id="is_active"
-                @checked(old('is_active', $paymentMethod->is_active ?? true))>
+            <input type="checkbox" name="is_active" value="1" class="form-check-input rounded-0"
+                id="is_active" @checked(old('is_active', $paymentMethod->is_active ?? true))>
 
             <label class="form-check-label" for="is_active">
                 Active

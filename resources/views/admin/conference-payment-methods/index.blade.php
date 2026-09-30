@@ -53,7 +53,7 @@
 @section('content')
 
     @if ($paymentMethods->isEmpty())
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
             <div class="card-body text-center py-5">
 
@@ -68,7 +68,7 @@
                 </p>
 
                 <a href="{{ route('admin.conferences.payment-methods.create', $conference) }}"
-                    class="btn btn-success rounded-2">
+                    class="btn btn-success rounded-0">
 
                     <i class="bi bi-plus-circle me-1"></i>
                     Add Payment Method
@@ -79,9 +79,9 @@
 
         </div>
     @else
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
                     <i class="bi bi-credit-card me-2"></i>
@@ -91,7 +91,7 @@
                 <div class="float-end">
 
                     <a href="{{ route('admin.conferences.payment-methods.create', $conference) }}"
-                        class="btn btn-success btn-sm rounded-2">
+                        class="btn btn-success btn-sm rounded-0">
 
                         <i class="bi bi-plus-circle me-1"></i>
                         Add Payment Method
@@ -104,7 +104,7 @@
 
             <div class="card-body p-0">
 
-                <div class="table-responsive rounded-3">
+                <div class="table-responsive rounded-0">
 
                     <table class="table table-hover align-middle mb-0">
 
@@ -186,11 +186,11 @@
                                     <td>
 
                                         @if ($paymentMethod->is_active)
-                                            <span class="badge text-bg-success rounded-pill">
+                                            <span class="badge text-bg-success rounded-0">
                                                 Active
                                             </span>
                                         @else
-                                            <span class="badge text-bg-secondary rounded-pill">
+                                            <span class="badge text-bg-secondary rounded-0">
                                                 Inactive
                                             </span>
                                         @endif
@@ -202,7 +202,7 @@
                                         <div class="d-flex gap-1">
 
                                             <a href="{{ route('admin.conferences.payment-methods.edit', [$conference, $paymentMethod]) }}"
-                                                class="btn btn-outline-primary btn-sm rounded-2" title="Edit">
+                                                class="btn btn-outline-primary btn-sm rounded-0" title="Edit">
 
                                                 <i class="bi bi-pencil"></i>
 
@@ -215,7 +215,7 @@
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-2"
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-0"
                                                     title="Delete">
 
                                                     <i class="bi bi-trash"></i>
@@ -240,7 +240,7 @@
             </div>
 
             @if ($paymentMethods->hasPages())
-                <div class="card-footer rounded-bottom-3">
+                <div class="card-footer rounded-0">
                     {{ $paymentMethods->links() }}
                 </div>
             @endif

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\CertificatesExport;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Participant;
 use App\Models\Submission;
-use App\Exports\CertificatesExport;
+use App\Services\CertificateEligibilityService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -66,8 +67,10 @@ class CertificateController extends Controller
         );
     }
 
-    public function store(Request $request)
-    {
+    public function store(
+        Request $request,
+        CertificateEligibilityService $certificateEligibilityService
+    ) {
         $validated = $request->validate([
             'participant_id' => [
                 'required',
@@ -93,6 +96,12 @@ class CertificateController extends Controller
                 $validated['participant_id']
             );
 
+        /*
+    |--------------------------------------------------------------------------
+    | Certificate setting
+    |--------------------------------------------------------------------------
+    */
+
         if (
             !$participant->conference?->setting?->certificate_enabled
             || $participant->conference?->setting?->maintenance_mode
@@ -102,6 +111,27 @@ class CertificateController extends Controller
                 ->with(
                     'error',
                     'Certificate generation is currently disabled for this conference.'
+                );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Submission
+    |--------------------------------------------------------------------------
+    |
+    | A submission may only be linked to a presenter certificate.
+    |
+    */
+
+        if (
+            $validated['type'] !== 'presenter'
+            && !empty($validated['submission_id'])
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'A submission can only be linked to a presenter certificate.'
                 );
         }
 
@@ -128,14 +158,13 @@ class CertificateController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Presenter certificate
-        |--------------------------------------------------------------------------
-        |
-        | Presenter certificates are tied to a published submission.
-        | Therefore duplicate detection must use submission_id.
-        |
-        */
+    |--------------------------------------------------------------------------
+    | Presenter certificate
+    |--------------------------------------------------------------------------
+    |
+    | Presenter certificates are tied to a published submission.
+    |
+    */
 
         if (
             $validated['type'] === 'presenter'
@@ -150,10 +179,40 @@ class CertificateController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Duplicate protection
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | Certificate eligibility
+    |--------------------------------------------------------------------------
+    |
+    | Check the business rules for the selected certificate type:
+    |
+    | participant -> confirmed registration + verified attendance
+    | presenter   -> published submission + verified attendance
+    | speaker     -> confirmed speaker registration + verified attendance
+    | committee   -> confirmed committee registration + verified attendance
+    | reviewer    -> reviewer assignment + all assigned reviews completed
+    |
+    */
+
+        $eligibility = $certificateEligibilityService->evaluate(
+            $participant,
+            $validated['type'],
+            $submission
+        );
+
+        if (!$eligibility['eligible']) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    implode(' ', $eligibility['reasons'])
+                );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Duplicate protection
+    |--------------------------------------------------------------------------
+    */
 
         $existingCertificate = null;
 
@@ -207,10 +266,10 @@ class CertificateController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | Create certificate
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | Create certificate
+    |--------------------------------------------------------------------------
+    */
 
         $certificate = DB::transaction(
             function () use (
@@ -243,10 +302,10 @@ class CertificateController extends Controller
         );
 
         /*
-        |--------------------------------------------------------------------------
-        | Generate PDF
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | Generate PDF
+    |--------------------------------------------------------------------------
+    */
 
         $certificate->load([
             'participant',

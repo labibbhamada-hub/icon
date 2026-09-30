@@ -10,7 +10,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-2">
+            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-0">
 
                 <option value="">
                     Select Conference
@@ -42,7 +42,7 @@
             </label>
 
             <input type="text" name="title" value="{{ old('title', $conferenceWhatsappGroup->title ?? '') }}"
-                class="form-control @error('title') is-invalid @enderror rounded-2"
+                class="form-control @error('title') is-invalid @enderror rounded-0"
                 placeholder="e.g. BHAMADA ICON 2026 Presenter Group">
 
             @error('title')
@@ -63,7 +63,7 @@
 
             <input type="url" name="group_url"
                 value="{{ old('group_url', $conferenceWhatsappGroup->group_url ?? '') }}"
-                class="form-control @error('group_url') is-invalid @enderror rounded-2"
+                class="form-control @error('group_url') is-invalid @enderror rounded-0"
                 placeholder="https://chat.whatsapp.com/...">
 
             @error('group_url')
@@ -88,7 +88,7 @@
                 </small>
             </label>
 
-            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-2"
+            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-0"
                 placeholder="Write information for participants...">{{ old('description', $conferenceWhatsappGroup->description ?? '') }}</textarea>
 
             @error('description')
@@ -114,7 +114,7 @@
 
                 <input type="hidden" name="is_active" value="0">
 
-                <input class="form-check-input" type="checkbox" name="is_active" value="1"
+                <input class="form-check-input rounded-0" type="checkbox" name="is_active" value="1"
                     @checked(old('is_active', $conferenceWhatsappGroup->is_active ?? true))>
 
                 <label class="form-check-label">

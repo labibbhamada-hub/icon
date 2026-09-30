@@ -6,7 +6,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.conferences.show', $conference) }}" class="btn btn-secondary btn-sm rounded-2"
+                <a href="{{ route('admin.conferences.show', $conference) }}" class="btn btn-secondary btn-sm rounded-0"
                     title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
@@ -52,7 +52,7 @@
 
 @section('content')
     @if ($errors->any())
-        <div class="alert alert-danger rounded-3"> <strong>
+        <div class="alert alert-danger rounded-0"> <strong>
                 Please correct the following: </strong>
 
             <ul class="mb-0 mt-2">
@@ -69,8 +69,8 @@
         @csrf
         @method('PUT')
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-calendar-event me-2"></i>
                     Conference
@@ -102,8 +102,8 @@
             </div>
         </div>
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-toggles me-2"></i>
                     General Settings
@@ -114,11 +114,11 @@
                 <div class="row g-4">
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="is_active" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="is_active" name="is_active"
+                                <input type="checkbox" class="form-check-input rounded-0" id="is_active" name="is_active"
                                     value="1" @checked(old('is_active', $settings->is_active))>
 
                                 <label class="form-check-label fw-semibold" for="is_active">
@@ -134,11 +134,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="published" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="published" name="published"
+                                <input type="checkbox" class="form-check-input rounded-0" id="published" name="published"
                                     value="1" @checked(old('published', $settings->published))>
 
                                 <label class="form-check-label fw-semibold" for="published">
@@ -154,11 +154,11 @@
                     </div>
 
                     <div class="col-md-12">
-                        <div class="border border-warning bg-warning-subtle rounded-3 p-3">
+                        <div class="border border-warning bg-warning-subtle rounded-0 p-3">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="maintenance_mode" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="maintenance_mode"
+                                <input type="checkbox" class="form-check-input rounded-0" id="maintenance_mode"
                                     name="maintenance_mode" value="1" @checked(old('maintenance_mode', $settings->maintenance_mode))>
 
                                 <label class="form-check-label fw-semibold" for="maintenance_mode">
@@ -177,8 +177,8 @@
             </div>
         </div>
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-globe2 me-2"></i>
                     Attendance Options
@@ -186,7 +186,7 @@
             </div>
 
             <div class="card-body">
-                <div class="alert alert-info rounded-3">
+                <div class="alert alert-info rounded-0">
                     <i class="bi bi-info-circle me-2"></i>
                     Select how participants can attend this conference.
                     At least one option must be enabled.
@@ -199,10 +199,10 @@
                 <div class="row g-3">
 
                     <div class="col-md-4">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="attendance_online"
+                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_online"
                                     name="attendance_types[]" value="online" @checked(in_array('online', $selectedAttendanceTypes, true))>
 
                                 <label class="form-check-label fw-semibold" for="attendance_online">
@@ -219,10 +219,10 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="attendance_offline"
+                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_offline"
                                     name="attendance_types[]" value="offline" @checked(in_array('offline', $selectedAttendanceTypes, true))>
 
                                 <label class="form-check-label fw-semibold" for="attendance_offline">
@@ -239,10 +239,10 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="attendance_hybrid"
+                                <input type="checkbox" class="form-check-input rounded-0" id="attendance_hybrid"
                                     name="attendance_types[]" value="hybrid" @checked(in_array('hybrid', $selectedAttendanceTypes, true))>
 
                                 <label class="form-check-label fw-semibold" for="attendance_hybrid">
@@ -275,8 +275,8 @@
             </div>
         </div>
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-diagram-3 me-2"></i>
                     Conference Workflow
@@ -287,11 +287,11 @@
                 <div class="row g-4">
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="registration_enabled" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="registration_enabled"
+                                <input type="checkbox" class="form-check-input rounded-0" id="registration_enabled"
                                     name="registration_enabled" value="1" @checked(old('registration_enabled', $settings->registration_enabled))>
 
                                 <label class="form-check-label fw-semibold" for="registration_enabled">
@@ -307,11 +307,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="submission_enabled" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="submission_enabled"
+                                <input type="checkbox" class="form-check-input rounded-0" id="submission_enabled"
                                     name="submission_enabled" value="1" @checked(old('submission_enabled', $settings->submission_enabled))>
 
                                 <label class="form-check-label fw-semibold" for="submission_enabled">
@@ -327,11 +327,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="payment_enabled" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="payment_enabled"
+                                <input type="checkbox" class="form-check-input rounded-0" id="payment_enabled"
                                     name="payment_enabled" value="1" @checked(old('payment_enabled', $settings->payment_enabled))>
 
                                 <label class="form-check-label fw-semibold" for="payment_enabled">
@@ -347,11 +347,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="review_enabled" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="review_enabled"
+                                <input type="checkbox" class="form-check-input rounded-0" id="review_enabled"
                                     name="review_enabled" value="1" @checked(old('review_enabled', $settings->review_enabled))>
 
                                 <label class="form-check-label fw-semibold" for="review_enabled">
@@ -366,11 +366,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
                             <div class="form-check form-switch">
                                 <input type="hidden" name="certificate_enabled" value="0">
 
-                                <input type="checkbox" class="form-check-input" id="certificate_enabled"
+                                <input type="checkbox" class="form-check-input rounded-0" id="certificate_enabled"
                                     name="certificate_enabled" value="1" @checked(old('certificate_enabled', $settings->certificate_enabled))>
 
                                 <label class="form-check-label fw-semibold" for="certificate_enabled">
@@ -390,7 +390,7 @@
         </div>
 
         <div class="text-end mb-3">
-            <button type="submit" class="btn btn-success btn-sm rounded-2">
+            <button type="submit" class="btn btn-success btn-sm rounded-0">
                 <i class="bi bi-check-circle me-1"></i>
                 Save Settings
             </button>

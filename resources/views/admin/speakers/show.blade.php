@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-mic me-2"></i>
@@ -63,7 +63,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.speakers.edit', $speaker) }}" class="btn btn-warning btn-sm rounded-2">
+                <a href="{{ route('admin.speakers.edit', $speaker) }}" class="btn btn-warning btn-sm rounded-0">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Speaker
                 </a>
@@ -80,9 +80,9 @@
 
                     @if ($speaker->photo)
                         <img src="{{ asset('storage/' . $speaker->photo) }}" alt="{{ $speaker->name }}"
-                            class="img-thumbnail rounded-3 w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                            class="img-thumbnail rounded-0 w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
                     @else
-                        <div class="border rounded-3 d-flex align-items-center justify-content-center bg-light w-100"
+                        <div class="border rounded-0 d-flex align-items-center justify-content-center bg-light w-100"
                             style="aspect-ratio: 1 / 1;">
                             <div class="text-center text-muted">
 
@@ -110,7 +110,7 @@
                         </div>
                     @endif
 
-                    <div class="table-responsive rounded-3">
+                    <div class="table-responsive rounded-0">
 
                         <table class="table table-borderless align-middle mb-0">
 
@@ -233,11 +233,11 @@
                                     <td>
 
                                         @if ($speaker->is_active)
-                                            <span class="badge text-bg-success rounded-pill">
+                                            <span class="badge text-bg-success rounded-0">
                                                 Active
                                             </span>
                                         @else
-                                            <span class="badge text-bg-secondary rounded-pill">
+                                            <span class="badge text-bg-secondary rounded-0">
                                                 Inactive
                                             </span>
                                         @endif
@@ -275,9 +275,9 @@
 
         </div>
 
-        <div class="card-footer rounded-bottom-3">
+        <div class="card-footer rounded-0">
 
-            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-2">
+            <a href="{{ route('admin.speakers.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Speakers
             </a>

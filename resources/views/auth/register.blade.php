@@ -6,7 +6,7 @@
 
     <div class="register-box py-5">
         <div class="text-center mb-4">
-            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON 2026" width="80" class="rounded-2">
+            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON 2026" width="80" class="rounded-0">
 
             <h3 class="mt-3 fw-bold mb-1">
                 ICON 2026
@@ -17,8 +17,8 @@
             </p>
         </div>
 
-        <div class="card card-outline card-success shadow rounded-3 overflow-hidden">
-            <div class="card-header rounded-top-3 text-center">
+        <div class="card card-outline card-success shadow rounded-0 overflow-hidden">
+            <div class="card-header rounded-0 text-center">
                 <h5 class="mb-0">
                     Register
                 </h5>
@@ -30,7 +30,7 @@
                 </p>
 
                 @if ($errors->any())
-                    <div class="alert alert-danger rounded-3">
+                    <div class="alert alert-danger rounded-0">
                         <ul class="mb-0 ps-3">
                             @foreach ($errors->all() as $error)
                                 <li>
@@ -42,7 +42,7 @@
                 @endif
 
                 @if (session('error'))
-                    <div class="alert alert-danger rounded-3">
+                    <div class="alert alert-danger rounded-0">
                         {{ session('error') }}
                     </div>
                 @endif
@@ -56,10 +56,10 @@
 
                     <div class="input-group mb-3">
                         <input id="registerName" type="text" name="name" value="{{ old('name') }}"
-                            class="form-control @error('name') is-invalid @enderror rounded-start-2" placeholder="Full Name"
+                            class="form-control @error('name') is-invalid @enderror rounded-0" placeholder="Full Name"
                             autocomplete="name" required autofocus>
 
-                        <div class="input-group-text rounded-end-2">
+                        <div class="input-group-text rounded-0">
                             <span class="bi bi-person"></span>
                         </div>
 
@@ -76,10 +76,10 @@
 
                     <div class="input-group mb-3">
                         <input id="registerEmail" type="email" name="email" value="{{ old('email') }}"
-                            class="form-control @error('email') is-invalid @enderror rounded-start-2" placeholder="Email"
+                            class="form-control @error('email') is-invalid @enderror rounded-0" placeholder="Email"
                             autocomplete="email" required>
 
-                        <div class="input-group-text rounded-end-2">
+                        <div class="input-group-text rounded-0">
                             <span class="bi bi-envelope"></span>
                         </div>
 
@@ -96,10 +96,10 @@
 
                     <div class="input-group mb-3">
                         <input id="registerPassword" type="password" name="password"
-                            class="form-control @error('password') is-invalid @enderror rounded-start-2"
-                            placeholder="Password" autocomplete="new-password" required>
+                            class="form-control @error('password') is-invalid @enderror rounded-0" placeholder="Password"
+                            autocomplete="new-password" required>
 
-                        <div class="input-group-text rounded-end-2">
+                        <div class="input-group-text rounded-0">
                             <span class="bi bi-lock-fill"></span>
                         </div>
 
@@ -116,10 +116,10 @@
 
                     <div class="input-group mb-3">
                         <input id="registerPasswordConfirmation" type="password" name="password_confirmation"
-                            class="form-control rounded-start-2" placeholder="Confirm Password" autocomplete="new-password"
+                            class="form-control rounded-0" placeholder="Confirm Password" autocomplete="new-password"
                             required>
 
-                        <div class="input-group-text rounded-end-2">
+                        <div class="input-group-text rounded-0">
                             <span class="bi bi-lock-fill"></span>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                     <div class="row mb-3">
                         <div class="col-8">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="1" id="agreeTerms"
+                                <input class="form-check-input rounded-0" type="checkbox" value="1" id="agreeTerms"
                                     name="terms" required>
 
                                 <label class="form-check-label" for="agreeTerms">
@@ -141,7 +141,7 @@
                     </div>
 
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-success rounded-2">
+                        <button type="submit" class="btn btn-success rounded-0">
                             <i class="bi bi-box-arrow-in-right me-2"></i>
                             Register
                         </button>

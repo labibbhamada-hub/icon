@@ -14,7 +14,7 @@
 
                     <div class="d-flex align-items-center gap-2">
 
-                        <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary btn-sm rounded-2">
+                        <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary btn-sm rounded-0">
 
                             <i class="bi bi-arrow-left"></i>
 
@@ -73,7 +73,7 @@
 
             @if ($participants->isEmpty())
 
-                <div class="alert alert-info rounded-3">
+                <div class="alert alert-info rounded-0">
 
                     <i class="bi bi-info-circle me-2"></i>
 
@@ -81,7 +81,7 @@
 
                 </div>
 
-                <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-2">
+                <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-0">
 
                     <i class="bi bi-arrow-left me-1"></i>
 
@@ -94,9 +94,9 @@
                     @csrf
 
 
-                    <div class="card rounded-3 overflow-hidden">
+                    <div class="card rounded-0 overflow-hidden">
 
-                        <div class="card-header rounded-top-3">
+                        <div class="card-header rounded-0">
 
                             <h3 class="card-title">
 
@@ -125,7 +125,7 @@
                                     </label>
 
                                     <select name="participant_id"
-                                        class="form-select @error('participant_id') is-invalid @enderror rounded-2">
+                                        class="form-select @error('participant_id') is-invalid @enderror rounded-0">
 
                                         <option value="">
                                             Select Registration
@@ -166,13 +166,13 @@
 
                                     <div class="input-group">
 
-                                        <span class="input-group-text rounded-start-2">
+                                        <span class="input-group-text rounded-0">
                                             Rp
                                         </span>
 
                                         <input type="number" name="amount" min="0" step="0.01"
                                             value="{{ old('amount') }}"
-                                            class="form-control @error('amount') is-invalid @enderror rounded-end-2"
+                                            class="form-control @error('amount') is-invalid @enderror rounded-0"
                                             placeholder="500000">
 
                                     </div>
@@ -198,7 +198,7 @@
                                     </label>
 
                                     <select name="payment_method"
-                                        class="form-select @error('payment_method') is-invalid @enderror rounded-2">
+                                        class="form-select @error('payment_method') is-invalid @enderror rounded-0">
 
                                         <option value="bank_transfer" @selected(old('payment_method', 'bank_transfer') === 'bank_transfer')>
 
@@ -242,7 +242,7 @@
 
                                     <input type="datetime-local" name="paid_at"
                                         value="{{ old('paid_at', now()->format('Y-m-d\TH:i')) }}"
-                                        class="form-control @error('paid_at') is-invalid @enderror rounded-2">
+                                        class="form-control @error('paid_at') is-invalid @enderror rounded-0">
 
                                     @error('paid_at')
                                         <div class="invalid-feedback">
@@ -265,7 +265,7 @@
                                     </label>
 
                                     <input type="file" name="proof_file" accept=".jpg,.jpeg,.png,.webp,.pdf"
-                                        class="form-control @error('proof_file') is-invalid @enderror rounded-2">
+                                        class="form-control @error('proof_file') is-invalid @enderror rounded-0">
 
                                     <div class="form-text">
                                         JPG, PNG, WebP, or PDF. Maximum 5 MB.
@@ -287,7 +287,7 @@
                                         Notes
                                     </label>
 
-                                    <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror rounded-2"
+                                    <textarea name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror rounded-0"
                                         placeholder="Additional payment information...">{{ old('notes') }}</textarea>
 
                                     @error('notes')
@@ -303,15 +303,15 @@
                         </div>
 
 
-                        <div class="card-footer rounded-bottom-3 text-end">
+                        <div class="card-footer rounded-0 text-end">
 
-                            <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary rounded-2">
+                            <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary rounded-0">
 
                                 Cancel
 
                             </a>
 
-                            <button type="submit" class="btn btn-success rounded-2">
+                            <button type="submit" class="btn btn-success rounded-0">
 
                                 <i class="bi bi-upload me-1"></i>
 

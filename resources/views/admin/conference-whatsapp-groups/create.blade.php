@@ -35,9 +35,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
             <h3 class="card-title">
                 <i class="bi bi-whatsapp me-2"></i>
                 WhatsApp Group Information
@@ -50,14 +50,14 @@
 
             @include('admin.conference-whatsapp-groups._form')
 
-            <div class="card-footer rounded-bottom-3">
+            <div class="card-footer rounded-0">
 
-                <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary rounded-2">
+                <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left me-1"></i>
                     Back
                 </a>
 
-                <button type="submit" class="btn btn-success rounded-2">
+                <button type="submit" class="btn btn-success rounded-0">
                     <i class="bi bi-check-circle me-1"></i>
                     Save WhatsApp Group
                 </button>

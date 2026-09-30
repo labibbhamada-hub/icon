@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -53,9 +53,9 @@
 @section('content')
 
     {{-- Participant Summary --}}
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-person-vcard me-2"></i>
@@ -64,7 +64,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.participants.edit', $participant) }}" class="btn btn-warning btn-sm rounded-2">
+                <a href="{{ route('admin.participants.edit', $participant) }}" class="btn btn-warning btn-sm rounded-0">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Participant
                 </a>
@@ -79,7 +79,7 @@
 
                 <div class="col-lg-6">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Registration
@@ -151,15 +151,15 @@
                             <dd class="col-sm-7">
 
                                 @if ($participant->registration_status === 'confirmed')
-                                    <span class="badge text-bg-success rounded-pill">
+                                    <span class="badge text-bg-success rounded-0">
                                         Confirmed
                                     </span>
                                 @elseif ($participant->registration_status === 'cancelled')
-                                    <span class="badge text-bg-danger rounded-pill">
+                                    <span class="badge text-bg-danger rounded-0">
                                         Cancelled
                                     </span>
                                 @else
-                                    <span class="badge text-bg-warning rounded-pill">
+                                    <span class="badge text-bg-warning rounded-0">
                                         Pending
                                     </span>
                                 @endif
@@ -182,7 +182,7 @@
 
                 <div class="col-lg-6 mt-3 mt-lg-0">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Personal Information
@@ -270,9 +270,9 @@
         $attendance = $participant->attendances->first();
     @endphp
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-calendar-check me-2"></i>
@@ -287,7 +287,7 @@
 
                 <div class="col-lg-6">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Attendance Status
@@ -302,19 +302,19 @@
                             <dd class="col-sm-7">
 
                                 @if (!$attendance || $attendance->attendance_status === 'not_checked_in')
-                                    <span class="badge text-bg-secondary rounded-pill">
+                                    <span class="badge text-bg-secondary rounded-0">
                                         Not Checked In
                                     </span>
                                 @elseif ($attendance->attendance_status === 'checked_in')
-                                    <span class="badge text-bg-warning rounded-pill">
+                                    <span class="badge text-bg-warning rounded-0">
                                         Waiting for Verification
                                     </span>
                                 @elseif ($attendance->attendance_status === 'verified')
-                                    <span class="badge text-bg-success rounded-pill">
+                                    <span class="badge text-bg-success rounded-0">
                                         Verified
                                     </span>
                                 @else
-                                    <span class="badge text-bg-secondary rounded-pill">
+                                    <span class="badge text-bg-secondary rounded-0">
                                         {{ ucfirst(str_replace('_', ' ', $attendance->attendance_status)) }}
                                     </span>
                                 @endif
@@ -369,7 +369,7 @@
 
                 <div class="col-lg-6">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Attendance Actions
@@ -393,7 +393,7 @@
                                     </label>
 
                                     <input type="datetime-local" name="checked_in_at" id="checked_in_at"
-                                        class="form-control rounded-2 @error('checked_in_at') is-invalid @enderror"
+                                        class="form-control rounded-0 @error('checked_in_at') is-invalid @enderror"
                                         value="{{ old('checked_in_at', now()->format('Y-m-d\TH:i')) }}" required>
 
                                     @error('checked_in_at')
@@ -411,7 +411,7 @@
                                     </label>
 
                                     <textarea name="verification_notes" id="verification_notes" rows="4"
-                                        class="form-control rounded-2 @error('verification_notes') is-invalid @enderror"
+                                        class="form-control rounded-0 @error('verification_notes') is-invalid @enderror"
                                         placeholder="Enter the reason or notes for manual check-in..." required>{{ old('verification_notes') }}</textarea>
 
                                     @error('verification_notes')
@@ -422,14 +422,14 @@
 
                                 </div>
 
-                                <button type="submit" class="btn btn-primary rounded-2">
+                                <button type="submit" class="btn btn-primary rounded-0">
                                     <i class="bi bi-person-check me-1"></i>
                                     Manual Check-in
                                 </button>
 
                             </form>
                         @elseif ($attendance->attendance_status === 'checked_in')
-                            <div class="alert alert-warning rounded-3">
+                            <div class="alert alert-warning rounded-0">
 
                                 <div class="d-flex align-items-start gap-2">
 
@@ -455,14 +455,14 @@
                                 @csrf
                                 @method('PATCH')
 
-                                <button type="submit" class="btn btn-success rounded-2">
+                                <button type="submit" class="btn btn-success rounded-0">
                                     <i class="bi bi-check-circle me-1"></i>
                                     Verify Attendance
                                 </button>
 
                             </form>
                         @elseif ($attendance->attendance_status === 'verified')
-                            <div class="alert alert-success rounded-3">
+                            <div class="alert alert-success rounded-0">
 
                                 <div class="d-flex align-items-start gap-2">
 
@@ -498,7 +498,7 @@
 
         <div class="col-md-4">
 
-            <div class="small-box text-bg-primary rounded-3">
+            <div class="small-box text-bg-primary rounded-0">
 
                 <div class="inner">
 
@@ -522,7 +522,7 @@
 
         <div class="col-md-4">
 
-            <div class="small-box text-bg-success rounded-3">
+            <div class="small-box text-bg-success rounded-0">
 
                 <div class="inner">
 
@@ -546,7 +546,7 @@
 
         <div class="col-md-4">
 
-            <div class="small-box text-bg-warning rounded-3">
+            <div class="small-box text-bg-warning rounded-0">
 
                 <div class="inner">
 
@@ -573,9 +573,9 @@
 
     {{-- Notes --}}
     @if ($participant->notes)
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
                     <i class="bi bi-sticky me-2"></i>
@@ -592,11 +592,11 @@
     @endif
 
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-footer rounded-bottom-3">
+        <div class="card-footer rounded-0">
 
-            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-2">
+            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Participants
             </a>

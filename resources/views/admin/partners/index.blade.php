@@ -40,9 +40,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-buildings me-2"></i>
@@ -51,7 +51,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.partners.create') }}" class="btn btn-success btn-sm rounded-2">
+                <a href="{{ route('admin.partners.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle me-1"></i>
                     Add Partner
                 </a>
@@ -62,7 +62,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -115,10 +115,10 @@
 
                                     @if ($partner->logo)
                                         <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name }}"
-                                            class="img-thumbnail rounded-3"
+                                            class="img-thumbnail rounded-0"
                                             style="width: 55px; height: 55px; object-fit: contain;">
                                     @else
-                                        <div class="rounded-3 bg-light border d-flex align-items-center justify-content-center"
+                                        <div class="rounded-0 bg-light border d-flex align-items-center justify-content-center"
                                             style="width: 55px; height: 55px;">
                                             <i class="bi bi-building text-muted fs-4"></i>
                                         </div>
@@ -142,7 +142,7 @@
 
                                 <td>
 
-                                    <span class="badge text-bg-secondary rounded-pill">
+                                    <span class="badge text-bg-secondary rounded-0">
                                         {{ ucwords(str_replace('_', ' ', $partner->type)) }}
                                     </span>
 
@@ -169,11 +169,11 @@
                                 <td>
 
                                     @if ($partner->is_active)
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Active
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Inactive
                                         </span>
                                     @endif
@@ -185,12 +185,12 @@
                                     <div class="btn-group gap-1">
 
                                         <a href="{{ route('admin.partners.show', $partner) }}"
-                                            class="btn btn-info btn-sm rounded-2" title="View">
+                                            class="btn btn-info btn-sm rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         <a href="{{ route('admin.partners.edit', $partner) }}"
-                                            class="btn btn-warning btn-sm rounded-2" title="Edit">
+                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
@@ -199,7 +199,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-2" title="Delete">
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
 
@@ -229,7 +229,7 @@
                                         There are no partner data yet.
                                     </p>
 
-                                    <a href="{{ route('admin.partners.create') }}" class="btn btn-success rounded-2">
+                                    <a href="{{ route('admin.partners.create') }}" class="btn btn-success rounded-0">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Create First Partner
                                     </a>
@@ -248,7 +248,7 @@
         </div>
 
         @if ($partners->hasPages())
-            <div class="card-footer rounded-bottom-3">
+            <div class="card-footer rounded-0">
                 {{ $partners->links() }}
             </div>
         @endif

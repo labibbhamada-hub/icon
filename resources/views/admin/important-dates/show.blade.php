@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -52,9 +52,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-calendar-event me-2"></i>
@@ -64,7 +64,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.important-dates.edit', $importantDate) }}"
-                    class="btn btn-warning btn-sm rounded-2">
+                    class="btn btn-warning btn-sm rounded-0">
                     <i class="bi bi-pencil me-1"></i>
                     Edit Important Date
                 </a>
@@ -80,7 +80,7 @@
                 {{-- Event Date --}}
                 <div class="col-md-4 mb-3">
 
-                    <div class="border rounded-3 bg-light text-center p-4 h-100">
+                    <div class="border rounded-0 bg-light text-center p-4 h-100">
 
                         <div class="text-muted text-uppercase small">
                             Event Date
@@ -127,23 +127,23 @@
 
                     <div class="mb-3">
 
-                        <span class="badge text-bg-primary rounded-pill">
+                        <span class="badge text-bg-primary rounded-0">
                             {{ $typeLabels[$importantDate->type] ?? 'Other' }}
                         </span>
 
                         @if ($importantDate->is_active)
-                            <span class="badge text-bg-success rounded-pill">
+                            <span class="badge text-bg-success rounded-0">
                                 Active
                             </span>
                         @else
-                            <span class="badge text-bg-secondary rounded-pill">
+                            <span class="badge text-bg-secondary rounded-0">
                                 Inactive
                             </span>
                         @endif
 
                     </div>
 
-                    <div class="table-responsive rounded-3">
+                    <div class="table-responsive rounded-0">
 
                         <table class="table table-borderless align-middle mb-0">
 
@@ -270,9 +270,9 @@
 
         </div>
 
-        <div class="card-footer rounded-bottom-3">
+        <div class="card-footer rounded-0">
 
-            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-2">
+            <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary btn-sm rounded-0">
                 <i class="bi bi-arrow-left me-1"></i>
                 Back to Important Dates
             </a>

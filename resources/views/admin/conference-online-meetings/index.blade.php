@@ -29,9 +29,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-camera-video me-2"></i>
@@ -39,7 +39,7 @@
             </h3>
 
             <div class="float-end">
-                <a href="{{ route('admin.conference-online-meetings.create') }}" class="btn btn-success btn-sm rounded-2">
+                <a href="{{ route('admin.conference-online-meetings.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle me-1"></i>
                     Add Online Meeting
                 </a>
@@ -49,7 +49,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -152,11 +152,11 @@
 
                                 <td>
                                     @if ($meeting->is_active)
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Active
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Inactive
                                         </span>
                                     @endif
@@ -167,12 +167,12 @@
                                     <div class="btn-group gap-1">
 
                                         <a href="{{ route('admin.conference-online-meetings.show', $meeting) }}"
-                                            class="btn btn-info btn-sm rounded-2" title="View">
+                                            class="btn btn-info btn-sm rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         <a href="{{ route('admin.conference-online-meetings.edit', $meeting) }}"
-                                            class="btn btn-warning btn-sm rounded-2" title="Edit">
+                                            class="btn btn-warning btn-sm rounded-0" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
@@ -182,7 +182,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-2" title="Delete">
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
 
@@ -213,7 +213,7 @@
                                     </p>
 
                                     <a href="{{ route('admin.conference-online-meetings.create') }}"
-                                        class="btn btn-success rounded-2">
+                                        class="btn btn-success rounded-0">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Create First Online Meeting
                                     </a>
@@ -232,7 +232,7 @@
         </div>
 
         @if ($meetings->hasPages())
-            <div class="card-footer rounded-bottom-3">
+            <div class="card-footer rounded-0">
                 {{ $meetings->links() }}
             </div>
         @endif

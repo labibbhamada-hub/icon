@@ -2,9 +2,11 @@
 
 @section('title', 'Conference Detail')
 
-@section('header') <div class="row">
-        <div class="col-sm-6 d-flex align-items-center gap-2"> <a href="{{ route('admin.conferences.index') }}"
-                class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+@section('header')
+    <div class="row">
+        <div class="col-sm-6 d-flex align-items-center gap-2">
+            <a href="{{ route('admin.conferences.index') }}" class="btn btn-secondary btn-sm rounded-0">
+                <i class="bi bi-arrow-left"></i> </a>
 
             <h1 class="mb-0 fs-3">
                 Conference Detail
@@ -28,32 +30,32 @@
 
 @endsection
 
-@section('content') <div class="card rounded-3 overflow-hidden">
-        <div class="card-header rounded-top-3">
+@section('content') <div class="card rounded-0 overflow-hidden">
+        <div class="card-header rounded-0">
             <h3 class="card-title">
                 {{ $conference->name }} </h3>
 
             <div class="float-end d-flex gap-1 flex-wrap">
 
                 <a href="{{ route('admin.conferences.settings.edit', $conference) }}"
-                    class="btn btn-secondary btn-sm rounded-2">
+                    class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-toggles me-1"></i>
                     Settings
                 </a>
 
                 <a href="{{ route('admin.conferences.configuration.edit', $conference) }}"
-                    class="btn btn-primary btn-sm rounded-2">
+                    class="btn btn-primary btn-sm rounded-0">
                     <i class="bi bi-sliders me-1"></i>
                     Configuration
                 </a>
 
                 <a href="{{ route('admin.conferences.payment-methods.index', $conference) }}"
-                    class="btn btn-info btn-sm rounded-2">
+                    class="btn btn-info btn-sm rounded-0">
                     <i class="bi bi-credit-card me-1"></i>
                     Payment Methods
                 </a>
 
-                <a href="{{ route('admin.conferences.edit', $conference) }}" class="btn btn-warning btn-sm rounded-2">
+                <a href="{{ route('admin.conferences.edit', $conference) }}" class="btn btn-warning btn-sm rounded-0">
                     <i class="bi bi-pencil me-1"></i>
                     Edit
                 </a>
@@ -65,10 +67,10 @@
             <div class="row">
                 <div class="col-md-3 mb-3">
                     @if ($conference->logo)
-                        <img src="{{ asset('storage/' . $conference->logo) }}" class="img-fluid rounded-3 border"
+                        <img src="{{ asset('storage/' . $conference->logo) }}" class="img-fluid rounded-0 border"
                             alt="{{ $conference->name }}">
                     @else
-                        <div class="text-center p-5 border rounded-3">
+                        <div class="text-center p-5 border rounded-0">
                             <i class="bi bi-image display-4 text-secondary"></i>
 
                             <p class="mt-2">
@@ -79,7 +81,7 @@
                 </div>
 
                 <div class="col-md-9">
-                    <div class="table-responsive rounded-3">
+                    <div class="table-responsive rounded-0">
                         <table class="table table-bordered mb-0">
                             <tr>
                                 <th>
@@ -209,7 +211,7 @@
                     Conference Banner
                 </h5>
 
-                <img src="{{ asset('storage/' . $conference->banner) }}" class="img-fluid rounded-3 border"
+                <img src="{{ asset('storage/' . $conference->banner) }}" class="img-fluid rounded-0 border"
                     alt="{{ $conference->name }} Banner">
             @endif
         </div>

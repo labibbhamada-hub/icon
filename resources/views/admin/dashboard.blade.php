@@ -7,7 +7,9 @@
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3 fw-bold">Dashboard</h1>
             <p class="text-muted mb-0">
-                Welcome back, <strong>{{ Auth::user()->name ?? 'Administrator' }}</strong> </p>
+                Welcome back,
+                <strong>{{ Auth::user()->name ?? 'Administrator' }}</strong>
+            </p>
         </div>
         <div class="col-sm-6 text-end">
             <nav aria-label="breadcrumb">
@@ -22,18 +24,21 @@
 @section('content')
     <div class="row mb-2">
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-primary rounded-3 mb-2">
+            <div class="small-box text-bg-primary rounded-0 mb-2">
                 <div class="inner">
                     <h3>{{ $conferenceCount }}</h3>
                     <p>Conferences</p>
-                </div> <i class="small-box-icon bi bi-calendar-event"></i> <a href="{{ route('admin.conferences.index') }}"
+                </div> <i class="small-box-icon bi bi-calendar-event"></i>
+                <a href="{{ route('admin.conferences.index') }}"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                    Manage Conferences <i class="bi bi-arrow-right"></i> </a>
+                    Manage Conferences
+                    <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </div>
 
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-success rounded-3 mb-2">
+            <div class="small-box text-bg-success rounded-0 mb-2">
                 <div class="inner">
                     <h3>{{ $topicCount }}</h3>
                     <p>Topics</p>
@@ -48,7 +53,7 @@
         </div>
 
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-warning rounded-3 mb-2">
+            <div class="small-box text-bg-warning rounded-0 mb-2">
                 <div class="inner">
                     <h3>{{ $speakerCount }}</h3>
                     <p>Speakers</p>
@@ -63,7 +68,7 @@
         </div>
 
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-info rounded-3 mb-2">
+            <div class="small-box text-bg-info rounded-0 mb-2">
                 <div class="inner">
                     <h3>{{ $participantCount }}</h3>
                     <p>Participants</p>
@@ -80,7 +85,7 @@
 
     <div class="row mb-2">
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-success rounded-3 mb-2">
+            <div class="small-box text-bg-success rounded-0 mb-2">
                 <div class="inner">
                     <h3>
                         {{ $confirmedParticipantCount }}
@@ -99,7 +104,7 @@
         </div>
 
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-warning rounded-3 mb-2">
+            <div class="small-box text-bg-warning rounded-0 mb-2">
                 <div class="inner">
                     <h3>
                         {{ $pendingPaymentCount }}
@@ -118,7 +123,7 @@
         </div>
 
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-info rounded-3 mb-2">
+            <div class="small-box text-bg-info rounded-0 mb-2">
                 <div class="inner">
                     <h3>
                         {{ $submissionCount }}
@@ -137,7 +142,7 @@
         </div>
 
         <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-dark rounded-3 mb-2">
+            <div class="small-box text-bg-dark rounded-0 mb-2">
                 <div class="inner">
                     <h3>
                         {{ $publishedCount }}
@@ -158,7 +163,7 @@
 
     <div class="row mb-2">
         <div class="col-lg-3 col-md-6">
-            <div class="card rounded-3 mb-2 overflow-hidden">
+            <div class="card rounded-0 mb-2 overflow-hidden">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -176,7 +181,7 @@
         </div>
 
         <div class="col-lg-3 col-md-6">
-            <div class="card rounded-3 mb-2 overflow-hidden">
+            <div class="card rounded-0 mb-2 overflow-hidden">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -194,7 +199,7 @@
         </div>
 
         <div class="col-lg-3 col-md-6">
-            <div class="card rounded-3 mb-2 overflow-hidden">
+            <div class="card rounded-0 mb-2 overflow-hidden">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -212,7 +217,7 @@
         </div>
 
         <div class="col-lg-3 col-md-6">
-            <div class="card rounded-3 mb-2 overflow-hidden">
+            <div class="card rounded-0 mb-2 overflow-hidden">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -232,15 +237,15 @@
 
     <div class="row mb-2">
         <div class="col-lg-8">
-            <div class="card rounded-3 mb-2 overflow-hidden">
-                <div class="card-header rounded-top-3">
+            <div class="card rounded-0 mb-2 overflow-hidden">
+                <div class="card-header rounded-0">
                     <h3 class="card-title">
                         <i class="bi bi-calendar-event me-2"></i>
                         Current Conference
                     </h3>
                     <div class="float-end">
                         <a href="{{ route('admin.conferences.index') }}"
-                            class="btn btn-sm btn-outline-primary rounded-2">
+                            class="btn btn-sm btn-outline-primary rounded-0">
                             View All
                         </a>
                     </div>
@@ -279,7 +284,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="border rounded-3 p-3">
+                                <div class="border rounded-0 p-3">
                                     <small class="text-muted d-block mb-2">
                                         Conference Status
                                     </small>
@@ -297,7 +302,7 @@
                                     @endphp
 
                                     <span
-                                        class="badge text-bg-{{ $statusMap[$activeConference->status] ?? 'secondary' }} rounded-pill">
+                                        class="badge text-bg-{{ $statusMap[$activeConference->status] ?? 'secondary' }} rounded-0">
                                         {{ ucwords(str_replace('_', ' ', $activeConference->status)) }}
                                     </span>
 
@@ -355,7 +360,7 @@
                                 Create a conference to start managing your event.
                             </p>
 
-                            <a href="{{ route('admin.conferences.create') }}" class="btn btn-primary rounded-2">
+                            <a href="{{ route('admin.conferences.create') }}" class="btn btn-primary rounded-0">
                                 <i class="bi bi-plus-circle me-2"></i>
                                 Create Conference
                             </a>
@@ -366,8 +371,8 @@
         </div>
 
         <div class="col-lg-4 mb-2">
-            <div class="card rounded-3 mb-4 overflow-hidden">
-                <div class="card-header rounded-top-3">
+            <div class="card rounded-0 mb-4 overflow-hidden">
+                <div class="card-header rounded-0">
                     <h3 class="card-title">
                         <i class="bi bi-lightning-charge me-2"></i>
                         Quick Actions
@@ -376,22 +381,22 @@
 
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ route('admin.conferences.create') }}" class="btn btn-primary rounded-2">
+                        <a href="{{ route('admin.conferences.create') }}" class="btn btn-primary rounded-0">
                             <i class="bi bi-calendar-plus me-2"></i>
                             Create Conference
                         </a>
 
-                        <a href="{{ route('admin.topics.create') }}" class="btn btn-success rounded-2">
+                        <a href="{{ route('admin.topics.create') }}" class="btn btn-success rounded-0">
                             <i class="bi bi-plus-circle me-2"></i>
                             Add Topic
                         </a>
 
-                        <a href="{{ route('admin.speakers.create') }}" class="btn btn-warning rounded-2">
+                        <a href="{{ route('admin.speakers.create') }}" class="btn btn-warning rounded-0">
                             <i class="bi bi-mic me-2"></i>
                             Add Speaker
                         </a>
 
-                        <a href="{{ route('admin.partners.create') }}" class="btn btn-info rounded-2">
+                        <a href="{{ route('admin.partners.create') }}" class="btn btn-info rounded-0">
                             <i class="bi bi-building me-2"></i>
                             Add Partner
                         </a>
@@ -403,22 +408,22 @@
 
     <div class="row mb-2">
         <div class="col-lg-7 mb-2">
-            <div class="card rounded-3 mb-4 overflow-hidden">
-                <div class="card-header rounded-top-3">
+            <div class="card rounded-0 mb-4 overflow-hidden">
+                <div class="card-header rounded-0">
                     <h3 class="card-title">
                         <i class="bi bi-diagram-3 me-2"></i>
                         Recent Topics
                     </h3>
 
                     <div class="float-end">
-                        <a href="{{ route('admin.topics.index') }}" class="btn btn-sm btn-outline-success rounded-2">
+                        <a href="{{ route('admin.topics.index') }}" class="btn btn-sm btn-outline-success rounded-0">
                             View All
                         </a>
                     </div>
                 </div>
 
                 <div class="card-body p-0">
-                    <div class="table-responsive rounded-3">
+                    <div class="table-responsive rounded-0">
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
@@ -473,11 +478,11 @@
 
                                         <td>
                                             @if ($topic->is_active)
-                                                <span class="badge text-bg-success rounded-pill">
+                                                <span class="badge text-bg-success rounded-0">
                                                     Active
                                                 </span>
                                             @else
-                                                <span class="badge text-bg-secondary rounded-pill">
+                                                <span class="badge text-bg-secondary rounded-0">
                                                     Inactive
                                                 </span>
                                             @endif
@@ -499,8 +504,8 @@
         </div>
 
         <div class="col-lg-5 mb-2">
-            <div class="card rounded-3 mb-4 overflow-hidden">
-                <div class="card-header rounded-top-3">
+            <div class="card rounded-0 mb-4 overflow-hidden">
+                <div class="card-header rounded-0">
                     <h3 class="card-title">
                         <i class="bi bi-info-circle me-2"></i>
                         System Information
@@ -508,7 +513,7 @@
                 </div>
 
                 <div class="card-body p-0">
-                    <div class="table-responsive rounded-3">
+                    <div class="table-responsive rounded-0">
                         <table class="table table-sm mb-0">
                             <tbody>
                                 <tr>
@@ -544,11 +549,11 @@
                                     </td>
                                     <td class="text-end pe-3">
                                         @if (app()->environment('production'))
-                                            <span class="badge text-bg-success rounded-pill">
+                                            <span class="badge text-bg-success rounded-0">
                                                 Production
                                             </span>
                                         @else
-                                            <span class="badge text-bg-warning rounded-pill">
+                                            <span class="badge text-bg-warning rounded-0">
                                                 {{ ucfirst(app()->environment()) }}
                                             </span>
                                         @endif

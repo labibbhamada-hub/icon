@@ -6,7 +6,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-2">
+            <select name="conference_id" class="form-select @error('conference_id') is-invalid @enderror rounded-0">
                 <option value="">
                     Select Conference
                 </option>
@@ -33,7 +33,7 @@
             </label>
 
             <input type="text" name="title" value="{{ old('title', $importantDate->title ?? '') }}"
-                class="form-control @error('title') is-invalid @enderror rounded-2"
+                class="form-control @error('title') is-invalid @enderror rounded-0"
                 placeholder="e.g. Full Paper Submission Deadline">
 
             @error('title')
@@ -62,7 +62,7 @@
                 ];
             @endphp
 
-            <select name="type" class="form-select @error('type') is-invalid @enderror rounded-2">
+            <select name="type" class="form-select @error('type') is-invalid @enderror rounded-0">
                 @foreach ($types as $value => $label)
                     <option value="{{ $value }}" @selected(old('type', $importantDate->type ?? 'other') === $value)>
                         {{ $label }}
@@ -84,7 +84,7 @@
 
             <input type="number" name="sort_order" min="0"
                 value="{{ old('sort_order', $importantDate->sort_order ?? 0) }}"
-                class="form-control @error('sort_order') is-invalid @enderror rounded-2">
+                class="form-control @error('sort_order') is-invalid @enderror rounded-0">
 
             @error('sort_order')
                 <div class="invalid-feedback">
@@ -101,7 +101,7 @@
             <div class="form-check form-switch mt-2">
                 <input type="hidden" name="is_active" value="0">
 
-                <input class="form-check-input" type="checkbox" name="is_active" value="1"
+                <input class="form-check-input rounded-0" type="checkbox" name="is_active" value="1"
                     @checked(old('is_active', $importantDate->is_active ?? true))>
 
                 <label class="form-check-label">
@@ -118,7 +118,7 @@
 
             <input type="date" name="date"
                 value="{{ old('date', isset($importantDate->date) ? $importantDate->date->format('Y-m-d') : '') }}"
-                class="form-control @error('date') is-invalid @enderror rounded-2">
+                class="form-control @error('date') is-invalid @enderror rounded-0">
 
             @error('date')
                 <div class="invalid-feedback">
@@ -137,7 +137,7 @@
 
             <input type="date" name="end_date"
                 value="{{ old('end_date', isset($importantDate->end_date) ? $importantDate->end_date->format('Y-m-d') : '') }}"
-                class="form-control @error('end_date') is-invalid @enderror rounded-2">
+                class="form-control @error('end_date') is-invalid @enderror rounded-0">
 
             @error('end_date')
                 <div class="invalid-feedback">
@@ -155,7 +155,7 @@
                 Description
             </label>
 
-            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-2"
+            <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror rounded-0"
                 placeholder="Write additional information about this date...">{{ old('description', $importantDate->description ?? '') }}</textarea>
 
             @error('description')
@@ -166,4 +166,5 @@
         </div>
 
     </div>
+
 </div>
