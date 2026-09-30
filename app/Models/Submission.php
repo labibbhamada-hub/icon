@@ -21,6 +21,7 @@ class Submission extends Model
         'video_url',
         'video_submitted_at',
         'camera_ready_correction_reason',
+        'camera_ready_status',
         'status',
         'presenter_author_id',
         'submitted_at',

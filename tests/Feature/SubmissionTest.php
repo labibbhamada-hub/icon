@@ -2,23 +2,24 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Topic;
+use App\Models\Conference;
+use App\Models\ConferenceAttendance;
+use App\Models\ConferenceAttendanceOption;
+use App\Models\ConferencePaymentMethod;
+use App\Models\ConferenceRegistrationType;
+use App\Models\ConferenceSetting;
+use App\Models\Participant;
+use App\Models\Payment;
 use App\Models\Review;
 use App\Models\Reviewer;
-use App\Models\Conference;
 use App\Models\Submission;
-use App\Models\Participant;
-use App\Models\ConferenceSetting;
-use App\Models\ConferenceAttendanceOption;
-use App\Models\ConferenceRegistrationType;
-use App\Models\ConferencePaymentMethod;
-use App\Models\Payment;
+use App\Models\Topic;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SubmissionTest extends TestCase
@@ -1360,6 +1361,11 @@ class SubmissionTest extends TestCase
         );
 
         $this->assertSame(
+            'revision',
+            $submission->camera_ready_status
+        );
+
+        $this->assertSame(
             'Please correct the author affiliation and update Figure 2.',
             $submission->camera_ready_correction_reason
         );
@@ -1395,6 +1401,11 @@ class SubmissionTest extends TestCase
             $submission->status
         );
 
+        $this->assertSame(
+            'submitted',
+            $submission->camera_ready_status
+        );
+
         $this->assertNull(
             $submission->camera_ready_correction_reason
         );
@@ -1410,6 +1421,542 @@ class SubmissionTest extends TestCase
 
         Storage::disk('local')->assertExists(
             $submission->camera_ready_file
+        );
+    }
+
+    public function test_admin_can_approve_camera_ready_and_set_approved_status(): void
+    {
+        Storage::fake('local');
+        Storage::fake('public');
+        Mail::fake();
+        Queue::fake();
+
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
+                    'video_submitted_at' => now(),
+                    'camera_ready_file' =>
+                    'submissions/camera-ready/test-camera-ready.pdf',
+                ]
+            );
+
+        $submission->camera_ready_status = 'submitted';
+        $submission->save();
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => $participant->full_name,
+            'email' => $participant->email,
+            'institution' => $participant->institution,
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $submission->update([
+            'presenter_author_id' => $author->id,
+        ]);
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/test-camera-ready.pdf',
+            'TEST CAMERA READY'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'verified',
+            'checked_in_at' => now(),
+            'verified_at' => now(),
+            'verified_by' => $admin->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.submissions.camera-ready.approve',
+                    $submission
+                )
+            )
+            ->assertRedirect(
+                route(
+                    'admin.submissions.show',
+                    $submission
+                )
+            );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            'published',
+            $submission->status
+        );
+
+        $this->assertSame(
+            'approved',
+            $submission->camera_ready_status
+        );
+    }
+
+    public function test_admin_cannot_publish_without_presentation_video(): void
+    {
+        Storage::fake('local');
+
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                    'camera_ready_file' =>
+                    'submissions/camera-ready/test-no-video.pdf',
+                ]
+            );
+
+        $submission->camera_ready_status = 'submitted';
+        $submission->save();
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => $participant->full_name,
+            'email' => $participant->email,
+            'institution' => $participant->institution,
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $submission->presenter_author_id = $author->id;
+        $submission->save();
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/test-no-video.pdf',
+            'TEST CAMERA READY'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        \App\Models\ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'verified',
+            'checked_in_at' => now(),
+            'verified_at' => now(),
+            'verified_by' => $admin->id,
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.submissions.camera-ready.approve',
+                    $submission
+                )
+            );
+
+        $response->assertRedirect();
+
+        $response->assertSessionHas(
+            'error',
+            'Cannot publish this submission: The presentation video has not been submitted.'
+        );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            'camera_ready',
+            $submission->status
+        );
+
+        $this->assertSame(
+            'submitted',
+            $submission->camera_ready_status
+        );
+    }
+
+    public function test_admin_cannot_publish_without_verified_attendance(): void
+    {
+        Storage::fake('local');
+
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                    'camera_ready_file' =>
+                    'submissions/camera-ready/test-no-attendance.pdf',
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
+                    'video_submitted_at' => now(),
+                ]
+            );
+
+        $submission->camera_ready_status = 'submitted';
+        $submission->save();
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => $participant->full_name,
+            'email' => $participant->email,
+            'institution' => $participant->institution,
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $submission->presenter_author_id = $author->id;
+        $submission->save();
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/test-no-attendance.pdf',
+            'TEST CAMERA READY'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.submissions.camera-ready.approve',
+                    $submission
+                )
+            );
+
+        $response->assertRedirect();
+
+        $response->assertSessionHas(
+            'error',
+            'Cannot publish this submission: Conference attendance has not been verified.'
+        );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            'camera_ready',
+            $submission->status
+        );
+
+        $this->assertSame(
+            'submitted',
+            $submission->camera_ready_status
+        );
+    }
+
+    public function test_admin_cannot_create_published_submission_through_standard_form(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(
+                route('admin.submissions.store'),
+                [
+                    'conference_id' => $conference->id,
+                    'participant_id' => $participant->id,
+                    'topic_id' => $topic->id,
+                    'title' => 'Published Bypass Test',
+                    'abstract' => 'Test abstract.',
+                    'keywords' => 'test, publication',
+                    'status' => 'published',
+                    'authors' => [
+                        [
+                            'name' => 'Test Presenter',
+                            'email' => $participant->email,
+                            'institution' => 'Test University',
+                            'department' => 'Test Department',
+                            'is_corresponding' => true,
+                            'sort_order' => 1,
+                        ],
+                    ],
+                ]
+            );
+
+        $response->assertSessionHasErrors([
+            'status',
+        ]);
+
+        $this->assertDatabaseMissing('submissions', [
+            'title' => 'Published Bypass Test',
+        ]);
+    }
+
+    public function test_admin_cannot_update_submission_to_published_through_standard_form(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                ]
+            );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->put(
+                route(
+                    'admin.submissions.update',
+                    $submission
+                ),
+                [
+                    'conference_id' => $conference->id,
+                    'participant_id' => $participant->id,
+                    'topic_id' => $topic->id,
+                    'title' => $submission->title,
+                    'abstract' => $submission->abstract,
+                    'keywords' => $submission->keywords,
+                    'status' => 'published',
+                    'authors' => [
+                        [
+                            'name' => 'Test Presenter',
+                            'email' => $participant->email,
+                            'institution' => 'Test University',
+                            'department' => 'Test Department',
+                            'is_corresponding' => true,
+                            'sort_order' => 1,
+                        ],
+                    ],
+                ]
+            );
+
+        $response->assertSessionHasErrors([
+            'status',
+        ]);
+
+        $submission->refresh();
+
+        $this->assertSame(
+            'camera_ready',
+            $submission->status
+        );
+    }
+
+    public function test_published_submission_cannot_be_edited_through_standard_form(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'published',
+                ]
+            );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->put(
+                route(
+                    'admin.submissions.update',
+                    $submission
+                ),
+                [
+                    'conference_id' => $conference->id,
+                    'participant_id' => $participant->id,
+                    'topic_id' => $topic->id,
+                    'title' => 'Should Not Change',
+                    'abstract' => $submission->abstract,
+                    'keywords' => $submission->keywords,
+                    'status' => 'accepted',
+                    'authors' => [
+                        [
+                            'name' => 'Test Presenter',
+                            'email' => $participant->email,
+                            'institution' => 'Test University',
+                            'department' => 'Test Department',
+                            'is_corresponding' => true,
+                            'sort_order' => 1,
+                        ],
+                    ],
+                ]
+            );
+
+        $response->assertRedirect(
+            route(
+                'admin.submissions.show',
+                $submission
+            )
+        );
+
+        $response->assertSessionHas(
+            'error',
+            'Published submissions cannot be edited through the standard submission form.'
+        );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            'published',
+            $submission->status
         );
     }
 
@@ -1990,6 +2537,330 @@ class SubmissionTest extends TestCase
 
         $this->assertNull(
             $submission->presenter_author_id
+        );
+    }
+
+    public function test_admin_cannot_publish_using_verified_attendance_of_another_participant(): void
+    {
+        Storage::fake('local');
+
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $otherParticipant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $otherParticipant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic(
+                $conference
+            );
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                    'camera_ready_file' =>
+                    'submissions/camera-ready/test-wrong-attendance.pdf',
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
+                    'video_submitted_at' => now(),
+                ]
+            );
+
+        $submission->camera_ready_status = 'submitted';
+        $submission->save();
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => $participant->full_name,
+            'email' => $participant->email,
+            'institution' => $participant->institution,
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $submission->presenter_author_id = $author->id;
+        $submission->save();
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/test-wrong-attendance.pdf',
+            'TEST CAMERA READY'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $otherParticipant->id,
+            'attendance_status' => 'verified',
+            'checked_in_at' => now(),
+            'verified_at' => now(),
+            'verified_by' => $admin->id,
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.submissions.camera-ready.approve',
+                    $submission
+                )
+            );
+
+        $response->assertRedirect();
+
+        $response->assertSessionHas(
+            'error',
+            'Cannot publish this submission: Conference attendance has not been verified.'
+        );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            'camera_ready',
+            $submission->status
+        );
+
+        $this->assertSame(
+            'submitted',
+            $submission->camera_ready_status
+        );
+    }
+
+    public function test_admin_submission_detail_shows_publication_requirements_when_not_eligible(): void
+    {
+        Storage::fake('local');
+
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic($conference);
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                    'camera_ready_file' =>
+                    'submissions/camera-ready/test-ui.pdf',
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
+                    'video_submitted_at' => now(),
+                ]
+            );
+
+        $submission->camera_ready_status = 'submitted';
+        $submission->save();
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => $participant->full_name,
+            'email' => $participant->email,
+            'institution' => $participant->institution,
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $submission->presenter_author_id = $author->id;
+        $submission->save();
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/test-ui.pdf',
+            'TEST CAMERA READY'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response =
+            $this->actingAs($admin)
+            ->get(
+                route(
+                    'admin.submissions.show',
+                    $submission
+                )
+            );
+
+        $response->assertOk();
+
+        $response->assertSee(
+            'Publication Eligibility'
+        );
+
+        $response->assertSee(
+            'Conference Attendance'
+        );
+
+        $response->assertSee(
+            'Conference attendance has not been verified.'
+        );
+
+        $response->assertSee(
+            'Publication is not available yet.'
+        );
+
+        $response->assertSee(
+            'Publication requirements are not yet satisfied.',
+            false
+        );
+    }
+
+    public function test_admin_submission_detail_shows_publication_ready_when_eligible(): void
+    {
+        Storage::fake('local');
+
+        $conference = $this->createOpenConference();
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant =
+            $this->createParticipant(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+            'participant_type' => 'presenter',
+        ]);
+
+        $topic =
+            $this->createTopic($conference);
+
+        $submission =
+            $this->createSubmission(
+                $conference,
+                $participant,
+                $topic,
+                [
+                    'submission_stage' => 'full_paper',
+                    'status' => 'camera_ready',
+                    'camera_ready_file' =>
+                    'submissions/camera-ready/test-ui-ready.pdf',
+                    'video_url' =>
+                    'https://drive.google.com/file/d/test-video-id/view',
+                    'video_submitted_at' => now(),
+                ]
+            );
+
+        $submission->camera_ready_status = 'submitted';
+        $submission->save();
+
+        $author = \App\Models\SubmissionAuthor::create([
+            'submission_id' => $submission->id,
+            'name' => $participant->full_name,
+            'email' => $participant->email,
+            'institution' => $participant->institution,
+            'is_corresponding' => true,
+            'sort_order' => 1,
+        ]);
+
+        $submission->presenter_author_id = $author->id;
+        $submission->save();
+
+        Storage::disk('local')->put(
+            'submissions/camera-ready/test-ui-ready.pdf',
+            'TEST CAMERA READY'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'verified',
+            'checked_in_at' => now(),
+            'verified_at' => now(),
+            'verified_by' => $admin->id,
+        ]);
+
+        $response =
+            $this->actingAs($admin)
+            ->get(
+                route(
+                    'admin.submissions.show',
+                    $submission
+                )
+            );
+
+        $response->assertOk();
+
+        $response->assertSee(
+            'Publication Eligibility'
+        );
+
+        $response->assertSee(
+            'This submission is eligible for publication.'
+        );
+
+        $response->assertSee(
+            'Approve & Publish',
+            false
+        );
+
+        $response->assertSee(
+            'Camera Ready'
+        );
+
+        $response->assertSee(
+            'Presentation Video'
+        );
+
+        $response->assertSee(
+            'Conference Attendance'
         );
     }
 }

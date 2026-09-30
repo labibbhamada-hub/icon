@@ -76,7 +76,6 @@ class SubmissionRequest extends FormRequest
                     'accepted',
                     'rejected',
                     'camera_ready',
-                    'published',
                 ]),
             ],
 

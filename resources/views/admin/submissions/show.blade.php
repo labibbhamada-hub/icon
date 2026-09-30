@@ -1022,10 +1022,153 @@
 
     </div>
 
+    {{-- ============================================================
+PUBLICATION ELIGIBILITY
+============================================================= --}}
+
+    @if ($publicationEligibility)
+
+        @php
+            $eligibilityChecks = [
+                'camera_ready' => 'Camera Ready',
+                'video' => 'Presentation Video',
+                'presenter' => 'Presenter',
+                'attendance' => 'Conference Attendance',
+            ];
+        @endphp
+
+        <div class="card rounded-3 overflow-hidden mb-3">
+
+            <div class="card-header rounded-top-3">
+
+                <h3 class="card-title">
+                    <i class="bi bi-shield-check me-2"></i>
+                    Publication Eligibility
+                </h3>
+
+            </div>
+
+            <div class="card-body">
+
+                @if ($publicationEligibility['eligible'])
+                    <div class="alert alert-success rounded-3">
+
+                        <div class="d-flex align-items-start gap-2">
+
+                            <i class="bi bi-check-circle-fill fs-5"></i>
+
+                            <div>
+                                <strong>
+                                    This submission is eligible for publication.
+                                </strong>
+
+                                <div class="small mt-1">
+                                    All required publication conditions have been satisfied.
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                @else
+                    <div class="alert alert-warning rounded-3">
+
+                        <div class="d-flex align-items-start gap-2">
+
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+
+                            <div>
+                                <strong>
+                                    Publication is not available yet.
+                                </strong>
+
+                                <div class="small mt-1">
+                                    Complete the requirements below before publishing this submission.
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                @endif
+
+                <div class="row g-3">
+
+                    @foreach ($eligibilityChecks as $checkKey => $checkLabel)
+                        @php
+                            $isPassed = $publicationEligibility['checks'][$checkKey] ?? false;
+                        @endphp
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded-3 p-3 h-100">
+
+                                <div class="d-flex align-items-center gap-2">
+
+                                    @if ($isPassed)
+                                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+
+                                        <strong class="text-success">
+                                            {{ $checkLabel }}
+                                        </strong>
+                                    @else
+                                        <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+
+                                        <strong class="text-danger">
+                                            {{ $checkLabel }}
+                                        </strong>
+                                    @endif
+
+                                </div>
+
+                                <small class="text-muted d-block mt-1">
+
+                                    @if ($isPassed)
+                                        Requirement satisfied.
+                                    @else
+                                        Requirement not satisfied.
+                                    @endif
+
+                                </small>
+
+                            </div>
+
+                        </div>
+                    @endforeach
+
+                </div>
+
+                @if (!$publicationEligibility['eligible'])
+
+                    <div class="mt-3">
+
+                        <h6 class="fw-bold mb-2">
+                            Requirements to complete
+                        </h6>
+
+                        <ul class="mb-0">
+
+                            @foreach ($publicationEligibility['reasons'] as $reason)
+                                <li class="mb-1">
+                                    {{ $reason }}
+                                </li>
+                            @endforeach
+
+                        </ul>
+
+                    </div>
+
+                @endif
+
+            </div>
+
+        </div>
+
+    @endif
 
     {{-- ============================================================
     CAMERA READY APPROVAL
-============================================================= --}}
+    ============================================================= --}}
 
     @if ($submission->status === 'camera_ready')
 
@@ -1097,7 +1240,9 @@
                                     @csrf
                                     @method('PATCH')
 
-                                    <button type="submit" class="btn btn-success btn-sm rounded-2">
+                                    <button type="submit" class="btn btn-success btn-sm rounded-2"
+                                        @disabled(!($publicationEligibility['eligible'] ?? false))
+                                        @if (!($publicationEligibility['eligible'] ?? false)) title="Publication requirements are not yet satisfied." @endif>
                                         <i class="bi bi-check-circle me-1"></i>
                                         Approve & Publish
                                     </button>
@@ -1169,10 +1314,10 @@
 @push('scripts')
     <script>
         /*
-    |--------------------------------------------------------------------------
-    | Remove Reviewer
-    |--------------------------------------------------------------------------
-    */
+            |--------------------------------------------------------------------------
+            | Remove Reviewer
+            |--------------------------------------------------------------------------
+            */
 
         document
             .querySelectorAll('.delete-review-form')

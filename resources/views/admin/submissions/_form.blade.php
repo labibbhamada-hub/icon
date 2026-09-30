@@ -279,8 +279,6 @@ PAPER + STATUS
                     'rejected' => 'Rejected',
 
                     'camera_ready' => 'Camera Ready',
-
-                    'published' => 'Published',
                 ];
 
             @endphp

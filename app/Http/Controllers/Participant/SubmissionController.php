@@ -1224,14 +1224,10 @@ class SubmissionController extends Controller
                 $newFile
             ) {
                 $submission->update([
-                    'camera_ready_file' =>
-                    $newFile,
-
-                    'camera_ready_correction_reason' =>
-                    null,
-
-                    'status' =>
-                    'camera_ready',
+                    'camera_ready_file' => $newFile,
+                    'camera_ready_correction_reason' => null,
+                    'camera_ready_status' => 'submitted',
+                    'status' => 'camera_ready',
                 ]);
 
                 if ($oldFile) {

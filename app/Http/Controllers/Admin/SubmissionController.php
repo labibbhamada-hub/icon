@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\SubmissionsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SubmissionRequest;
+use App\Jobs\SendCameraReadyApprovedWhatsApp;
+use App\Jobs\SendCameraReadyCorrectionWhatsApp;
+use App\Mail\SubmissionStatusMail;
 use App\Models\Conference;
 use App\Models\Participant;
 use App\Models\Submission;
 use App\Models\SubmissionAuthor;
 use App\Models\Topic;
-use App\Mail\SubmissionStatusMail;
-use App\Exports\SubmissionsExport;
-use App\Jobs\SendCameraReadyApprovedWhatsApp;
-use App\Jobs\SendCameraReadyCorrectionWhatsApp;
 use App\Notifications\ConferenceNotification;
 use App\Services\CertificateGenerationService;
+use App\Services\PublicationEligibilityService;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class SubmissionController extends Controller
@@ -118,8 +119,10 @@ class SubmissionController extends Controller
             );
     }
 
-    public function show(Submission $submission)
-    {
+    public function show(
+        Submission $submission,
+        PublicationEligibilityService $publicationEligibilityService
+    ) {
         $submission->load([
             'conference',
             'participant',
@@ -129,7 +132,21 @@ class SubmissionController extends Controller
             'reviews.reviewer.user',
         ]);
 
-        return view('admin.submissions.show', compact('submission'));
+        $publicationEligibility = null;
+
+        if ($submission->status === 'camera_ready') {
+            $publicationEligibility =
+                $publicationEligibilityService
+                ->evaluate($submission);
+        }
+
+        return view(
+            'admin.submissions.show',
+            compact(
+                'submission',
+                'publicationEligibility'
+            )
+        );
     }
 
     public function edit(Submission $submission)
@@ -161,6 +178,18 @@ class SubmissionController extends Controller
         SubmissionRequest $request,
         Submission $submission
     ) {
+        if ($submission->status === 'published') {
+            return redirect()
+                ->route(
+                    'admin.submissions.show',
+                    $submission
+                )
+                ->with(
+                    'error',
+                    'Published submissions cannot be edited through the standard submission form.'
+                );
+        }
+
         $data = $request->validated();
 
         DB::transaction(function () use (
@@ -268,7 +297,8 @@ class SubmissionController extends Controller
 
     public function approveCameraReady(
         Submission $submission,
-        \App\Services\CertificateGenerationService $certificateGenerationService
+        \App\Services\CertificateGenerationService $certificateGenerationService,
+        PublicationEligibilityService $publicationEligibilityService
     ) {
         if (
             $submission->submission_stage !== 'full_paper'
@@ -303,19 +333,33 @@ class SubmissionController extends Controller
                 );
         }
 
+        $eligibility =
+            $publicationEligibilityService
+            ->evaluate($submission);
+
+        if (!$eligibility['eligible']) {
+            return back()
+                ->with(
+                    'error',
+                    'Cannot publish this submission: ' .
+                        implode(' ', $eligibility['reasons'])
+                );
+        }
+
         DB::transaction(function () use (
             $submission
         ) {
             $submission->update([
+                'camera_ready_status' => 'approved',
                 'status' => 'published',
             ]);
         });
 
         /*
-    |--------------------------------------------------------------------------
-    | Generate presenter certificate
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Generate presenter certificate
+        |--------------------------------------------------------------------------
+        */
 
         try {
             $certificate =
@@ -425,6 +469,7 @@ class SubmissionController extends Controller
 
         $submission->update([
             'status' => 'accepted',
+            'camera_ready_status' => 'revision',
             'camera_ready_correction_reason' => $validated['correction_reason'],
         ]);
 
