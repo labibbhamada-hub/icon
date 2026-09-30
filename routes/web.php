@@ -87,6 +87,16 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('certificates', App\Http\Controllers\Admin\CertificateController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
 
         Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+
+        Route::patch(
+            'attendance/{participant}/manual-check-in',
+            [App\Http\Controllers\Admin\AttendanceController::class, 'manualCheckIn']
+        )->name('attendance.manual-check-in');
+
+        Route::patch(
+            'attendance/{attendance}/verify',
+            [App\Http\Controllers\Admin\AttendanceController::class, 'verify']
+        )->name('attendance.verify');
     });
 
 Route::middleware(['auth', 'role:reviewer'])

@@ -28,11 +28,16 @@ class ConferenceAttendance extends Model
 
     public function participant()
     {
-        return $this->belongsTo(Participant::class);
+        return $this->belongsTo(
+            Participant::class
+        );
     }
 
     public function verifier()
     {
-        return $this->belongsTo(User::class, 'verified_by');
+        return $this->belongsTo(
+            User::class,
+            'verified_by'
+        );
     }
 }

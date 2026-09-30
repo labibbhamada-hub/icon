@@ -85,6 +85,7 @@ class ParticipantController extends Controller
             'submissions',
             'payments',
             'certificates',
+            'attendances.verifier',
         ]);
 
         return view(

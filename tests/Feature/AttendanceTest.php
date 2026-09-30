@@ -254,4 +254,274 @@ class AttendanceTest extends TestCase
 
         $this->assertNotNull($attendance->verified_at);
     }
+
+    public function test_admin_can_manually_check_in_confirmed_participant(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $participantUser = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $participantUser
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $checkedInAt = '2026-12-20 08:30:00';
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.attendance.manual-check-in',
+                    $participant
+                ),
+                [
+                    'checked_in_at' => $checkedInAt,
+                    'verification_notes' =>
+                    'Participant attended the conference but forgot to check in.',
+                ]
+            );
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('conference_attendances', [
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'checked_in',
+            'checked_in_at' => $checkedInAt,
+            'verification_notes' =>
+            'Participant attended the conference but forgot to check in.',
+        ]);
+    }
+
+    public function test_admin_can_verify_checked_in_attendance(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $participantUser = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $participantUser
+        );
+
+        $attendance = ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'checked_in',
+            'checked_in_at' => '2026-12-20 08:30:00',
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.attendance.verify',
+                    $attendance
+                )
+            );
+
+        $response->assertRedirect();
+
+        $attendance->refresh();
+
+        $this->assertSame(
+            'verified',
+            $attendance->attendance_status
+        );
+
+        $this->assertSame(
+            $admin->id,
+            $attendance->verified_by
+        );
+
+        $this->assertNotNull(
+            $attendance->verified_at
+        );
+
+        $this->assertSame(
+            '2026-12-20 08:30:00',
+            $attendance->checked_in_at->format('Y-m-d H:i:s')
+        );
+    }
+
+    public function test_admin_cannot_verify_attendance_that_has_not_been_checked_in(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $participantUser = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $participantUser
+        );
+
+        $attendance = ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'not_checked_in',
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.attendance.verify',
+                    $attendance
+                )
+            );
+
+        $response->assertForbidden();
+
+        $attendance->refresh();
+
+        $this->assertSame(
+            'not_checked_in',
+            $attendance->attendance_status
+        );
+
+        $this->assertNull(
+            $attendance->verified_at
+        );
+
+        $this->assertNull(
+            $attendance->verified_by
+        );
+    }
+
+    public function test_admin_manual_check_in_requires_verification_notes(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $participantUser = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $participantUser
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.attendance.manual-check-in',
+                    $participant
+                ),
+                [
+                    'checked_in_at' => '2026-12-20 08:30:00',
+                ]
+            );
+
+        $response->assertSessionHasErrors([
+            'verification_notes',
+        ]);
+
+        $this->assertDatabaseMissing(
+            'conference_attendances',
+            [
+                'participant_id' => $participant->id,
+            ]
+        );
+    }
+
+    public function test_verified_attendance_cannot_be_manually_checked_in_again(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $participantUser = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $participantUser
+        );
+
+        $attendance = ConferenceAttendance::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'verified',
+            'checked_in_at' => '2026-12-20 08:30:00',
+            'verified_at' => '2026-12-20 09:00:00',
+            'verified_by' => User::factory()->create([
+                'role' => 'admin',
+                'status' => 'active',
+            ])->id,
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.attendance.manual-check-in',
+                    $participant
+                ),
+                [
+                    'checked_in_at' => '2026-12-20 10:00:00',
+                    'verification_notes' => 'Incorrect previous time.',
+                ]
+            );
+
+        $response->assertForbidden();
+
+        $attendance->refresh();
+
+        $this->assertSame(
+            'verified',
+            $attendance->attendance_status
+        );
+
+        $this->assertSame(
+            '2026-12-20 08:30:00',
+            $attendance->checked_in_at->format('Y-m-d H:i:s')
+        );
+    }
 }

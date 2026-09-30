@@ -560,13 +560,88 @@
                                     </div>
 
                                     <div class="col-md-3 col-6 mb-2">
-                                        <small class="text-muted d-block">
-                                            Attendance
-                                        </small>
+                                        <dt class="col-sm-5">
+                                            Attendance Type
+                                        </dt>
 
-                                        <strong>
+                                        <dd class="col-sm-7">
                                             {{ ucfirst($participant->attendance_type) }}
-                                        </strong>
+                                        </dd>
+
+                                        @php
+                                            $attendance = $participant->attendances->first();
+                                        @endphp
+
+                                        <dt class="col-sm-5">
+                                            Conference Attendance
+                                        </dt>
+
+                                        <dd class="col-sm-7">
+
+                                            @if (!$attendance || $attendance->attendance_status === 'not_checked_in')
+                                                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+
+                                                    <span class="badge text-bg-secondary rounded-pill">
+                                                        Not Checked In
+                                                    </span>
+
+                                                    @if ($participant->registration_status === 'confirmed')
+                                                        <form method="POST"
+                                                            action="{{ route('participant.attendance.check-in', $participant) }}"
+                                                            class="d-inline">
+                                                            @csrf
+
+                                                            <button type="submit"
+                                                                class="btn btn-primary btn-sm rounded-2">
+                                                                <i class="bi bi-box-arrow-in-right me-1"></i>
+                                                                Check In
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <small class="text-muted">
+                                                            Check-in is available after registration is confirmed.
+                                                        </small>
+                                                    @endif
+
+                                                </div>
+                                            @elseif ($attendance->attendance_status === 'checked_in')
+                                                <div>
+
+                                                    <span class="badge text-bg-warning rounded-pill">
+                                                        Waiting for Verification
+                                                    </span>
+
+                                                    <small class="text-muted d-block mt-1">
+                                                        Checked in at
+                                                        {{ $attendance->checked_in_at?->format('d F Y H:i') ?? '-' }}
+                                                    </small>
+
+                                                </div>
+                                            @elseif ($attendance->attendance_status === 'verified')
+                                                <div>
+
+                                                    <span class="badge text-bg-success rounded-pill">
+                                                        Verified
+                                                    </span>
+
+                                                    <small class="text-muted d-block mt-1">
+                                                        Checked in at
+                                                        {{ $attendance->checked_in_at?->format('d F Y H:i') ?? '-' }}
+                                                    </small>
+
+                                                    <small class="text-muted d-block">
+                                                        Verified at
+                                                        {{ $attendance->verified_at?->format('d F Y H:i') ?? '-' }}
+                                                    </small>
+
+                                                </div>
+                                            @else
+                                                <span class="badge text-bg-secondary rounded-pill">
+                                                    {{ ucfirst(str_replace('_', ' ', $attendance->attendance_status)) }}
+                                                </span>
+                                            @endif
+
+                                        </dd>
                                     </div>
 
                                     <div class="col-md-3 col-6 mb-2">

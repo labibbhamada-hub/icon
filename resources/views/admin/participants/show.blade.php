@@ -265,6 +265,233 @@
 
     </div>
 
+    {{-- Conference Attendance --}}
+    @php
+        $attendance = $participant->attendances->first();
+    @endphp
+
+    <div class="card rounded-3 overflow-hidden">
+
+        <div class="card-header rounded-top-3">
+
+            <h3 class="card-title">
+                <i class="bi bi-calendar-check me-2"></i>
+                Conference Attendance
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-lg-6">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <h5 class="fw-bold mb-3">
+                            Attendance Status
+                        </h5>
+
+                        <dl class="row mb-0">
+
+                            <dt class="col-sm-5">
+                                Status
+                            </dt>
+
+                            <dd class="col-sm-7">
+
+                                @if (!$attendance || $attendance->attendance_status === 'not_checked_in')
+                                    <span class="badge text-bg-secondary rounded-pill">
+                                        Not Checked In
+                                    </span>
+                                @elseif ($attendance->attendance_status === 'checked_in')
+                                    <span class="badge text-bg-warning rounded-pill">
+                                        Waiting for Verification
+                                    </span>
+                                @elseif ($attendance->attendance_status === 'verified')
+                                    <span class="badge text-bg-success rounded-pill">
+                                        Verified
+                                    </span>
+                                @else
+                                    <span class="badge text-bg-secondary rounded-pill">
+                                        {{ ucfirst(str_replace('_', ' ', $attendance->attendance_status)) }}
+                                    </span>
+                                @endif
+
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Attendance Type
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                {{ ucfirst($participant->attendance_type) }}
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Checked In At
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                {{ $attendance?->checked_in_at?->format('d F Y H:i') ?? '-' }}
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Verified At
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                {{ $attendance?->verified_at?->format('d F Y H:i') ?? '-' }}
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Verified By
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                {{ $attendance?->verifier?->name ?? '-' }}
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Verification Notes
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                {{ $attendance?->verification_notes ?: '-' }}
+                            </dd>
+
+                        </dl>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <h5 class="fw-bold mb-3">
+                            Attendance Actions
+                        </h5>
+
+                        @if (!$attendance || $attendance->attendance_status === 'not_checked_in')
+                            <p class="text-muted">
+                                No attendance check-in has been recorded.
+                                Admin can manually record the participant's check-in.
+                            </p>
+
+                            <form method="POST" action="{{ route('admin.attendance.manual-check-in', $participant) }}">
+
+                                @csrf
+                                @method('PATCH')
+
+                                <div class="mb-3">
+
+                                    <label for="checked_in_at" class="form-label">
+                                        Check-in Time
+                                    </label>
+
+                                    <input type="datetime-local" name="checked_in_at" id="checked_in_at"
+                                        class="form-control rounded-2 @error('checked_in_at') is-invalid @enderror"
+                                        value="{{ old('checked_in_at', now()->format('Y-m-d\TH:i')) }}" required>
+
+                                    @error('checked_in_at')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+
+                                </div>
+
+                                <div class="mb-3">
+
+                                    <label for="verification_notes" class="form-label">
+                                        Check-in Notes
+                                    </label>
+
+                                    <textarea name="verification_notes" id="verification_notes" rows="4"
+                                        class="form-control rounded-2 @error('verification_notes') is-invalid @enderror"
+                                        placeholder="Enter the reason or notes for manual check-in..." required>{{ old('verification_notes') }}</textarea>
+
+                                    @error('verification_notes')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+
+                                </div>
+
+                                <button type="submit" class="btn btn-primary rounded-2">
+                                    <i class="bi bi-person-check me-1"></i>
+                                    Manual Check-in
+                                </button>
+
+                            </form>
+                        @elseif ($attendance->attendance_status === 'checked_in')
+                            <div class="alert alert-warning rounded-3">
+
+                                <div class="d-flex align-items-start gap-2">
+
+                                    <i class="bi bi-hourglass-split fs-5"></i>
+
+                                    <div>
+                                        <strong>
+                                            Attendance is waiting for verification.
+                                        </strong>
+
+                                        <div class="small mt-1">
+                                            The participant has already checked in.
+                                            Admin can now verify the attendance.
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <form method="POST" action="{{ route('admin.attendance.verify', $attendance) }}">
+
+                                @csrf
+                                @method('PATCH')
+
+                                <button type="submit" class="btn btn-success rounded-2">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Verify Attendance
+                                </button>
+
+                            </form>
+                        @elseif ($attendance->attendance_status === 'verified')
+                            <div class="alert alert-success rounded-3">
+
+                                <div class="d-flex align-items-start gap-2">
+
+                                    <i class="bi bi-patch-check-fill fs-5"></i>
+
+                                    <div>
+                                        <strong>
+                                            Attendance has been verified.
+                                        </strong>
+
+                                        <div class="small mt-1">
+                                            No further attendance action is required.
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        @endif
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
     {{-- Related Statistics --}}
     <div class="row">

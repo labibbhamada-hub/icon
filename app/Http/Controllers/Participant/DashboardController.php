@@ -21,6 +21,7 @@ class DashboardController extends Controller
             'registrationType',
             'submissions.topic',
             'payments',
+            'attendances',
         ])
             ->where(
                 'user_id',
