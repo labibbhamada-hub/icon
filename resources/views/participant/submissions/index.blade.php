@@ -33,13 +33,13 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
-        <div class="card-header rounded-top-3">
+    <div class="card rounded-0 overflow-hidden">
+        <div class="card-header rounded-0">
             <h3 class="card-title"> <i class="bi bi-file-earmark-text me-2"></i>
                 Submission List </h3>
 
             <div class="float-end">
-                <a href="{{ route('participant.submissions.create') }}" class="btn btn-success btn-sm rounded-2">
+                <a href="{{ route('participant.submissions.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle me-1"></i>
                     New Submission
                 </a>
@@ -47,7 +47,7 @@
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
@@ -92,39 +92,39 @@
 
                                 <td class="align-top">
                                     @if ($submission->status === 'draft')
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Draft
                                         </span>
                                     @elseif ($submission->status === 'submitted')
-                                        <span class="badge text-bg-primary rounded-pill">
+                                        <span class="badge text-bg-primary rounded-0">
                                             Submitted
                                         </span>
                                     @elseif ($submission->status === 'under_review')
-                                        <span class="badge text-bg-warning rounded-pill">
+                                        <span class="badge text-bg-warning rounded-0">
                                             Under Review
                                         </span>
                                     @elseif ($submission->status === 'revision')
-                                        <span class="badge text-bg-warning rounded-pill">
+                                        <span class="badge text-bg-warning rounded-0">
                                             Revision
                                         </span>
                                     @elseif ($submission->status === 'accepted')
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Accepted
                                         </span>
                                     @elseif ($submission->status === 'rejected')
-                                        <span class="badge text-bg-danger rounded-pill">
+                                        <span class="badge text-bg-danger rounded-0">
                                             Rejected
                                         </span>
                                     @elseif ($submission->status === 'camera_ready')
-                                        <span class="badge text-bg-info rounded-pill">
+                                        <span class="badge text-bg-info rounded-0">
                                             Camera Ready
                                         </span>
                                     @elseif ($submission->status === 'published')
-                                        <span class="badge text-bg-dark rounded-pill">
+                                        <span class="badge text-bg-dark rounded-0">
                                             Published
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Unknown
                                         </span>
                                     @endif
@@ -136,7 +136,7 @@
 
                                 <td class="align-top">
                                     <a href="{{ route('participant.submissions.show', $submission) }}"
-                                        class="btn btn-info btn-sm rounded-2" title="View">
+                                        class="btn btn-info btn-sm rounded-0" title="View">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
@@ -155,7 +155,7 @@
                                     </p>
 
                                     <a href="{{ route('participant.submissions.create') }}"
-                                        class="btn btn-success rounded-2">
+                                        class="btn btn-success rounded-0">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         New Submission
                                     </a>
@@ -168,7 +168,7 @@
         </div>
 
         @if ($submissions->hasPages())
-            <div class="card-footer rounded-bottom-3">
+            <div class="card-footer rounded-0">
                 {{ $submissions->links() }}
             </div>
         @endif

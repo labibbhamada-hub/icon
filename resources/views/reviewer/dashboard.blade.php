@@ -18,17 +18,18 @@
             </nav>
         </div>
     </div>
+
 @endsection
 
 @section('content')
     @if (!$reviewer)
-        <div class="alert alert-warning rounded-3"> <i class="bi bi-exclamation-triangle me-2"></i>
+        <div class="alert alert-warning rounded-0"> <i class="bi bi-exclamation-triangle me-2"></i>
             Your account has not been registered as an active
             reviewer for any conference yet. </div>
     @else
         <div class="row mb-2">
             <div class="col-lg-4 col-md-6 mb-2">
-                <div class="small-box text-bg-primary rounded-3 mb-0">
+                <div class="small-box text-bg-primary rounded-0 mb-0">
                     <div class="inner">
                         <h3>{{ $reviewCount }}</h3>
                         <p>Total Assignments</p>
@@ -38,7 +39,7 @@
             </div>
 
             <div class="col-lg-4 col-md-6 mb-2">
-                <div class="small-box text-bg-warning rounded-3 mb-0">
+                <div class="small-box text-bg-warning rounded-0 mb-0">
                     <div class="inner">
                         <h3>{{ $pendingCount }}</h3>
                         <p>Pending Reviews</p>
@@ -50,7 +51,7 @@
             </div>
 
             <div class="col-lg-4 col-md-6 mb-2">
-                <div class="small-box text-bg-success rounded-3 mb-0">
+                <div class="small-box text-bg-success rounded-0 mb-0">
                     <div class="inner">
                         <h3>{{ $completedCount }}</h3>
                         <p>Completed Reviews</p>
@@ -62,8 +63,8 @@
             </div>
         </div>
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-person-check me-2"></i>
                     Reviewer Information
@@ -85,8 +86,8 @@
             </div>
         </div>
 
-        <div class="card rounded-3 overflow-hidden">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-check me-2"></i>
                     Recent Assignments
@@ -94,7 +95,7 @@
             </div>
 
             <div class="card-body p-0">
-                <div class="table-responsive rounded-3">
+                <div class="table-responsive rounded-0">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
@@ -121,11 +122,11 @@
 
                                     <td class="align-top">
                                         @if ($review->reviewed_at)
-                                            <span class="badge text-bg-success rounded-pill">
+                                            <span class="badge text-bg-success rounded-0">
                                                 Completed
                                             </span>
                                         @else
-                                            <span class="badge text-bg-warning rounded-pill">
+                                            <span class="badge text-bg-warning rounded-0">
                                                 Pending
                                             </span>
                                         @endif
@@ -134,12 +135,12 @@
                                     <td class="align-top">
                                         @if (!$review->reviewed_at)
                                             <a href="{{ route('reviewer.reviews.edit', $review) }}"
-                                                class="btn btn-primary btn-sm rounded-2">
+                                                class="btn btn-primary btn-sm rounded-0">
                                                 <i class="bi bi-clipboard-check"></i>
                                             </a>
                                         @else
                                             <a href="{{ route('reviewer.reviews.show', $review) }}"
-                                                class="btn btn-info btn-sm rounded-2">
+                                                class="btn btn-info btn-sm rounded-0">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif

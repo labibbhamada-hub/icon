@@ -7,7 +7,7 @@
     <div class="row align-items-top">
         <div class="col-sm-6">
             <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.index') }}"
-                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
 
                 <h1 class="mb-0 fs-3">
                     Submission Detail
@@ -44,9 +44,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-file-earmark-text me-2"></i>
@@ -58,7 +58,7 @@
                 {{-- Original Paper --}}
                 @if ($submission->paper_file)
                     <a href="{{ route('participant.submissions.paper.download', $submission) }}"
-                        class="btn btn-outline-danger btn-sm rounded-2">
+                        class="btn btn-outline-danger btn-sm rounded-0">
                         <i class="bi bi-file-earmark-pdf me-1"></i>
                         Full Paper
                     </a>
@@ -67,7 +67,7 @@
                 {{-- Revised File --}}
                 @if ($submission->revised_file)
                     <a href="{{ route('participant.submissions.revision.download', $submission) }}"
-                        class="btn btn-outline-warning btn-sm rounded-2">
+                        class="btn btn-outline-warning btn-sm rounded-0">
                         <i class="bi bi-file-earmark-pdf me-1"></i>
                         Revised Paper
                     </a>
@@ -76,7 +76,7 @@
                 {{-- Camera Ready --}}
                 @if ($submission->camera_ready_file)
                     <a href="{{ route('participant.submissions.camera-ready.download', $submission) }}"
-                        class="btn btn-outline-success btn-sm rounded-2">
+                        class="btn btn-outline-success btn-sm rounded-0">
                         <i class="bi bi-file-earmark-pdf me-1"></i>
                         Camera Ready
                     </a>
@@ -87,7 +87,7 @@
                     $submission->submission_stage === 'full_paper' &&
                         in_array($submission->status, ['accepted', 'camera_ready', 'published'], true))
                     <a href="{{ route('participant.submissions.loa', $submission) }}"
-                        class="btn btn-success btn-sm rounded-2">
+                        class="btn btn-success btn-sm rounded-0">
                         <i class="bi bi-file-earmark-check me-1"></i>
                         View LOA
                     </a>
@@ -106,11 +106,11 @@
             <div class="mb-2">
 
                 @if ($submission->submission_stage === 'abstract')
-                    <span class="badge text-bg-secondary rounded-pill">
+                    <span class="badge text-bg-secondary rounded-0">
                         Abstract Stage
                     </span>
                 @elseif ($submission->submission_stage === 'full_paper')
-                    <span class="badge text-bg-primary rounded-pill">
+                    <span class="badge text-bg-primary rounded-0">
                         Full Paper Stage
                     </span>
                 @endif
@@ -121,35 +121,35 @@
             <div class="mb-2">
 
                 @if ($submission->status === 'draft')
-                    <span class="badge text-bg-secondary rounded-pill">
+                    <span class="badge text-bg-secondary rounded-0">
                         Draft
                     </span>
                 @elseif ($submission->status === 'submitted')
-                    <span class="badge text-bg-primary rounded-pill">
+                    <span class="badge text-bg-primary rounded-0">
                         Submitted
                     </span>
                 @elseif ($submission->status === 'under_review')
-                    <span class="badge text-bg-warning rounded-pill">
+                    <span class="badge text-bg-warning rounded-0">
                         Under Review
                     </span>
                 @elseif ($submission->status === 'revision')
-                    <span class="badge text-bg-warning rounded-pill">
+                    <span class="badge text-bg-warning rounded-0">
                         Revision
                     </span>
                 @elseif ($submission->status === 'accepted')
-                    <span class="badge text-bg-success rounded-pill">
+                    <span class="badge text-bg-success rounded-0">
                         Accepted
                     </span>
                 @elseif ($submission->status === 'rejected')
-                    <span class="badge text-bg-danger rounded-pill">
+                    <span class="badge text-bg-danger rounded-0">
                         Rejected
                     </span>
                 @elseif ($submission->status === 'camera_ready')
-                    <span class="badge text-bg-info rounded-pill">
+                    <span class="badge text-bg-info rounded-0">
                         Camera Ready
                     </span>
                 @elseif ($submission->status === 'published')
-                    <span class="badge text-bg-dark rounded-pill">
+                    <span class="badge text-bg-dark rounded-0">
                         Published
                     </span>
                 @endif
@@ -171,7 +171,7 @@
 
                 {{-- Revision --}}
                 @if ($submission->status === 'revision')
-                    <div class="alert alert-warning rounded-3 mb-2">
+                    <div class="alert alert-warning rounded-0 mb-2">
 
                         <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -190,7 +190,7 @@
                             </div>
 
                             <a href="{{ route('participant.submissions.revision', $submission) }}"
-                                class="btn btn-warning btn-sm rounded-2">
+                                class="btn btn-warning btn-sm rounded-0">
                                 <i class="bi bi-arrow-repeat me-1"></i>
                                 Submit Revision
                             </a>
@@ -202,7 +202,7 @@
 
                 {{-- Abstract Accepted --}}
                 @if ($submission->submission_stage === 'abstract' && $submission->status === 'accepted')
-                    <div class="alert alert-success rounded-3 mb-2">
+                    <div class="alert alert-success rounded-0 mb-2">
 
                         <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -219,7 +219,7 @@
                             </div>
 
                             <a href="{{ route('participant.submissions.full-paper', $submission) }}"
-                                class="btn btn-primary btn-sm rounded-2 text-nowrap">
+                                class="btn btn-primary btn-sm rounded-0 text-nowrap">
                                 <i class="bi bi-upload me-1"></i>
                                 Submit Full Paper
                             </a>
@@ -233,7 +233,7 @@
                 @if ($submission->submission_stage === 'full_paper' && $submission->status === 'accepted')
 
                     @if (!$submission->video_url)
-                        <div class="alert alert-success rounded-3 mb-2">
+                        <div class="alert alert-success rounded-0 mb-2">
 
                             <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -251,7 +251,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.submissions.video.edit', $submission) }}"
-                                    class="btn btn-primary btn-sm rounded-2 text-nowrap">
+                                    class="btn btn-primary btn-sm rounded-0 text-nowrap">
                                     <i class="bi bi-camera-video me-1"></i>
                                     Submit Presentation Video
                                 </a>
@@ -260,7 +260,7 @@
 
                         </div>
                     @elseif (!$payment)
-                        <div class="alert alert-warning rounded-3 mb-2">
+                        <div class="alert alert-warning rounded-0 mb-2">
 
                             <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -279,7 +279,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.payments.create') }}"
-                                    class="btn btn-warning btn-sm rounded-2 text-nowrap">
+                                    class="btn btn-warning btn-sm rounded-0 text-nowrap">
                                     <i class="bi bi-credit-card me-1"></i>
                                     Submit Payment
                                 </a>
@@ -288,7 +288,7 @@
 
                         </div>
                     @elseif ($payment->status === 'pending')
-                        <div class="alert alert-warning rounded-3 mb-2">
+                        <div class="alert alert-warning rounded-0 mb-2">
 
                             <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -306,7 +306,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.payments.index') }}"
-                                    class="btn btn-warning btn-sm rounded-2 text-nowrap">
+                                    class="btn btn-warning btn-sm rounded-0 text-nowrap">
                                     <i class="bi bi-credit-card me-1"></i>
                                     View Payment
                                 </a>
@@ -315,7 +315,7 @@
 
                         </div>
                     @elseif ($payment->status === 'rejected')
-                        <div class="alert alert-danger rounded-3 mb-2">
+                        <div class="alert alert-danger rounded-0 mb-2">
 
                             <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -333,7 +333,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.payments.create') }}"
-                                    class="btn btn-danger btn-sm rounded-2 text-nowrap">
+                                    class="btn btn-danger btn-sm rounded-0 text-nowrap">
                                     <i class="bi bi-credit-card me-1"></i>
                                     Submit Payment
                                 </a>
@@ -342,7 +342,7 @@
 
                         </div>
                     @elseif ($payment->status === 'verified')
-                        <div class="alert alert-success rounded-3 mb-2">
+                        <div class="alert alert-success rounded-0 mb-2">
 
                             <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -360,7 +360,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
-                                    class="btn btn-success btn-sm rounded-2 text-nowrap">
+                                    class="btn btn-success btn-sm rounded-0 text-nowrap">
                                     <i class="bi bi-upload me-1"></i>
                                     Submit Camera Ready
                                 </a>
@@ -374,7 +374,7 @@
 
                 {{-- Camera Ready --}}
                 @if ($submission->submission_stage === 'full_paper' && $submission->status === 'camera_ready')
-                    <div class="alert alert-info rounded-3 mb-2">
+                    <div class="alert alert-info rounded-0 mb-2">
 
                         <i class="bi bi-hourglass-split me-2"></i>
 
@@ -386,7 +386,7 @@
 
                 {{-- Published --}}
                 @if ($submission->submission_stage === 'full_paper' && $submission->status === 'published')
-                    <div class="alert alert-success rounded-3 mb-2">
+                    <div class="alert alert-success rounded-0 mb-2">
 
                         <i class="bi bi-check-circle me-2"></i>
 
@@ -511,7 +511,7 @@
                         </strong>
 
                         @if ($author->is_corresponding)
-                            <span class="badge text-bg-success rounded-pill ms-1">
+                            <span class="badge text-bg-success rounded-0 ms-1">
                                 Corresponding
                             </span>
                         @endif

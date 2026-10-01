@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -74,9 +74,9 @@
         @csrf
         @method('PUT')
 
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
 
@@ -92,14 +92,14 @@
             @include('admin.users._form')
 
 
-            <div class="card-footer rounded-bottom-3 d-flex justify-content-end gap-2">
+            <div class="card-footer rounded-0 d-flex justify-content-end gap-2">
 
-                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm rounded-2">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-x-circle me-1"></i>
                     Cancel
                 </a>
 
-                <button type="submit" class="btn btn-success btn-sm rounded-2">
+                <button type="submit" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-check-circle me-1"></i>
                     Save Changes
                 </button>

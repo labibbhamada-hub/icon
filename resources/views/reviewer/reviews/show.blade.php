@@ -2,11 +2,10 @@
 
 @section('title', 'Review Detail')
 
-@section('header')
-    <div class="row align-items-center">
+@section('header') <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="d-flex align-items-center gap-2"> <a href="{{ route('reviewer.reviews.index') }}"
-                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
 
                 <h1 class="mb-0 fs-3">
                     Review Detail
@@ -43,20 +42,20 @@
 
 @section('content') <div class="row">
         <div class="col-lg-8">
-            <div class="card rounded-3 overflow-hidden">
-                <div class="card-header rounded-top-3">
+            <div class="card rounded-0 overflow-hidden">
+                <div class="card-header rounded-0">
                     <h3 class="card-title"> <i class="bi bi-file-earmark-text me-2"></i>
                         {{ $review->submission->submission_code }} </h3>
 
                     <div class="float-end">
                         @if (!$review->reviewed_at)
                             <a href="{{ route('reviewer.reviews.edit', $review) }}"
-                                class="btn btn-primary btn-sm rounded-2">
+                                class="btn btn-primary btn-sm rounded-0">
                                 <i class="bi bi-pencil me-1"></i>
                                 Continue Review
                             </a>
                         @else
-                            <span class="badge text-bg-success rounded-pill">
+                            <span class="badge text-bg-success rounded-0">
                                 Completed
                             </span>
                         @endif
@@ -69,14 +68,14 @@
                             {{ $review->submission->title }}
                         </h4>
 
-                        <span class="badge text-bg-primary rounded-pill">
+                        <span class="badge text-bg-primary rounded-0">
                             {{ $review->submission->topic?->name ?? 'No Topic' }}
                         </span>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4 mb-2">
-                            <div class="border rounded-3 p-3 text-center">
+                            <div class="border rounded-0 p-3 text-center">
                                 <small class="text-muted d-block">
                                     Score
                                 </small>
@@ -94,29 +93,29 @@
                         </div>
 
                         <div class="col-md-8 mb-2">
-                            <div class="border rounded-3 p-3 h-100">
+                            <div class="border rounded-0 p-3 h-100">
                                 <small class="text-muted d-block mb-2">
                                     Recommendation
                                 </small>
 
                                 @if ($review->recommendation === 'accept')
-                                    <span class="badge text-bg-success rounded-pill fs-6">
+                                    <span class="badge text-bg-success rounded-0 fs-6">
                                         Accept
                                     </span>
                                 @elseif ($review->recommendation === 'minor_revision')
-                                    <span class="badge text-bg-warning rounded-pill fs-6">
+                                    <span class="badge text-bg-warning rounded-0 fs-6">
                                         Minor Revision
                                     </span>
                                 @elseif ($review->recommendation === 'major_revision')
-                                    <span class="badge text-bg-warning rounded-pill fs-6">
+                                    <span class="badge text-bg-warning rounded-0 fs-6">
                                         Major Revision
                                     </span>
                                 @elseif ($review->recommendation === 'reject')
-                                    <span class="badge text-bg-danger rounded-pill fs-6">
+                                    <span class="badge text-bg-danger rounded-0 fs-6">
                                         Reject
                                     </span>
                                 @else
-                                    <span class="badge text-bg-secondary rounded-pill fs-6">
+                                    <span class="badge text-bg-secondary rounded-0 fs-6">
                                         Pending
                                     </span>
                                 @endif
@@ -142,9 +141,9 @@
                 </div>
 
                 @if ($review->submission?->paper_file)
-                    <div class="card-footer rounded-bottom-3">
+                    <div class="card-footer rounded-0">
                         <a href="{{ route('reviewer.reviews.paper.download', $review) }}"
-                            class="btn btn-danger btn-sm rounded-2">
+                            class="btn btn-danger btn-sm rounded-0">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper
                         </a>
@@ -154,8 +153,8 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card rounded-3 overflow-hidden">
-                <div class="card-header rounded-top-3">
+            <div class="card rounded-0 overflow-hidden">
+                <div class="card-header rounded-0">
                     <h3 class="card-title">
                         <i class="bi bi-info-circle me-2"></i>
                         Paper Information

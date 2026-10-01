@@ -21,13 +21,13 @@
                     <i class="bi bi-bell-fill"></i>
 
                     @if ($unreadCount > 0)
-                        <span class="navbar-badge badge text-bg-warning rounded-pill">
+                        <span class="navbar-badge badge text-bg-warning rounded-0">
                             {{ $unreadCount > 99 ? '99+' : $unreadCount }}
                         </span>
                     @endif
                 </a>
 
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-3 overflow-hidden">
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-0 overflow-hidden">
                     <span class="dropdown-item dropdown-header">
                         {{ $unreadCount }} {{ $unreadCount === 1 ? 'Notification' : 'Notifications' }}
                     </span>
@@ -90,7 +90,7 @@
                     <i class="bi bi-circle-half d-none" data-lte-theme-icon="auto"></i>
                 </a>
 
-                <ul class="dropdown-menu dropdown-menu-end rounded-2" aria-labelledby="bd-theme"
+                <ul class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="bd-theme"
                     style="--bs-dropdown-min-width: 8rem">
                     <li>
                         <button type="button" class="dropdown-item d-flex align-items-center"
@@ -132,7 +132,7 @@
                     </span>
                 </a>
 
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-3 overflow-hidden">
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-0 overflow-hidden">
                     <li class="user-header text-bg-primary">
                         <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="rounded-circle shadow"
                             alt="{{ auth()->user()->name }}" />
@@ -162,11 +162,11 @@
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
 
-                            <a href="#" class="btn btn-outline-secondary rounded-2">
+                            <a href="#" class="btn btn-outline-secondary rounded-0">
                                 Profile
                             </a>
 
-                            <button class="btn btn-outline-danger rounded-2 float-end">
+                            <button class="btn btn-outline-danger rounded-0 float-end">
                                 Logout
                             </button>
                         </form>

@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -70,9 +70,9 @@
         @csrf
 
 
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
 
@@ -88,8 +88,8 @@
             <div class="card-body">
 
                 {{-- ====================================================
-                PARTICIPANT & TYPE
-            ===================================================== --}}
+            PARTICIPANT & TYPE
+        ===================================================== --}}
 
                 <div class="row g-3">
 
@@ -102,7 +102,7 @@
                         </label>
 
                         <select name="participant_id" id="participant_id"
-                            class="form-select @error('participant_id') is-invalid @enderror rounded-2">
+                            class="form-select @error('participant_id') is-invalid @enderror rounded-0">
 
                             <option value="">
                                 Select Participant
@@ -148,7 +148,7 @@
                         </label>
 
                         <select name="type" id="type"
-                            class="form-select @error('type') is-invalid @enderror rounded-2">
+                            class="form-select @error('type') is-invalid @enderror rounded-0">
 
                             <option value="participant" @selected(old('type', 'participant') === 'participant')>
                                 Participant
@@ -190,8 +190,8 @@
 
 
             {{-- ========================================================
-            SUBMISSION
-        ========================================================= --}}
+        SUBMISSION
+    ========================================================= --}}
 
             <div class="card-body border-top">
 
@@ -204,7 +204,7 @@
                         </label>
 
                         <select name="submission_id" id="submission_id"
-                            class="form-select @error('submission_id') is-invalid @enderror rounded-2">
+                            class="form-select @error('submission_id') is-invalid @enderror rounded-0">
 
                             <option value="">
                                 No submission
@@ -233,12 +233,12 @@
 
 
             {{-- ========================================================
-            INFO
-        ========================================================= --}}
+        INFO
+    ========================================================= --}}
 
             <div class="card-body border-top">
 
-                <div class="alert alert-info rounded-3 mb-0">
+                <div class="alert alert-info rounded-0 mb-0">
 
                     <div class="d-flex">
 
@@ -270,17 +270,17 @@
 
 
             {{-- ========================================================
-            FOOTER
-        ========================================================= --}}
+        FOOTER
+    ========================================================= --}}
 
-            <div class="card-footer rounded-bottom-3 d-flex justify-content-end gap-2">
+            <div class="card-footer rounded-0 d-flex justify-content-end gap-2">
 
-                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-2">
+                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-x-circle me-1"></i>
                     Cancel
                 </a>
 
-                <button type="submit" class="btn btn-success btn-sm rounded-2" id="generate-certificate-button">
+                <button type="submit" class="btn btn-success btn-sm rounded-0" id="generate-certificate-button">
                     <i class="bi bi-award me-1"></i>
                     Generate Certificate
                 </button>
@@ -338,10 +338,10 @@
                 function refreshSubmissions() {
 
                     submissionSelect.innerHTML = `
-                <option value="">
-                    No submission
-                </option>
-            `;
+            <option value="">
+                No submission
+            </option>
+        `;
 
 
                     const isPresenter =

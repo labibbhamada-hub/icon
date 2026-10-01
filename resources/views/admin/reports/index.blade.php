@@ -25,9 +25,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-funnel me-2"></i>
@@ -48,7 +48,7 @@
                             Conference
                         </label>
 
-                        <select name="conference_id" class="form-select rounded-2">
+                        <select name="conference_id" class="form-select rounded-0">
 
                             <option value="">
                                 All Conferences
@@ -70,12 +70,12 @@
 
                     <div class="col-md-4 mb-2 gap-2 d-flex">
 
-                        <button type="submit" class="btn btn-primary rounded-2">
+                        <button type="submit" class="btn btn-primary rounded-0">
                             <i class="bi bi-funnel me-1"></i>
                             Apply Filter
                         </button>
 
-                        <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary rounded-2">
+                        <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary rounded-0">
                             <i class="bi bi-arrow-counterclockwise me-1"></i>
                             Reset
                         </a>
@@ -91,9 +91,9 @@
     </div>
 
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-people me-2"></i>
@@ -103,7 +103,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.participants.export', ['conference_id' => $conferenceId]) }}"
-                    class="btn btn-dark btn-sm rounded-2">
+                    class="btn btn-dark btn-sm rounded-0">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -118,7 +118,7 @@
 
                 <div class="col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Total Participants
@@ -134,7 +134,7 @@
 
                 <div class="col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Confirmed
@@ -155,9 +155,9 @@
     </div>
 
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-credit-card me-2"></i>
@@ -167,7 +167,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.payments.export', ['conference_id' => $conferenceId]) }}"
-                    class="btn btn-dark btn-sm rounded-2">
+                    class="btn btn-dark btn-sm rounded-0">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -182,7 +182,7 @@
 
                 <div class="col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Pending
@@ -198,7 +198,7 @@
 
                 <div class="col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Verified
@@ -219,9 +219,9 @@
     </div>
 
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-file-earmark-text me-2"></i>
@@ -231,7 +231,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.submissions.export', ['conference_id' => $conferenceId]) }}"
-                    class="btn btn-dark btn-sm rounded-2">
+                    class="btn btn-dark btn-sm rounded-0">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -246,7 +246,7 @@
 
                 <div class="col-lg-3 col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Total
@@ -262,7 +262,7 @@
 
                 <div class="col-lg-3 col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Under Review
@@ -278,7 +278,7 @@
 
                 <div class="col-lg-3 col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Revision
@@ -294,7 +294,7 @@
 
                 <div class="col-lg-3 col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Published
@@ -315,9 +315,9 @@
     </div>
 
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-clipboard-check me-2"></i>
@@ -327,7 +327,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.reviews.export', ['conference_id' => $conferenceId]) }}"
-                    class="btn btn-dark btn-sm rounded-2">
+                    class="btn btn-dark btn-sm rounded-0">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -342,7 +342,7 @@
 
                 <div class="col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Total Review Records
@@ -358,7 +358,7 @@
 
                 <div class="col-md-6 mb-2">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded-0 p-3">
 
                         <small class="text-muted d-block">
                             Completed Reviews
@@ -379,9 +379,9 @@
     </div>
 
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-award me-2"></i>
@@ -391,7 +391,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.certificates.export', ['conference_id' => $conferenceId]) }}"
-                    class="btn btn-dark btn-sm rounded-2">
+                    class="btn btn-dark btn-sm rounded-0">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
@@ -402,7 +402,7 @@
 
         <div class="card-body">
 
-            <div class="border rounded-3 p-3">
+            <div class="border rounded-0 p-3">
 
                 <small class="text-muted d-block">
                     Total Certificates

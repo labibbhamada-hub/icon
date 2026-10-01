@@ -28,7 +28,7 @@
                 </a>
 
 
-                <ul class="dropdown-menu dropdown-menu-end rounded-2">
+                <ul class="dropdown-menu dropdown-menu-end rounded-0">
 
                     <li>
 
@@ -91,7 +91,7 @@
                     <i class="bi bi-circle-half d-none" data-lte-theme-icon="auto"></i>
                 </a>
 
-                <ul class="dropdown-menu dropdown-menu-end rounded-2" aria-labelledby="bd-theme"
+                <ul class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="bd-theme"
                     style="--bs-dropdown-min-width: 8rem">
                     <li>
                         <button type="button" class="dropdown-item d-flex align-items-center"
@@ -129,7 +129,7 @@
                     <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
                 </a>
 
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-3 overflow-hidden">
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-0 overflow-hidden">
                     <li class="user-header text-bg-primary">
                         <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="rounded-circle shadow"
                             alt="{{ auth()->user()->name }}" />
@@ -158,9 +158,9 @@
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
 
-                            <a href="#" class="btn btn-outline-secondary rounded-2">Profile</a>
+                            <a href="#" class="btn btn-outline-secondary rounded-0">Profile</a>
 
-                            <button class="btn btn-outline-danger rounded-2 float-end">
+                            <button class="btn btn-outline-danger rounded-0 float-end">
                                 Logout
                             </button>
                         </form>

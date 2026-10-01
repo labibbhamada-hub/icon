@@ -29,13 +29,13 @@
 
 @endsection
 
-@section('content') <div class="card rounded-3 overflow-hidden">
-        <div class="card-header rounded-top-3">
+@section('content') <div class="card rounded-0 overflow-hidden">
+        <div class="card-header rounded-0">
             <h3 class="card-title"> <i class="bi bi-credit-card me-2"></i>
                 Payment History </h3>
 
             <div class="float-end">
-                <a href="{{ route('participant.payments.create') }}" class="btn btn-success btn-sm rounded-2">
+                <a href="{{ route('participant.payments.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-upload me-1"></i>
                     Submit Payment
                 </a>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
@@ -115,15 +115,15 @@
 
                                 <td>
                                     @if ($payment->status === 'verified')
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Verified
                                         </span>
                                     @elseif ($payment->status === 'rejected')
-                                        <span class="badge text-bg-danger rounded-pill">
+                                        <span class="badge text-bg-danger rounded-0">
                                             Rejected
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-pill">
+                                        <span class="badge text-bg-warning rounded-0">
                                             Pending
                                         </span>
                                     @endif
@@ -146,7 +146,7 @@
                                         You have not submitted a payment yet.
                                     </p>
 
-                                    <a href="{{ route('participant.payments.create') }}" class="btn btn-success rounded-2">
+                                    <a href="{{ route('participant.payments.create') }}" class="btn btn-success rounded-0">
                                         <i class="bi bi-upload me-1"></i>
                                         Submit Payment
                                     </a>

@@ -11,7 +11,7 @@
             </label>
 
             <select name="conference_id" id="conference_id"
-                class="form-select @error('conference_id') is-invalid @enderror rounded-2">
+                class="form-select @error('conference_id') is-invalid @enderror rounded-0">
 
                 <option value="">
                     Select Conference
@@ -43,7 +43,7 @@
                 <span class="text-danger">*</span>
             </label>
 
-            <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror rounded-2">
+            <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror rounded-0">
 
                 <option value="">
                     Select Reviewer
@@ -80,7 +80,7 @@
 
             <input type="text" name="institution" id="institution"
                 value="{{ old('institution', $reviewer->institution ?? '') }}"
-                class="form-control @error('institution') is-invalid @enderror rounded-2"
+                class="form-control @error('institution') is-invalid @enderror rounded-0"
                 placeholder="University / Institution">
 
             @error('institution')
@@ -101,7 +101,7 @@
 
             <input type="text" name="expertise" id="expertise"
                 value="{{ old('expertise', $reviewer->expertise ?? '') }}"
-                class="form-control @error('expertise') is-invalid @enderror rounded-2"
+                class="form-control @error('expertise') is-invalid @enderror rounded-0"
                 placeholder="AI, Machine Learning, Data Science">
 
             <div class="form-text">
@@ -124,7 +124,7 @@
                 Biography
             </label>
 
-            <textarea name="bio" id="bio" rows="6" class="form-control @error('bio') is-invalid @enderror rounded-2"
+            <textarea name="bio" id="bio" rows="6" class="form-control @error('bio') is-invalid @enderror rounded-0"
                 placeholder="Write reviewer biography...">{{ old('bio', $reviewer->bio ?? '') }}</textarea>
 
             @error('bio')
@@ -143,14 +143,14 @@
                 Status
             </label>
 
-            <div class="border rounded-3 p-3">
+            <div class="border rounded-0 p-3">
 
                 <input type="hidden" name="is_active" value="0">
 
                 <div class="form-check form-switch">
 
-                    <input type="checkbox" name="is_active" id="is_active" value="1" class="form-check-input"
-                        @checked(old('is_active', $reviewer->is_active ?? true))>
+                    <input type="checkbox" name="is_active" id="is_active" value="1"
+                        class="form-check-input rounded-0" @checked(old('is_active', $reviewer->is_active ?? true))>
 
                     <label for="is_active" class="form-check-label fw-semibold">
                         Active Reviewer

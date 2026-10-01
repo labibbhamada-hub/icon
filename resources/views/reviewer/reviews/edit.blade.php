@@ -5,7 +5,7 @@
 @section('header') <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="d-flex align-items-center gap-2"> <a href="{{ route('reviewer.reviews.index') }}"
-                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
 
                 <h1 class="mb-0 fs-3">
                     Review Submission
@@ -42,7 +42,7 @@
 
 @section('content')
     @if ($errors->any())
-        <div class="alert alert-danger rounded-3"> <strong>
+        <div class="alert alert-danger rounded-0"> <strong>
                 Please correct the following: </strong>
 
             <ul class="mb-0 mt-2">
@@ -59,8 +59,8 @@
         @csrf
         @method('PUT')
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-text me-2"></i>
                     Submission Information
@@ -69,7 +69,7 @@
                 <div class="float-end">
                     @if ($review->submission?->paper_file)
                         <a href="{{ route('reviewer.reviews.paper.download', $review) }}" target="_blank"
-                            class="btn btn-danger btn-sm rounded-2">
+                            class="btn btn-danger btn-sm rounded-0">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper
                         </a>
@@ -83,27 +83,27 @@
                 </h4>
 
                 <div>
-                    <span class="badge text-bg-primary rounded-pill">
+                    <span class="badge text-bg-primary rounded-0">
                         {{ $review->submission->submission_code }}
                     </span>
 
                     @if ($review->submission->topic)
-                        <span class="badge text-bg-secondary rounded-pill">
+                        <span class="badge text-bg-secondary rounded-0">
                             {{ $review->submission->topic->name }}
                         </span>
                     @endif
 
                     @if ($review->review_stage === 'abstract')
-                        <span class="badge text-bg-secondary rounded-pill">
+                        <span class="badge text-bg-secondary rounded-0">
                             Abstract Review
                         </span>
                     @elseif ($review->review_stage === 'full_paper')
-                        <span class="badge text-bg-primary rounded-pill">
+                        <span class="badge text-bg-primary rounded-0">
                             Full Paper Review
                         </span>
                     @endif
 
-                    <span class="badge text-bg-light border rounded-pill">
+                    <span class="badge text-bg-light border rounded-0">
                         Round {{ $review->review_round }}
                     </span>
                 </div>
@@ -130,7 +130,7 @@
                             </strong>
 
                             @if ($author->is_corresponding)
-                                <span class="badge text-bg-success rounded-pill ms-1">
+                                <span class="badge text-bg-success rounded-0 ms-1">
                                     Corresponding
                                 </span>
                             @endif
@@ -146,8 +146,8 @@
             </div>
         </div>
 
-        <div class="card rounded-3 overflow-hidden mb-3">
-            <div class="card-header rounded-top-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
                 <h3 class="card-title">
                     <i class="bi bi-clipboard-check me-2"></i>
                     Evaluation
@@ -164,7 +164,7 @@
 
                         <input type="number" name="score" min="0" max="100" step="0.01"
                             value="{{ old('score', $review->score) }}"
-                            class="form-control form-control-lg @error('score') is-invalid @enderror rounded-2"
+                            class="form-control form-control-lg @error('score') is-invalid @enderror rounded-0"
                             placeholder="0 - 100">
 
                         <div class="form-text">
@@ -185,7 +185,7 @@
                         </label>
 
                         <select name="recommendation"
-                            class="form-select form-select-lg @error('recommendation') is-invalid @enderror rounded-2">
+                            class="form-select form-select-lg @error('recommendation') is-invalid @enderror rounded-0">
                             <option value="">
                                 Select Recommendation
                             </option>
@@ -220,7 +220,7 @@
                             <span class="text-danger">*</span>
                         </label>
 
-                        <textarea name="comment" rows="10" class="form-control @error('comment') is-invalid @enderror rounded-2"
+                        <textarea name="comment" rows="10" class="form-control @error('comment') is-invalid @enderror rounded-0"
                             placeholder="Write your evaluation, findings, suggestions, and recommendation...">{{ old('comment', $review->comment) }}</textarea>
 
                         @error('comment')
@@ -232,8 +232,8 @@
                 </div>
             </div>
 
-            <div class="card-footer rounded-bottom-3 text-end">
-                <button type="submit" class="btn btn-primary rounded-2">
+            <div class="card-footer rounded-0 text-end">
+                <button type="submit" class="btn btn-primary rounded-0">
                     <i class="bi bi-check-circle me-1"></i>
                     Submit Review
                 </button>

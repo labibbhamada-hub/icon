@@ -7,7 +7,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.show', $submission) }}"
-                    class="btn btn-secondary btn-sm rounded-2"> <i class="bi bi-arrow-left"></i> </a>
+                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
 
                 <h1 class="mb-0 fs-3">
                     Letter of Acceptance
@@ -44,14 +44,14 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden mb-3">
-        <div class="card-header rounded-top-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
+        <div class="card-header rounded-0">
             <h3 class="card-title mb-0"> <i class="bi bi-file-earmark-check me-2"></i>
                 Letter of Acceptance </h3>
 
             <div class="float-end">
                 <a href="{{ route('participant.submissions.loa.download', $submission) }}"
-                    class="btn btn-primary btn-sm rounded-2">
+                    class="btn btn-primary btn-sm rounded-0">
                     <i class="bi bi-download me-1"></i>
                     Download LOA
                 </a>
@@ -62,7 +62,7 @@
             <div class="text-center mb-4">
                 @if ($submission->conference?->configuration?->logo)
                     <img src="{{ asset('storage/' . $submission->conference->configuration->logo) }}" alt="Conference Logo"
-                        style="max-height: 80px;" class="mb-3 rounded-3">
+                        style="max-height: 80px;" class="mb-3 rounded-0">
                 @endif
 
                 <h2 class="fw-bold mb-1">
@@ -74,7 +74,7 @@
                 </h4>
             </div>
 
-            <div class="border rounded-3 p-3">
+            <div class="border rounded-0 p-3">
                 <div class="row">
                     <div class="col-md-4 mb-2">
                         <small class="text-muted d-block">
@@ -91,7 +91,7 @@
                             Status
                         </small>
 
-                        <span class="badge bg-success rounded-pill">
+                        <span class="badge bg-success rounded-0">
                             Accepted
                         </span>
                     </div>
@@ -157,7 +157,7 @@
             <h5 class="fw-bold mb-2">Important Dates</h5>
 
             @if ($importantDates->isNotEmpty())
-                <div class="table-responsive rounded-3">
+                <div class="table-responsive rounded-0">
                     <table class="table table-bordered">
                         <thead>
                             <tr>

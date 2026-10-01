@@ -8,7 +8,7 @@
 
         <div class="col-sm-6 d-flex align-items-center gap-2">
 
-            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
 
@@ -92,12 +92,13 @@
 
 
     {{-- ============================================================
-    SUBMISSION INFORMATION
+SUBMISSION INFORMATION
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-file-earmark-text me-2"></i>
@@ -107,7 +108,7 @@
             @if ($submission->status !== 'published')
                 <div class="float-end">
 
-                    <a href="{{ route('admin.submissions.edit', $submission) }}" class="btn btn-warning btn-sm rounded-2">
+                    <a href="{{ route('admin.submissions.edit', $submission) }}" class="btn btn-warning btn-sm rounded-0">
                         <i class="bi bi-pencil me-1"></i>
                         Edit Submission
                     </a>
@@ -121,7 +122,7 @@
 
             <div class="mb-3">
 
-                <span class="badge text-bg-{{ $statusClass }} rounded-pill">
+                <span class="badge text-bg-{{ $statusClass }} rounded-0">
 
                     @if ($submission->status === 'published')
                         <i class="bi bi-check-circle me-1"></i>
@@ -331,7 +332,7 @@
                 {{-- Workflow --}}
                 <div class="col-lg-4">
 
-                    <div class="border rounded-3 bg-light p-3 h-100">
+                    <div class="border rounded-0 bg-light p-3 h-100">
 
                         <h5 class="fw-bold mb-3">
                             Workflow Status
@@ -396,7 +397,7 @@
 
                                     @if ($isCurrent)
                                         <span
-                                            class="badge text-bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                            class="badge text-bg-primary rounded-0 d-flex align-items-center justify-content-center"
                                             style="width: 18px; height: 18px;">
                                             {{ $stepNumber }}
                                         </span>
@@ -406,7 +407,7 @@
                                         </strong>
                                     @elseif ($isCompleted)
                                         <span
-                                            class="badge text-bg-success rounded-circle d-flex align-items-center justify-content-center"
+                                            class="badge text-bg-success rounded-0 d-flex align-items-center justify-content-center"
                                             style="width: 18px; height: 18px;">
                                             <i class="bi bi-check"></i>
                                         </span>
@@ -416,7 +417,7 @@
                                         </span>
                                     @else
                                         <span
-                                            class="badge text-bg-light border rounded-circle d-flex align-items-center justify-content-center"
+                                            class="badge text-bg-light border rounded-0 d-flex align-items-center justify-content-center"
                                             style="width: 18px; height: 18px;">
                                             {{ $stepNumber }}
                                         </span>
@@ -443,12 +444,13 @@
 
 
     {{-- ============================================================
-    MANUSCRIPT INFORMATION
+MANUSCRIPT INFORMATION
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-file-text me-2"></i>
@@ -489,7 +491,7 @@
 
                     @foreach (preg_split('/[,;]+/', $submission->keywords) as $keyword)
                         @if (trim($keyword))
-                            <span class="badge text-bg-light border rounded-pill">
+                            <span class="badge text-bg-light border rounded-0">
                                 {{ trim($keyword) }}
                             </span>
                         @endif
@@ -509,12 +511,13 @@
 
 
     {{-- ============================================================
-    AUTHORS
+AUTHORS
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-people me-2"></i>
@@ -526,7 +529,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -620,18 +623,18 @@
                                 <td>
 
                                     @if ($author->is_corresponding)
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Corresponding Author
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Author
                                         </span>
                                     @endif
 
 
                                     @if ($submission->presenter_author_id == $author->id)
-                                        <span class="badge text-bg-primary rounded-pill">
+                                        <span class="badge text-bg-primary rounded-0">
                                             Presenter
                                         </span>
                                     @endif
@@ -663,12 +666,13 @@
 
 
     {{-- ============================================================
-    REVIEWERS
+REVIEWERS
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-clipboard-check me-2"></i>
@@ -678,7 +682,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.submissions.reviews.create', $submission) }}"
-                    class="btn btn-success btn-sm rounded-2">
+                    class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-person-plus me-1"></i>
                     Assign Reviewer
                 </a>
@@ -690,7 +694,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -756,15 +760,15 @@
 
                                 <td>
                                     @if ($review->review_stage === 'abstract')
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Abstract
                                         </span>
                                     @elseif ($review->review_stage === 'full_paper')
-                                        <span class="badge text-bg-primary rounded-pill">
+                                        <span class="badge text-bg-primary rounded-0">
                                             Full Paper
                                         </span>
                                     @else
-                                        <span class="badge text-bg-light border rounded-pill">
+                                        <span class="badge text-bg-light border rounded-0">
                                             {{ ucfirst(str_replace('_', ' ', $review->review_stage)) }}
                                         </span>
                                     @endif
@@ -772,7 +776,7 @@
 
                                 <td>
 
-                                    <span class="badge text-bg-secondary rounded-pill">
+                                    <span class="badge text-bg-secondary rounded-0">
                                         Round {{ $review->review_round }}
                                     </span>
 
@@ -782,11 +786,11 @@
                                 <td>
 
                                     @if ($review->reviewed_at)
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Completed
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-pill">
+                                        <span class="badge text-bg-warning rounded-0">
                                             Pending
                                         </span>
                                     @endif
@@ -820,12 +824,12 @@
 
                                         @if ($review->reviewed_at)
                                             <a href="{{ route('admin.reviews.show', $review) }}"
-                                                class="btn btn-info btn-sm rounded-2" title="View Review">
+                                                class="btn btn-info btn-sm rounded-0" title="View Review">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @else
                                             <a href="{{ route('admin.reviews.edit', $review) }}"
-                                                class="btn btn-primary btn-sm rounded-2" title="Review">
+                                                class="btn btn-primary btn-sm rounded-0" title="Review">
                                                 <i class="bi bi-clipboard-check"></i>
                                             </a>
 
@@ -835,7 +839,7 @@
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-2"
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-0"
                                                     title="Remove Reviewer">
                                                     <i class="bi bi-person-dash"></i>
                                                 </button>
@@ -862,7 +866,7 @@
                                     </div>
 
                                     <a href="{{ route('admin.submissions.reviews.create', $submission) }}"
-                                        class="btn btn-success btn-sm rounded-2 mt-3">
+                                        class="btn btn-success btn-sm rounded-0 mt-3">
                                         <i class="bi bi-person-plus me-1"></i>
                                         Assign First Reviewer
                                     </a>
@@ -884,12 +888,13 @@
 
 
     {{-- ============================================================
-    SUBMISSION FILES 
+SUBMISSION FILES 
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-files me-2"></i>
@@ -906,7 +911,7 @@
                 {{-- Original Paper --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <small class="text-muted d-block">
                             Original Paper
@@ -917,7 +922,7 @@
                         </strong>
 
                         @if ($submission->paper_file)
-                            <div class="alert alert-light border rounded-3 mb-3">
+                            <div class="alert alert-light border rounded-0 mb-3">
 
                                 <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
 
@@ -926,7 +931,7 @@
                             </div>
 
                             <a href="{{ route('admin.submissions.paper.download', $submission) }}"
-                                class="btn btn-outline-danger btn-sm rounded-2">
+                                class="btn btn-outline-danger btn-sm rounded-0">
                                 <i class="bi bi-download me-1"></i>
                                 Download Paper
                             </a>
@@ -944,7 +949,7 @@
                 {{-- Revised Paper --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <small class="text-muted d-block">
                             Revised Paper
@@ -955,7 +960,7 @@
                         </strong>
 
                         @if ($submission->revised_file)
-                            <div class="alert alert-light border rounded-3 mb-3">
+                            <div class="alert alert-light border rounded-0 mb-3">
 
                                 <i class="bi bi-file-earmark-pdf text-warning me-2"></i>
 
@@ -964,7 +969,7 @@
                             </div>
 
                             <a href="{{ route('admin.submissions.revised-paper.download', $submission) }}"
-                                class="btn btn-outline-warning btn-sm rounded-2">
+                                class="btn btn-outline-warning btn-sm rounded-0">
                                 <i class="bi bi-download me-1"></i>
                                 Download Revised Paper
                             </a>
@@ -982,7 +987,7 @@
                 {{-- Camera Ready --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <small class="text-muted d-block">
                             Camera Ready
@@ -993,7 +998,7 @@
                         </strong>
 
                         @if ($submission->camera_ready_file)
-                            <div class="alert alert-light border rounded-3 mb-3">
+                            <div class="alert alert-light border rounded-0 mb-3">
 
                                 <i class="bi bi-file-earmark-check text-info me-2"></i>
 
@@ -1002,7 +1007,7 @@
                             </div>
 
                             <a href="{{ route('admin.submissions.camera-ready.download', $submission) }}" target="_blank"
-                                class="btn btn-outline-info btn-sm rounded-2">
+                                class="btn btn-outline-info btn-sm rounded-0">
                                 <i class="bi bi-file-earmark-pdf me-1"></i>
                                 Open Camera Ready
                             </a>
@@ -1023,6 +1028,7 @@
     </div>
 
     {{-- ============================================================
+
 PUBLICATION ELIGIBILITY
 ============================================================= --}}
 
@@ -1037,9 +1043,9 @@ PUBLICATION ELIGIBILITY
             ];
         @endphp
 
-        <div class="card rounded-3 overflow-hidden mb-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
                     <i class="bi bi-shield-check me-2"></i>
@@ -1051,7 +1057,7 @@ PUBLICATION ELIGIBILITY
             <div class="card-body">
 
                 @if ($publicationEligibility['eligible'])
-                    <div class="alert alert-success rounded-3">
+                    <div class="alert alert-success rounded-0">
 
                         <div class="d-flex align-items-start gap-2">
 
@@ -1065,13 +1071,14 @@ PUBLICATION ELIGIBILITY
                                 <div class="small mt-1">
                                     All required publication conditions have been satisfied.
                                 </div>
+
                             </div>
 
                         </div>
 
                     </div>
                 @else
-                    <div class="alert alert-warning rounded-3">
+                    <div class="alert alert-warning rounded-0">
 
                         <div class="d-flex align-items-start gap-2">
 
@@ -1085,6 +1092,7 @@ PUBLICATION ELIGIBILITY
                                 <div class="small mt-1">
                                     Complete the requirements below before publishing this submission.
                                 </div>
+
                             </div>
 
                         </div>
@@ -1101,7 +1109,7 @@ PUBLICATION ELIGIBILITY
 
                         <div class="col-md-6">
 
-                            <div class="border rounded-3 p-3 h-100">
+                            <div class="border rounded-0 p-3 h-100">
 
                                 <div class="d-flex align-items-center gap-2">
 
@@ -1167,14 +1175,14 @@ PUBLICATION ELIGIBILITY
     @endif
 
     {{-- ============================================================
-    CAMERA READY APPROVAL
-    ============================================================= --}}
+CAMERA READY APPROVAL
+============================================================= --}}
 
     @if ($submission->status === 'camera_ready')
 
-        <div class="card rounded-3 overflow-hidden mb-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
                     <i class="bi bi-file-earmark-check me-2"></i>
@@ -1186,7 +1194,7 @@ PUBLICATION ELIGIBILITY
 
             <div class="card-body">
 
-                <div class="alert alert-info rounded-3">
+                <div class="alert alert-info rounded-0">
 
                     <i class="bi bi-info-circle me-2"></i>
 
@@ -1201,7 +1209,7 @@ PUBLICATION ELIGIBILITY
 
                     <div class="col-md-6">
 
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <small class="text-muted d-block">
                                 Camera-Ready File
@@ -1213,7 +1221,7 @@ PUBLICATION ELIGIBILITY
 
                             @if ($submission->camera_ready_file)
                                 <a href="{{ route('admin.submissions.camera-ready.download', $submission) }}"
-                                    target="_blank" class="btn btn-outline-danger btn-sm rounded-2 mt-3">
+                                    target="_blank" class="btn btn-outline-danger btn-sm rounded-0 mt-3">
                                     <i class="bi bi-file-earmark-pdf me-1"></i>
                                     Open Camera-Ready PDF
                                 </a>
@@ -1226,7 +1234,7 @@ PUBLICATION ELIGIBILITY
 
                     <div class="col-md-6">
 
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <small class="text-muted d-block">
                                 Approval
@@ -1240,7 +1248,7 @@ PUBLICATION ELIGIBILITY
                                     @csrf
                                     @method('PATCH')
 
-                                    <button type="submit" class="btn btn-success btn-sm rounded-2"
+                                    <button type="submit" class="btn btn-success btn-sm rounded-0"
                                         @disabled(!($publicationEligibility['eligible'] ?? false))
                                         @if (!($publicationEligibility['eligible'] ?? false)) title="Publication requirements are not yet satisfied." @endif>
                                         <i class="bi bi-check-circle me-1"></i>
@@ -1258,7 +1266,7 @@ PUBLICATION ELIGIBILITY
 
                                     <input type="hidden" name="correction_reason" class="correction-reason-input">
 
-                                    <button type="submit" class="btn btn-warning btn-sm rounded-2">
+                                    <button type="submit" class="btn btn-warning btn-sm rounded-0">
                                         <i class="bi bi-arrow-repeat me-1"></i>
                                         Request Correction
                                     </button>
@@ -1281,13 +1289,14 @@ PUBLICATION ELIGIBILITY
 
 
     {{-- ============================================================
-    CAMERA READY CORRECTION REASON
+CAMERA READY CORRECTION REASON
+
 ============================================================= --}}
 
     @if ($submission->camera_ready_correction_reason && $submission->status === 'accepted')
-        <div class="card rounded-3 overflow-hidden mb-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -1298,7 +1307,7 @@ PUBLICATION ELIGIBILITY
 
             <div class="card-body">
 
-                <div class="alert alert-warning rounded-3 mb-0">
+                <div class="alert alert-warning rounded-0 mb-0">
 
                     {!! nl2br(e($submission->camera_ready_correction_reason)) !!}
 
@@ -1314,10 +1323,10 @@ PUBLICATION ELIGIBILITY
 @push('scripts')
     <script>
         /*
-            |--------------------------------------------------------------------------
-            | Remove Reviewer
-            |--------------------------------------------------------------------------
-            */
+    |--------------------------------------------------------------------------
+    | Remove Reviewer
+    |--------------------------------------------------------------------------
+    */
 
         document
             .querySelectorAll('.delete-review-form')

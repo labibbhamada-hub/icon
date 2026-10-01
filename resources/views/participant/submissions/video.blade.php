@@ -2,13 +2,15 @@
 
 @section('title', 'Video Submission')
 
-@section('header') <div class="row align-items-top">
+@section('header')
+
+    <div class="row align-items-top">
 
         <div class="col-sm-6">
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-2">
+                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -55,9 +57,9 @@
 @section('content')
 
     {{-- Accepted Paper --}}
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
 
@@ -71,7 +73,7 @@
 
         <div class="card-body">
 
-            <div class="alert alert-success rounded-3">
+            <div class="alert alert-success rounded-0">
 
                 <i class="bi bi-check-circle me-2"></i>
 
@@ -80,7 +82,7 @@
 
             </div>
 
-            <div class="border rounded-3 p-3 bg-light">
+            <div class="border rounded-0 p-3 bg-light">
 
                 <small class="text-muted d-block">
                     Submission
@@ -109,9 +111,9 @@
 
 
         {{-- Presenter --}}
-        <div class="card rounded-3 overflow-hidden mb-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
 
@@ -125,7 +127,7 @@
 
             <div class="card-body">
 
-                <div class="alert alert-info rounded-3">
+                <div class="alert alert-info rounded-0">
 
                     <i class="bi bi-info-circle me-2"></i>
 
@@ -143,7 +145,7 @@
                                 <input type="radio" name="presenter_author_id" value="{{ $author->id }}"
                                     class="btn-check" @checked(old('presenter_author_id', $submission->presenter_author_id) == $author->id)>
 
-                                <div class="border rounded-3 p-3 h-100 video-option">
+                                <div class="border rounded-0 p-3 h-100 video-option">
 
                                     <div class="d-flex justify-content-between align-items-start gap-2">
 
@@ -162,7 +164,7 @@
                                         </div>
 
                                         @if ($author->is_corresponding)
-                                            <span class="badge text-bg-primary rounded-pill">
+                                            <span class="badge text-bg-primary rounded-0">
                                                 Corresponding
                                             </span>
                                         @endif
@@ -196,9 +198,9 @@
 
 
         {{-- Video Link --}}
-        <div class="card rounded-3 overflow-hidden mb-3">
+        <div class="card rounded-0 overflow-hidden mb-3">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
 
@@ -212,7 +214,7 @@
 
             <div class="card-body">
 
-                <div class="alert alert-warning rounded-3">
+                <div class="alert alert-warning rounded-0">
 
                     <div class="d-flex align-items-start gap-2">
 
@@ -252,7 +254,7 @@
 
                     <input type="url" id="video_url" name="video_url"
                         value="{{ old('video_url', $submission->video_url) }}"
-                        class="form-control @error('video_url') is-invalid @enderror rounded-2"
+                        class="form-control @error('video_url') is-invalid @enderror rounded-0"
                         placeholder="https://drive.google.com/..." autocomplete="off">
 
                     @error('video_url')
@@ -272,7 +274,7 @@
 
                 @if ($submission->video_url)
 
-                    <div class="border rounded-3 p-3 bg-light">
+                    <div class="border rounded-0 p-3 bg-light">
 
                         <div class="d-flex justify-content-between align-items-center gap-3">
 
@@ -299,7 +301,7 @@
 
                             </div>
 
-                            <span class="badge text-bg-success rounded-pill">
+                            <span class="badge text-bg-success rounded-0">
 
                                 Submitted
 
@@ -319,13 +321,13 @@
         {{-- Actions --}}
         <div class="text-end">
 
-            <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-2 me-1">
+            <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-0 me-1">
 
                 Cancel
 
             </a>
 
-            <button type="submit" class="btn btn-success rounded-2">
+            <button type="submit" class="btn btn-success rounded-0">
 
                 <i class="bi bi-check-circle me-1"></i>
 

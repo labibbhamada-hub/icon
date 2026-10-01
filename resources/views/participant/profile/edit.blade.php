@@ -28,7 +28,7 @@
 
         <div class="row">
             <div class="col-lg-4">
-                <div class="card rounded-3 overflow-hidden">
+                <div class="card rounded-0 overflow-hidden">
                     <div class="card-body text-center p-4">
                         <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-2"
                             style="width:100px; height:100px;">
@@ -41,21 +41,21 @@
                         </div>
 
                         <div class="mb-2">
-                            <span class="badge text-bg-primary rounded-pill">
+                            <span class="badge text-bg-primary rounded-0">
                                 {{ $participant->registration_number }}
                             </span>
                         </div>
 
                         @if ($participant->registration_status === 'confirmed')
-                            <span class="badge text-bg-success rounded-pill">
+                            <span class="badge text-bg-success rounded-0">
                                 Confirmed
                             </span>
                         @elseif ($participant->registration_status === 'cancelled')
-                            <span class="badge text-bg-danger rounded-pill">
+                            <span class="badge text-bg-danger rounded-0">
                                 Cancelled
                             </span>
                         @else
-                            <span class="badge text-bg-warning rounded-pill">
+                            <span class="badge text-bg-warning rounded-0">
                                 Pending
                             </span>
                         @endif
@@ -64,8 +64,8 @@
             </div>
 
             <div class="col-lg-8">
-                <div class="card rounded-3 overflow-hidden">
-                    <div class="card-header rounded-top-3">
+                <div class="card rounded-0 overflow-hidden">
+                    <div class="card-header rounded-0">
                         <h3 class="card-title">
                             <i class="bi bi-person-vcard me-2"></i>
                             Personal Information
@@ -82,7 +82,7 @@
 
                                 <input type="text" id="title_prefix" name="title_prefix"
                                     value="{{ old('title_prefix', $participant->title_prefix) }}"
-                                    class="form-control @error('title_prefix') is-invalid @enderror rounded-2"
+                                    class="form-control @error('title_prefix') is-invalid @enderror rounded-0"
                                     placeholder="e.g. Dr.">
 
                                 @error('title_prefix')
@@ -100,7 +100,7 @@
 
                                 <input type="text" name="full_name"
                                     value="{{ old('full_name', $participant->full_name) }}"
-                                    class="form-control @error('full_name') is-invalid @enderror rounded-2">
+                                    class="form-control @error('full_name') is-invalid @enderror rounded-0">
 
                                 @error('full_name')
                                     <div class="invalid-feedback">
@@ -117,7 +117,7 @@
 
                                 <input type="text" id="title_suffix" name="title_suffix"
                                     value="{{ old('title_suffix', $participant->title_suffix) }}"
-                                    class="form-control @error('title_suffix') is-invalid @enderror rounded-2"
+                                    class="form-control @error('title_suffix') is-invalid @enderror rounded-0"
                                     placeholder="e.g. S.Kom., M.Kom.">
 
                                 @error('title_suffix')
@@ -132,7 +132,7 @@
                                     Email
                                 </label>
 
-                                <input type="email" value="{{ $participant->email }}" class="form-control rounded-2"
+                                <input type="email" value="{{ $participant->email }}" class="form-control rounded-0"
                                     readonly>
 
                                 <div class="form-text">
@@ -148,7 +148,7 @@
 
                                 <input type="text" id="orcid" name="orcid"
                                     value="{{ old('orcid', $participant->orcid) }}"
-                                    class="form-control @error('orcid') is-invalid @enderror rounded-2"
+                                    class="form-control @error('orcid') is-invalid @enderror rounded-0"
                                     placeholder="e.g. 0000-0002-1825-0097" maxlength="19">
 
                                 @error('orcid')
@@ -168,7 +168,7 @@
                                 </label>
 
                                 <input type="text" name="phone" value="{{ old('phone', $participant->phone) }}"
-                                    class="form-control @error('phone') is-invalid @enderror rounded-2">
+                                    class="form-control @error('phone') is-invalid @enderror rounded-0">
 
                                 @error('phone')
                                     <div class="invalid-feedback">
@@ -184,7 +184,7 @@
                                 </label>
 
                                 <input type="text" name="country" value="{{ old('country', $participant->country) }}"
-                                    class="form-control @error('country') is-invalid @enderror rounded-2">
+                                    class="form-control @error('country') is-invalid @enderror rounded-0">
 
                                 @error('country')
                                     <div class="invalid-feedback">
@@ -199,7 +199,7 @@
                                 </label>
 
                                 <input type="text" name="city" value="{{ old('city', $participant->city) }}"
-                                    class="form-control @error('city') is-invalid @enderror rounded-2">
+                                    class="form-control @error('city') is-invalid @enderror rounded-0">
 
                                 @error('city')
                                     <div class="invalid-feedback">
@@ -215,7 +215,7 @@
 
                                 <input type="text" name="institution"
                                     value="{{ old('institution', $participant->institution) }}"
-                                    class="form-control @error('institution') is-invalid @enderror rounded-2">
+                                    class="form-control @error('institution') is-invalid @enderror rounded-0">
 
                                 @error('institution')
                                     <div class="invalid-feedback">
@@ -231,7 +231,7 @@
 
                                 <input type="text" name="department"
                                     value="{{ old('department', $participant->department) }}"
-                                    class="form-control @error('department') is-invalid @enderror rounded-2">
+                                    class="form-control @error('department') is-invalid @enderror rounded-0">
 
                                 @error('department')
                                     <div class="invalid-feedback">
@@ -242,8 +242,8 @@
                         </div>
                     </div>
 
-                    <div class="card-footer rounded-bottom-3 text-end">
-                        <button class="btn btn-success btn-sm rounded-2">
+                    <div class="card-footer rounded-0 text-end">
+                        <button class="btn btn-success btn-sm rounded-0">
                             <i class="bi bi-check-circle"></i>
                             Save Conference
                         </button>

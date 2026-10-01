@@ -42,9 +42,9 @@
 
 @section('content')
 
-    <div class="card rounded-3 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
                 <i class="bi bi-person-check me-2"></i>
@@ -53,7 +53,7 @@
 
             <div class="float-end">
 
-                <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success btn-sm rounded-2">
+                <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-person-plus me-1"></i>
                     Add Reviewer
                 </a>
@@ -65,7 +65,7 @@
 
         <div class="card-body p-0">
 
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
 
                 <table class="table table-hover align-middle mb-0">
 
@@ -191,12 +191,12 @@
                                 <td class="align-top">
 
                                     @if ($reviewer->is_active)
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Active
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             <i class="bi bi-pause-circle me-1"></i>
                                             Inactive
                                         </span>
@@ -211,12 +211,12 @@
                                     <div class="btn-group gap-1">
 
                                         <a href="{{ route('admin.reviewers.show', $reviewer) }}"
-                                            class="btn btn-info btn-sm rounded-2" title="View Reviewer">
+                                            class="btn btn-info btn-sm rounded-0" title="View Reviewer">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         <a href="{{ route('admin.reviewers.edit', $reviewer) }}"
-                                            class="btn btn-warning btn-sm rounded-2" title="Edit Reviewer">
+                                            class="btn btn-warning btn-sm rounded-0" title="Edit Reviewer">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
@@ -226,7 +226,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-2"
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-0"
                                                 title="Delete Reviewer">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -259,7 +259,7 @@
                                         There are no reviewers registered yet.
                                     </p>
 
-                                    <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success rounded-2">
+                                    <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success rounded-0">
                                         <i class="bi bi-person-plus me-1"></i>
                                         Add Reviewer
                                     </a>
@@ -279,7 +279,7 @@
 
 
         @if ($reviewers->hasPages())
-            <div class="card-footer rounded-bottom-3">
+            <div class="card-footer rounded-0">
 
                 {{ $reviewers->links() }}
 

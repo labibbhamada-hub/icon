@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-2"
+                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0"
                     title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
@@ -77,9 +77,9 @@
         @csrf
 
 
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
 
@@ -95,10 +95,10 @@
             <div class="card-body">
 
                 {{-- ====================================================
-                SUBMISSION SUMMARY
-            ===================================================== --}}
+            SUBMISSION SUMMARY
+        ===================================================== --}}
 
-                <div class="border rounded-3 bg-light p-3 mb-4">
+                <div class="border rounded-0 bg-light p-3 mb-4">
 
                     <div class="row">
 
@@ -148,14 +148,14 @@
 
 
                 {{-- ====================================================
-                REVIEW ROUND
-            ===================================================== --}}
+            REVIEW ROUND
+        ===================================================== --}}
 
                 <div class="row mb-3">
 
                     <div class="col-md-4">
 
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <div class="text-muted small mb-1">
                                 Review Round
@@ -163,7 +163,7 @@
 
                             <div>
 
-                                <span class="badge text-bg-secondary rounded-pill fs-6">
+                                <span class="badge text-bg-secondary rounded-0 fs-6">
                                     Round {{ $currentRound }}
                                 </span>
 
@@ -181,7 +181,7 @@
 
                     <div class="col-md-8">
 
-                        <div class="border rounded-3 p-3 h-100">
+                        <div class="border rounded-0 p-3 h-100">
 
                             <div class="text-muted small mb-1">
                                 Available Reviewers
@@ -205,8 +205,8 @@
 
 
                 {{-- ====================================================
-                REVIEWER SELECT
-            ===================================================== --}}
+            REVIEWER SELECT
+        ===================================================== --}}
 
                 <div class="mb-0">
 
@@ -216,7 +216,7 @@
                     </label>
 
                     <select name="reviewer_id" id="reviewer_id"
-                        class="form-select @error('reviewer_id') is-invalid @enderror rounded-2"
+                        class="form-select @error('reviewer_id') is-invalid @enderror rounded-0"
                         @disabled($reviewers->isEmpty())>
 
                         <option value="">
@@ -254,7 +254,7 @@
 
 
                 @if ($reviewers->isEmpty())
-                    <div class="alert alert-warning rounded-3 mt-3 mb-0">
+                    <div class="alert alert-warning rounded-0 mt-3 mb-0">
 
                         <i class="bi bi-exclamation-triangle me-2"></i>
 
@@ -274,14 +274,14 @@
             </div>
 
 
-            <div class="card-footer rounded-bottom-3 d-flex justify-content-end gap-2">
+            <div class="card-footer rounded-0 d-flex justify-content-end gap-2">
 
-                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-2">
+                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0">
                     <i class="bi bi-x-circle me-1"></i>
                     Cancel
                 </a>
 
-                <button type="submit" class="btn btn-success btn-sm rounded-2" @disabled($reviewers->isEmpty())>
+                <button type="submit" class="btn btn-success btn-sm rounded-0" @disabled($reviewers->isEmpty())>
                     <i class="bi bi-person-plus me-1"></i>
                     Assign Reviewer
                 </button>

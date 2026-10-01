@@ -21,13 +21,13 @@
 
 @endsection
 
-@section('content') <div class="card rounded-3 overflow-hidden">
-        <div class="card-header rounded-top-3">
+@section('content') <div class="card rounded-0 overflow-hidden">
+        <div class="card-header rounded-0">
             <h3 class="card-title">
                 Conference Registrations </h3>
 
             <div class="float-end">
-                <a href="{{ route('participant.registration.create') }}" class="btn btn-success btn-sm rounded-2">
+                <a href="{{ route('participant.registration.create') }}" class="btn btn-success btn-sm rounded-0">
                     <i class="bi bi-plus-circle me-1"></i>
                     Register Conference
                 </a>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
@@ -83,19 +83,19 @@
 
                                 <td class="align-top">
                                     @if ($registration->registration_status === 'confirmed')
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Confirmed
                                         </span>
                                     @elseif ($registration->registration_status === 'cancelled')
-                                        <span class="badge text-bg-danger rounded-pill">
+                                        <span class="badge text-bg-danger rounded-0">
                                             Cancelled
                                         </span>
                                     @elseif ($registration->registration_status === 'pending')
-                                        <span class="badge text-bg-warning rounded-pill">
+                                        <span class="badge text-bg-warning rounded-0">
                                             Pending
                                         </span>
                                     @else
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             {{ ucwords(str_replace('_', ' ', $registration->registration_status)) }}
                                         </span>
                                     @endif
@@ -106,12 +106,12 @@
                                         $registration->registration_status === 'pending' &&
                                             $registration->registrationType?->payment_timing === 'immediate')
                                         <a href="{{ route('participant.payments.create') }}"
-                                            class="btn btn-warning btn-sm rounded-2">
+                                            class="btn btn-warning btn-sm rounded-0">
                                             <i class="bi bi-credit-card me-1"></i>
                                             Pay Now
                                         </a>
                                     @elseif ($registration->registration_status === 'confirmed')
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Paid / Confirmed
                                         </span>
                                     @else
@@ -137,7 +137,7 @@
                                     </p>
 
                                     <a href="{{ route('participant.registration.create') }}"
-                                        class="btn btn-success rounded-2">
+                                        class="btn btn-success rounded-0">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         Register Conference
                                     </a>

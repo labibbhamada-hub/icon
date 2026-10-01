@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary btn-sm rounded-2" title="Back">
+                <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -80,12 +80,13 @@
 
 
     {{-- ============================================================
-    REVIEW EVALUATION
+REVIEW EVALUATION
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
 
@@ -97,7 +98,7 @@
             @if (!$review->reviewed_at)
                 <div class="float-end">
 
-                    <a href="{{ route('admin.reviews.edit', $review) }}" class="btn btn-primary btn-sm rounded-2">
+                    <a href="{{ route('admin.reviews.edit', $review) }}" class="btn btn-primary btn-sm rounded-0">
                         <i class="bi bi-pencil me-1"></i>
                         Submit Review
                     </a>
@@ -115,7 +116,7 @@
                 {{-- Score --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3 text-center h-100">
+                    <div class="border rounded-0 p-3 text-center h-100">
 
                         <div class="text-muted small mb-2">
                             Score
@@ -143,13 +144,13 @@
                 {{-- Recommendation --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <div class="text-muted small mb-2">
                             Recommendation
                         </div>
 
-                        <span class="badge text-bg-{{ $recommendationClass }} rounded-pill">
+                        <span class="badge text-bg-{{ $recommendationClass }} rounded-0">
                             {{ $recommendationLabel }}
                         </span>
 
@@ -161,19 +162,19 @@
                 {{-- Review Status --}}
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3 h-100">
+                    <div class="border rounded-0 p-3 h-100">
 
                         <div class="text-muted small mb-2">
                             Review Status
                         </div>
 
                         @if ($review->reviewed_at)
-                            <span class="badge text-bg-success rounded-pill">
+                            <span class="badge text-bg-success rounded-0">
                                 <i class="bi bi-check-circle me-1"></i>
                                 Completed
                             </span>
                         @else
-                            <span class="badge text-bg-warning rounded-pill">
+                            <span class="badge text-bg-warning rounded-0">
                                 <i class="bi bi-hourglass-split me-1"></i>
                                 Pending
                             </span>
@@ -213,12 +214,13 @@
 
 
     {{-- ============================================================
-    REVIEW INFORMATION
+REVIEW INFORMATION
+
 ============================================================= --}}
 
-    <div class="card rounded-3 overflow-hidden mb-3">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
-        <div class="card-header rounded-top-3">
+        <div class="card-header rounded-0">
 
             <h3 class="card-title">
 
@@ -304,7 +306,7 @@
                         Review Round
                     </div>
 
-                    <span class="badge text-bg-secondary rounded-pill">
+                    <span class="badge text-bg-secondary rounded-0">
                         Round {{ $review->review_round }}
                     </span>
 
@@ -367,14 +369,15 @@
 
 
     {{-- ============================================================
-    SUBMISSION CONTEXT
+SUBMISSION CONTEXT
+
 ============================================================= --}}
 
     @if ($review->submission)
 
-        <div class="card rounded-3 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden">
 
-            <div class="card-header rounded-top-3">
+            <div class="card-header rounded-0">
 
                 <h3 class="card-title">
 
@@ -386,7 +389,7 @@
                 <div class="float-end">
 
                     <a href="{{ route('admin.submissions.show', $review->submission) }}"
-                        class="btn btn-info btn-sm rounded-2">
+                        class="btn btn-info btn-sm rounded-0">
                         <i class="bi bi-eye me-1"></i>
                         View Submission
                     </a>
@@ -408,25 +411,25 @@
                 <div class="d-flex flex-wrap gap-1">
 
                     @if ($review->submission->topic)
-                        <span class="badge text-bg-primary rounded-pill">
+                        <span class="badge text-bg-primary rounded-0">
                             {{ $review->submission->topic->name }}
                         </span>
                     @endif
 
 
                     @if ($review->submission->presenterAuthor)
-                        <span class="badge text-bg-secondary rounded-pill">
+                        <span class="badge text-bg-secondary rounded-0">
                             Presenter:
                             {{ $review->submission->presenterAuthor->name }}
                         </span>
                     @endif
 
                     @if ($review->submission->video_url)
-                        <span class="badge text-bg-success rounded-pill">
+                        <span class="badge text-bg-success rounded-0">
                             Video Submitted
                         </span>
                     @else
-                        <span class="badge text-bg-warning rounded-pill">
+                        <span class="badge text-bg-warning rounded-0">
                             Video Not Submitted
                         </span>
                     @endif

@@ -17,14 +17,14 @@
     </div>
 @endsection
 
-@section('content') <div class="card rounded-3 overflow-hidden">
-        <div class="card-header rounded-top-3">
+@section('content') <div class="card rounded-0 overflow-hidden">
+        <div class="card-header rounded-0">
             <h3 class="card-title"> <i class="bi bi-clipboard-check me-2"></i>
                 Assigned Reviews </h3>
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive rounded-3">
+            <div class="table-responsive rounded-0">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
@@ -61,15 +61,15 @@
 
                                 <td class="align-top">
                                     @if ($review->review_stage === 'abstract')
-                                        <span class="badge text-bg-secondary rounded-pill">
+                                        <span class="badge text-bg-secondary rounded-0">
                                             Abstract
                                         </span>
                                     @elseif ($review->review_stage === 'full_paper')
-                                        <span class="badge text-bg-primary rounded-pill">
+                                        <span class="badge text-bg-primary rounded-0">
                                             Full Paper
                                         </span>
                                     @else
-                                        <span class="badge text-bg-light border rounded-pill">
+                                        <span class="badge text-bg-light border rounded-0">
                                             {{ ucfirst(str_replace('_', ' ', $review->review_stage)) }}
                                         </span>
                                     @endif
@@ -89,11 +89,11 @@
 
                                 <td class="align-top">
                                     @if ($review->reviewed_at)
-                                        <span class="badge text-bg-success rounded-pill">
+                                        <span class="badge text-bg-success rounded-0">
                                             Completed
                                         </span>
                                     @else
-                                        <span class="badge text-bg-warning rounded-pill">
+                                        <span class="badge text-bg-warning rounded-0">
                                             Pending
                                         </span>
                                     @endif
@@ -102,12 +102,12 @@
                                 <td class="align-top">
                                     @if ($review->reviewed_at)
                                         <a href="{{ route('reviewer.reviews.show', $review) }}"
-                                            class="btn btn-info btn-sm rounded-2" title="View Review">
+                                            class="btn btn-info btn-sm rounded-0" title="View Review">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     @else
                                         <a href="{{ route('reviewer.reviews.edit', $review) }}"
-                                            class="btn btn-primary btn-sm rounded-2" title="Review Paper">
+                                            class="btn btn-primary btn-sm rounded-0" title="Review Paper">
                                             <i class="bi bi-clipboard-check"></i>
                                         </a>
                                     @endif
@@ -134,7 +134,7 @@
         </div>
 
         @if ($reviews->hasPages())
-            <div class="card-footer rounded-bottom-3">
+            <div class="card-footer rounded-0">
                 {{ $reviews->links() }}
             </div>
         @endif
