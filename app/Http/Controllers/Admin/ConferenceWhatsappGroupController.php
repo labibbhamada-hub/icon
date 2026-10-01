@@ -7,6 +7,7 @@ use App\Http\Requests\ConferenceWhatsappGroupRequest;
 use App\Models\Conference;
 use App\Models\ConferenceWhatsappGroup;
 use Illuminate\Database\QueryException;
+use Illuminate\Validation\Rule;
 
 class ConferenceWhatsappGroupController extends Controller
 {
@@ -43,8 +44,8 @@ class ConferenceWhatsappGroupController extends Controller
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'conference_id' =>
-                        'This conference already has a WhatsApp group.',
+                        'audience' =>
+                        'This conference already has a WhatsApp group for the selected audience.',
                     ]);
             }
 
@@ -96,8 +97,8 @@ class ConferenceWhatsappGroupController extends Controller
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'conference_id' =>
-                        'This conference already has a WhatsApp group.',
+                        'audience' =>
+                        'This conference already has a WhatsApp group for the selected audience.',
                     ]);
             }
 

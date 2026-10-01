@@ -2,11 +2,12 @@
 
 @section('title', 'Complete Payment')
 
-@section('header') <div class="row align-items-center">
+@section('header')
+    <div class="row align-items-top">
 
         <div class="col-sm-6">
 
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex gap-2">
 
                 <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary btn-sm rounded-0">
 
@@ -80,25 +81,21 @@
             </div>
 
         </div>
-
-        <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-0">
-
-            <i class="bi bi-arrow-left me-1"></i>
-            Back to Registration
-
-        </a>
     @else
         @php
             $defaultParticipant = $participants->first();
 
-            $defaultCalculation = app(\App\Services\PaymentCalculationService::class)->calculate($defaultParticipant);
-
             $oldParticipantId = old('participant_id', $defaultParticipant->id);
 
             $selectedParticipant = $participants->firstWhere('id', $oldParticipantId) ?? $defaultParticipant;
+
+            $defaultCalculation = app(\App\Services\PaymentCalculationService::class)->calculate($selectedParticipant);
+
+            $isPresenter = $selectedParticipant->registrationType?->category === 'presenter';
         @endphp
 
-        <form action="{{ route('participant.payments.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('participant.payments.store') }}" method="POST" enctype="multipart/form-data"
+            id="form-submit">
 
             @csrf
 
@@ -275,104 +272,7 @@
 
                 <div class="card-body">
 
-                    <div class="row g-3">
-
-                        <div class="col-md-6">
-
-                            <div class="border rounded-0 p-3 h-100">
-
-                                <small class="text-muted d-block">
-                                    Base Registration Fee
-                                </small>
-
-                                <strong id="base-fee" class="fs-5 d-block mt-1">
-
-                                    {{ $defaultCalculation['currency'] }}
-                                    {{ number_format($defaultCalculation['base_fee'], 0, ',', '.') }}
-
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="border rounded-0 p-3 h-100">
-
-                                <small class="text-muted d-block">
-                                    Accepted Papers
-                                </small>
-
-                                <strong id="accepted-papers" class="fs-5 d-block mt-1">
-
-                                    {{ $defaultCalculation['accepted_papers'] }}
-
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4">
-
-                            <div class="border rounded-0 p-3 h-100">
-
-                                <small class="text-muted d-block">
-                                    Included Papers
-                                </small>
-
-                                <strong id="included-papers" class="fs-5 d-block mt-1">
-
-                                    {{ $defaultCalculation['included_papers'] }}
-
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4">
-
-                            <div class="border rounded-0 p-3 h-100">
-
-                                <small class="text-muted d-block">
-                                    Additional Papers
-                                </small>
-
-                                <strong id="additional-papers" class="fs-5 d-block mt-1">
-
-                                    {{ $defaultCalculation['additional_papers'] }}
-
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-4">
-
-                            <div class="border rounded-0 p-3 h-100">
-
-                                <small class="text-muted d-block">
-                                    Additional Fee
-                                </small>
-
-                                <strong id="additional-amount" class="fs-5 d-block mt-1">
-
-                                    {{ $defaultCalculation['currency'] }}
-                                    {{ number_format($defaultCalculation['additional_amount'], 0, ',', '.') }}
-
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="border-top mt-4 pt-3">
-
+                    @if ($isPresenter)
                         <div class="row g-3">
 
                             <div class="col-md-6">
@@ -380,19 +280,15 @@
                                 <div class="border rounded-0 p-3 h-100">
 
                                     <small class="text-muted d-block">
-                                        Total Obligation
+                                        Base Registration Fee
                                     </small>
 
-                                    <strong id="total-obligation" class="fs-5 d-block mt-1">
+                                    <strong id="base-fee" class="fs-5 d-block mt-1">
 
                                         {{ $defaultCalculation['currency'] }}
-                                        {{ number_format($defaultCalculation['total_amount'], 0, ',', '.') }}
+                                        {{ number_format($defaultCalculation['base_fee'], 0, ',', '.') }}
 
                                     </strong>
-
-                                    <small class="text-muted d-block mt-1">
-                                        Total amount required for this registration.
-                                    </small>
 
                                 </div>
 
@@ -403,19 +299,69 @@
                                 <div class="border rounded-0 p-3 h-100">
 
                                     <small class="text-muted d-block">
-                                        Already Paid
+                                        Accepted Papers
                                     </small>
 
-                                    <strong id="verified-payment-amount" class="fs-5 d-block mt-1">
+                                    <strong id="accepted-papers" class="fs-5 d-block mt-1">
 
-                                        {{ $defaultCalculation['currency'] }}
-                                        {{ number_format($defaultCalculation['verified_payment_amount'], 0, ',', '.') }}
+                                        {{ $defaultCalculation['accepted_papers'] }}
 
                                     </strong>
 
-                                    <small class="text-muted d-block mt-1">
-                                        Verified payments for this registration.
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="border rounded-0 p-3 h-100">
+
+                                    <small class="text-muted d-block">
+                                        Included Papers
                                     </small>
+
+                                    <strong id="included-papers" class="fs-5 d-block mt-1">
+
+                                        {{ $defaultCalculation['included_papers'] }}
+
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="border rounded-0 p-3 h-100">
+
+                                    <small class="text-muted d-block">
+                                        Additional Papers
+                                    </small>
+
+                                    <strong id="additional-papers" class="fs-5 d-block mt-1">
+
+                                        {{ $defaultCalculation['additional_papers'] }}
+
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="border rounded-0 p-3 h-100">
+
+                                    <small class="text-muted d-block">
+                                        Additional Fee
+                                    </small>
+
+                                    <strong id="additional-amount" class="fs-5 d-block mt-1">
+
+                                        {{ $defaultCalculation['currency'] }}
+                                        {{ number_format($defaultCalculation['additional_amount'], 0, ',', '.') }}
+
+                                    </strong>
 
                                 </div>
 
@@ -423,12 +369,105 @@
 
                         </div>
 
-                        <div class="border rounded-0 p-3 mt-3">
+                        <div class="border-top mt-4 pt-3">
 
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+
+                                    <div class="border rounded-0 p-3 h-100">
+
+                                        <small class="text-muted d-block">
+                                            Total Obligation
+                                        </small>
+
+                                        <strong id="total-obligation" class="fs-5 d-block mt-1">
+
+                                            {{ $defaultCalculation['currency'] }}
+                                            {{ number_format($defaultCalculation['total_amount'], 0, ',', '.') }}
+
+                                        </strong>
+
+                                        <small class="text-muted d-block mt-1">
+                                            Total amount required for this registration.
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <div class="border rounded-0 p-3 h-100">
+
+                                        <small class="text-muted d-block">
+                                            Already Paid
+                                        </small>
+
+                                        <strong id="verified-payment-amount" class="fs-5 d-block mt-1">
+
+                                            {{ $defaultCalculation['currency'] }}
+                                            {{ number_format($defaultCalculation['verified_payment_amount'], 0, ',', '.') }}
+
+                                        </strong>
+
+                                        <small class="text-muted d-block mt-1">
+                                            Verified payments for this registration.
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="border rounded-0 p-3 mt-3">
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div>
+
+                                        <small class="text-muted d-block">
+                                            Amount Due Now
+                                        </small>
+
+                                        <strong>
+                                            This is the amount you need to pay now.
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="text-end">
+
+                                        <div id="outstanding-amount" class="fs-3 fw-bold text-success">
+
+                                            {{ $defaultCalculation['currency'] }}
+                                            {{ number_format($defaultCalculation['outstanding_amount'], 0, ',', '.') }}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        @if ($defaultParticipant->registrationType?->payment_timing === 'after_acceptance')
+                            <div class="alert alert-info rounded-0 mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Your payment is calculated from your accepted papers.
+                                Additional accepted papers may increase your total obligation.
+                                Any previous verified payment is deducted from the amount due now.
+                            </div>
+                        @endif
+                    @else
+                        <div class="border rounded-0 p-3">
+
+                            <div class="d-flex justify-content-between align-items-center gap-3">
 
                                 <div>
-
                                     <small class="text-muted d-block">
                                         Amount Due Now
                                     </small>
@@ -436,7 +475,6 @@
                                     <strong>
                                         This is the amount you need to pay now.
                                     </strong>
-
                                 </div>
 
                                 <div class="text-end">
@@ -452,16 +490,6 @@
 
                             </div>
 
-                        </div>
-
-                    </div>
-
-                    @if ($defaultParticipant->registrationType?->payment_timing === 'after_acceptance')
-                        <div class="alert alert-info rounded-0 mt-3 mb-0">
-                            <i class="bi bi-info-circle me-2"></i>
-                            Your payment is calculated from your accepted papers.
-                            Additional accepted papers may increase your total obligation.
-                            Any previous verified payment is deducted from the amount due now.
                         </div>
                     @endif
 
@@ -758,16 +786,27 @@
 
                         </div>
 
-                        <button type="submit" class="btn btn-success rounded-0" @disabled(!$paymentMethods || $paymentMethods->isEmpty())>
-
-                            <i class="bi bi-check-circle me-1"></i>
-                            Submit Payment Proof
-
-                        </button>
-
                     </div>
 
                 </div>
+
+            </div>
+
+            <div class="text-end">
+
+                <button type="submit" class="btn btn-success rounded-0" @disabled(!$paymentMethods || $paymentMethods->isEmpty()) id="btn-submit"
+                    onclick="form_submit()">
+
+                    <span id="btn-submit-text">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Submit Payment Proof
+                    </span>
+                    <span id="btn-submit-load" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        Memproses...
+                    </span>
+
+                </button>
 
             </div>
 
@@ -842,5 +881,21 @@
             }
 
         });
+    </script>
+
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
     </script>
 @endpush

@@ -33,6 +33,42 @@
 
         </div>
 
+        {{-- Audience --}}
+        <div class="col-md-6 mb-3">
+
+            <label class="form-label">
+                Audience
+                <span class="text-danger">*</span>
+            </label>
+
+            <select name="audience" class="form-select @error('audience') is-invalid @enderror rounded-0">
+
+                <option value="">
+                    Select Audience
+                </option>
+
+                <option value="presenter" @selected(old('audience', $conferenceWhatsappGroup->audience ?? '') === 'presenter')>
+                    Presenter
+                </option>
+
+                <option value="seminar" @selected(old('audience', $conferenceWhatsappGroup->audience ?? '') === 'seminar')>
+                    Seminar
+                </option>
+
+            </select>
+
+            @error('audience')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+
+            <div class="form-text">
+                Select the participant category that should receive this group.
+            </div>
+
+        </div>
+
         {{-- Group Title --}}
         <div class="col-md-6 mb-3">
 

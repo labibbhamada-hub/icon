@@ -86,13 +86,13 @@ class RegistrationRequest extends FormRequest
             ],
 
             'phone' => [
-                'nullable',
+                'required',
                 'string',
                 'max:50',
             ],
 
             'institution' => [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
             ],
@@ -157,6 +157,12 @@ class RegistrationRequest extends FormRequest
 
             'registration_type_id.exists' =>
             'The selected registration type is not available for this conference.',
+
+            'phone.required' =>
+            'Phone Number is required.',
+
+            'institution.required' =>
+            'Institution is required.',
 
             'country.required' =>
             'Country is required.',

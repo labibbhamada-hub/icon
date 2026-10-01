@@ -3,41 +3,14 @@
 @section('title', 'Payments Management')
 
 @section('header')
-
     <div class="row align-items-center">
-
         <div class="col-sm-6">
-
             <h1 class="mb-0 fs-3">
                 Payments Management
             </h1>
-
+            <p class="text-muted mb-0"> Review, verify, and manage participant payments.</p>
         </div>
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Payments
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
@@ -82,14 +55,6 @@
 
                             <th>
                                 Participant
-                            </th>
-
-                            <th>
-                                Conference
-                            </th>
-
-                            <th>
-                                Registration Type
                             </th>
 
                             <th>
@@ -150,53 +115,15 @@
                                         <div class="fw-semibold">
                                             {{ $payment->participant->full_name }}
                                         </div>
-
-                                        <small class="text-muted d-block">
-                                            {{ $payment->participant->registration_number }}
-                                        </small>
-
-                                        @if ($payment->participant->email)
-                                            <small class="text-muted d-block">
-                                                {{ $payment->participant->email }}
-                                            </small>
-                                        @endif
                                     @else
                                         <span class="text-muted">
                                             -
                                         </span>
                                     @endif
-
-                                </td>
-
-                                {{-- Conference --}}
-                                <td>
-
-                                    @if ($payment->participant?->conference)
-                                        <strong>
-                                            {{ $payment->participant->conference->short_name }}
-                                        </strong>
-
-                                        <small class="text-muted d-block">
-                                            {{ $payment->participant->conference->year }}
-                                        </small>
-                                    @else
-                                        <span class="text-muted">
-                                            -
-                                        </span>
-                                    @endif
-
-                                </td>
-
-                                {{-- Registration Type --}}
-                                <td>
 
                                     @if ($payment->participant?->registrationType)
-                                        <div class="fw-semibold">
-                                            {{ $payment->participant->registrationType->name }}
-                                        </div>
-
                                         <small class="text-muted d-block">
-                                            {{ ucfirst($payment->participant->registrationType->category) }}
+                                            {{ $payment->participant->registrationType->name }}
                                         </small>
                                     @else
                                         <span class="text-muted">

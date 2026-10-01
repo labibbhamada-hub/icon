@@ -4,49 +4,25 @@
 
 @section('header')
     <div class="row align-items-top">
+
         <div class="col-sm-6">
             <div class="d-flex gap-2">
                 <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
-
                 <h1 class="mb-0 fs-3">
                     Register for {{ $conference?->short_name ?? 'Conference' }}
                 </h1>
             </div>
-
             <p class="text-muted mb-0">
                 Complete your conference registration.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.registration.index') }}">
-                        Registration
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Register
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')
-
     @if (!$conference)
-
         <div class="alert alert-info rounded-0">
             <i class="bi bi-info-circle me-2"></i>
             There is currently no conference open for registration.
@@ -54,42 +30,33 @@
     @else
         @php
             $attendanceOptions = $conference->attendanceOptions->sortBy('sort_order')->values();
-
             $selectedAttendance = old(
                 'attendance_type',
                 $attendanceOptions->count() === 1 ? $attendanceOptions->first()?->type : null,
             );
         @endphp
-
-        <form action="{{ route('participant.registration.store') }}" method="POST">
-
+        <form action="{{ route('participant.registration.store') }}" method="POST" id="form-submit">
             @csrf
-
             <input type="hidden" name="conference_id" value="{{ $conference->id }}">
-
             {{-- =========================================================
                 REGISTRATION TYPE
             ========================================================== --}}
             <div class="card rounded-0 overflow-hidden mb-3">
-
                 <div class="card-header rounded-0">
                     <h3 class="card-title">
                         <i class="bi bi-person-check me-2"></i>
                         How will you participate?
                     </h3>
                 </div>
-
                 <div class="card-body">
                     @error('registration_type_id')
                         <div class="alert alert-danger rounded-0 mb-3">
                             <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-exclamation-circle fs-5"></i>
-
                                 <div>
                                     <strong>
                                         Registration Type Required
                                     </strong>
-
                                     <div class="small mt-1">
                                         Please choose how you would like to participate
                                         in this conference.
@@ -105,7 +72,6 @@
                                 <label class="d-block h-100">
                                     <input type="radio" name="registration_type_id" value="{{ $registrationType->id }}"
                                         class="btn-check registration-type-option" @checked(old('registration_type_id') == $registrationType->id)>
-
                                     <div class="border rounded-0 p-3 h-100 registration-type-card">
                                         <div class="d-flex justify-content-between align-items-start gap-3">
                                             <div>
@@ -113,36 +79,29 @@
                                                     {{ $registrationType->name }}
                                                 </h5>
                                             </div>
-
                                             <div class="text-end">
                                                 <small class="text-muted d-block">
                                                     Registration Fee
                                                 </small>
-
                                                 <strong class="text-success">
                                                     {{ $registrationType->currency }}
                                                     {{ number_format($registrationType->fee, 0, ',', '.') }}
                                                 </strong>
                                             </div>
                                         </div>
-
                                         {{-- Description --}}
                                         @if ($registrationType->description)
                                             <p class="text-muted mt-3 mb-2">
                                                 {{ $registrationType->description }}
                                             </p>
                                         @endif
-
                                         {{-- Benefits --}}
                                         @if ($registrationType->benefits)
                                             <div class="mt-2">
-
                                                 <small class="fw-semibold d-block mb-1">
                                                     Includes:
                                                 </small>
-
                                                 <ul class="mb-0 ps-3">
-
                                                     @foreach (preg_split('/\r\n|\r|\n/', $registrationType->benefits) as $benefit)
                                                         @if (trim($benefit))
                                                             <li>
@@ -150,26 +109,21 @@
                                                             </li>
                                                         @endif
                                                     @endforeach
-
                                                 </ul>
-
                                             </div>
                                         @endif
-
                                     </div>
-
                                 </label>
-
                             </div>
                         @endforeach
-
                     </div>
+
                 </div>
             </div>
 
             {{-- =========================================================
-         YOUR INFORMATION
-    ========================================================== --}}
+                YOUR INFORMATION
+            ========================================================== --}}
             <div class="card rounded-0 overflow-hidden mb-3">
 
                 <div class="card-header rounded-0">
@@ -214,6 +168,7 @@
 
                             <label class="form-label">
                                 Full Name
+                                <span class="text-danger">*</span>
                             </label>
 
                             <input type="text" value="{{ auth()->user()->name }}" class="form-control rounded-0"
@@ -243,6 +198,7 @@
 
                             <label class="form-label">
                                 Email
+                                <span class="text-danger">*</span>
                             </label>
 
                             <input type="email" value="{{ auth()->user()->email }}" class="form-control rounded-0"
@@ -276,11 +232,12 @@
 
                             <label for="phone" class="form-label">
                                 Phone / WhatsApp
+                                <span class="text-danger">*</span>
                             </label>
 
                             <input type="text" id="phone" name="phone" value="{{ old('phone') }}"
                                 class="form-control rounded-0 @error('phone') is-invalid @enderror"
-                                placeholder="e.g. 081234567890">
+                                placeholder="e.g. 081234567890" required>
 
                             @error('phone')
                                 <div class="invalid-feedback">
@@ -299,11 +256,12 @@
 
                             <label for="institution" class="form-label">
                                 Institution
+                                <span class="text-danger">*</span>
                             </label>
 
                             <input type="text" id="institution" name="institution" value="{{ old('institution') }}"
                                 class="form-control rounded-0 @error('institution') is-invalid @enderror"
-                                placeholder="University / Institution">
+                                placeholder="University / Institution" required>
 
                             @error('institution')
                                 <div class="invalid-feedback">
@@ -475,23 +433,25 @@
 
                         </div>
 
-                        <button type="submit" class="btn btn-success rounded-0">
-
-                            <i class="bi bi-check-circle me-1"></i>
-                            Complete Registration
-
-                        </button>
-
                     </div>
 
                 </div>
-
             </div>
 
+            <div class="text-end">
+                <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                    <span id="btn-submit-text">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Complete Registration
+                    </span>
+                    <span id="btn-submit-load" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        Memproses...
+                    </span>
+                </button>
+            </div>
         </form>
-
     @endif
-
 @endsection
 
 @push('styles')
@@ -516,4 +476,22 @@
                 0 0 0 .15rem rgba(var(--bs-primary-rgb), .15);
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
 @endpush

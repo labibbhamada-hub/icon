@@ -50,62 +50,71 @@ class ProfileController extends Controller
                 );
         }
 
-        $validated = $request->validate([
-            'title_prefix' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+        $validated = $request->validate(
+            [
+                'title_prefix' => [
+                    'nullable',
+                    'string',
+                    'max:50',
+                ],
 
-            'full_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
+                'full_name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                ],
 
-            'title_suffix' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
+                'title_suffix' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                ],
 
-            'orcid' => [
-                'nullable',
-                'string',
-                'max:19',
-                'regex:/^\d{4}-\d{4}-\d{4}-\d{4}$/',
-            ],
+                'orcid' => [
+                    'nullable',
+                    'string',
+                    'max:19',
+                    'regex:/^\d{4}-\d{4}-\d{4}-\d{4}$/',
+                ],
 
-            'phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+                'phone' => [
+                    'required',
+                    'string',
+                    'max:50',
+                ],
 
-            'institution' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
+                'institution' => [
+                    'required',
+                    'string',
+                    'max:255',
+                ],
 
-            'department' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
+                'department' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                ],
 
-            'country' => [
-                'required',
-                'string',
-                'max:100',
-            ],
+                'country' => [
+                    'required',
+                    'string',
+                    'max:100',
+                ],
 
-            'city' => [
-                'nullable',
-                'string',
-                'max:100',
+                'city' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                ],
             ],
-        ]);
+            [
+                'phone.required' =>
+                'Phone Number is required.',
+
+                'institution.required' =>
+                'Institution is required.',
+            ]
+        );
 
         $participant->update($validated);
 

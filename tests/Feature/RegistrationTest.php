@@ -199,6 +199,8 @@ class RegistrationTest extends TestCase
                     'registration_type_id' => $registrationType->id,
                     'country' => 'Indonesia',
                     'attendance_type' => 'online',
+                    'phone' => '081234567890',
+                    'institution' => 'Test University',
                 ]);
 
             $response->assertRedirect();
@@ -242,6 +244,8 @@ class RegistrationTest extends TestCase
                     'registration_type_id' => $registrationType->id,
                     'country' => 'Indonesia',
                     'attendance_type' => 'online',
+                    'phone' => '081234567890',
+                    'institution' => 'Test University',
                 ]);
 
             $response->assertRedirect(
@@ -360,6 +364,39 @@ class RegistrationTest extends TestCase
             'registration_type_id' => $registrationType->id,
             'participant_type' => 'presenter',
             'registration_status' => 'pending',
+        ]);
+    }
+
+    public function test_registration_requires_phone_and_institution(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('participant.registration.create'))
+            ->post(route('participant.registration.store'), [
+                'conference_id' => $conference->id,
+                'registration_type_id' => $registrationType->id,
+                'country' => 'Indonesia',
+                'attendance_type' => 'online',
+            ]);
+
+        $response
+            ->assertRedirect()
+            ->assertSessionHasErrors([
+                'phone',
+                'institution',
+            ]);
+
+        $this->assertDatabaseMissing('participants', [
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
         ]);
     }
 }

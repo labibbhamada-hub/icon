@@ -2,7 +2,8 @@
 
 @section('title', 'My Profile')
 
-@section('header') <div class="row">
+@section('header')
+    <div class="row">
         <div class="col-sm-6 d-flex align-items-center">
             <h1 class="mb-0 fs-3">
                 My Profile </h1>
@@ -165,10 +166,11 @@
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Phone Number
+                                    <span class="text-danger">*</span>
                                 </label>
 
                                 <input type="text" name="phone" value="{{ old('phone', $participant->phone) }}"
-                                    class="form-control @error('phone') is-invalid @enderror rounded-0">
+                                    class="form-control @error('phone') is-invalid @enderror rounded-0" required>
 
                                 @error('phone')
                                     <div class="invalid-feedback">
@@ -211,11 +213,12 @@
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">
                                     Institution
+                                    <span class="text-danger">*</span>
                                 </label>
 
                                 <input type="text" name="institution"
                                     value="{{ old('institution', $participant->institution) }}"
-                                    class="form-control @error('institution') is-invalid @enderror rounded-0">
+                                    class="form-control @error('institution') is-invalid @enderror rounded-0" required>
 
                                 @error('institution')
                                     <div class="invalid-feedback">

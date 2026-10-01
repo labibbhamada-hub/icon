@@ -35,15 +35,10 @@
 
     <div class="card rounded-0 overflow-hidden">
         <div class="card-header rounded-0">
-            <h3 class="card-title"> <i class="bi bi-file-earmark-text me-2"></i>
-                Submission List </h3>
-
-            <div class="float-end">
-                <a href="{{ route('participant.submissions.create') }}" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-plus-circle me-1"></i>
-                    New Submission
-                </a>
-            </div>
+            <h3 class="card-title">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                Submission List
+            </h3>
         </div>
 
         <div class="card-body p-0">

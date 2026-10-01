@@ -32,6 +32,8 @@ class SubmissionController extends Controller
 {
     public function index()
     {
+        $this->assertPresenterRegistration();
+
         $participantIds = Participant::where(
             'user_id',
             Auth::id()
@@ -58,6 +60,8 @@ class SubmissionController extends Controller
 
     public function create()
     {
+        $this->assertPresenterRegistration();
+
         $participant = Participant::with([
             'conference.setting',
             'conference.configuration',
@@ -182,6 +186,11 @@ class SubmissionController extends Controller
                 'confirmed'
             )
             ->firstOrFail();
+
+        abort_unless(
+            $participant->registrationType?->category === 'presenter',
+            403
+        );
 
         abort_unless(
             $participant->registration_status === 'confirmed',
@@ -319,23 +328,8 @@ class SubmissionController extends Controller
     public function show(
         Submission $submission
     ) {
-        $participant = Participant::where(
-            'user_id',
-            Auth::id()
-        )
-            ->where(
-                'id',
-                $submission->participant_id
-            )
-            ->where(
-                'registration_status',
-                'confirmed'
-            )
-            ->first();
-
-        abort_unless(
-            $participant,
-            403
+        $participant = $this->getOwnedSubmissionParticipant(
+            $submission
         );
 
         $submission->load([
@@ -1322,10 +1316,13 @@ class SubmissionController extends Controller
     private function getOwnedSubmissionParticipant(
         Submission $submission
     ): Participant {
-        return Participant::where(
-            'user_id',
-            Auth::id()
+        $participant = Participant::with(
+            'registrationType'
         )
+            ->where(
+                'user_id',
+                Auth::id()
+            )
             ->where(
                 'id',
                 $submission->participant_id
@@ -1335,6 +1332,13 @@ class SubmissionController extends Controller
                 'confirmed'
             )
             ->firstOrFail();
+
+        abort_unless(
+            $participant->registrationType?->category === 'presenter',
+            403
+        );
+
+        return $participant;
     }
 
     private function getSubmissionDeadline($conferenceId): ?ImportantDate
@@ -1594,5 +1598,26 @@ class SubmissionController extends Controller
         );
 
         return $code;
+    }
+
+    private function assertPresenterRegistration(): void
+    {
+        abort_unless(
+            Participant::where(
+                'user_id',
+                Auth::id()
+            )
+                ->whereHas(
+                    'registrationType',
+                    function ($query) {
+                        $query->where(
+                            'category',
+                            'presenter'
+                        );
+                    }
+                )
+                ->exists(),
+            403
+        );
     }
 }

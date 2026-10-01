@@ -142,22 +142,6 @@
                         </p>
                     </li>
 
-                    <li class="user-body">
-                        <div class="row">
-                            <div class="col-4 text-center">
-                                <a href="#">Followers</a>
-                            </div>
-
-                            <div class="col-4 text-center">
-                                <a href="#">Sales</a>
-                            </div>
-
-                            <div class="col-4 text-center">
-                                <a href="#">Friends</a>
-                            </div>
-                        </div>
-                    </li>
-
                     <li class="user-footer">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf

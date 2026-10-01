@@ -64,6 +64,10 @@
                             </th>
 
                             <th>
+                                Audience
+                            </th>
+
+                            <th>
                                 Group
                             </th>
 
@@ -106,6 +110,22 @@
                                         </span>
                                     @endif
 
+                                </td>
+
+                                <td>
+                                    @if ($group->audience === 'presenter')
+                                        <span class="badge text-bg-primary rounded-0">
+                                            Presenter
+                                        </span>
+                                    @elseif ($group->audience === 'seminar')
+                                        <span class="badge text-bg-success rounded-0">
+                                            Seminar
+                                        </span>
+                                    @else
+                                        <span class="badge text-bg-secondary rounded-0">
+                                            Unknown
+                                        </span>
+                                    @endif
                                 </td>
 
                                 <td>
@@ -186,7 +206,7 @@
 
                             <tr>
 
-                                <td colspan="6" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
 
                                     <div class="mb-2">
                                         <i class="bi bi-whatsapp display-5 text-muted"></i>

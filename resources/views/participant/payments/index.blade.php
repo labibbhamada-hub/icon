@@ -2,44 +2,26 @@
 
 @section('title', 'Payments')
 
-@section('header') <div class="row align-items-top">
+@section('header')
+    <div class="row align-items-top">
         <div class="col-sm-6">
-            <h3 class="mb-0">
-                My Payments </h3>
-
-            <p class="text-muted mb-0 mt-1">
+            <h3 class="mb-0 fs-3">
+                My Payments
+            </h3>
+            <p class="text-muted mb-0">
                 View and manage your conference payments.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Payments
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
-@section('content') <div class="card rounded-0 overflow-hidden">
+@section('content')
+    <div class="card rounded-0 overflow-hidden">
         <div class="card-header rounded-0">
-            <h3 class="card-title"> <i class="bi bi-credit-card me-2"></i>
-                Payment History </h3>
-
-            <div class="float-end">
-                <a href="{{ route('participant.payments.create') }}" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-upload me-1"></i>
-                    Submit Payment
-                </a>
-            </div>
+            <h3 class="card-title">
+                <i class="bi bi-credit-card me-2"></i>
+                Payment History
+            </h3>
         </div>
 
         <div class="card-body p-0">
@@ -110,7 +92,19 @@
                                 </td>
 
                                 <td>
-                                    {{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}
+                                    @if ($payment->paymentMethod)
+                                        <strong>
+                                            {{ $payment->paymentMethod->name }}
+                                        </strong>
+
+                                        @if ($payment->paymentMethod->type)
+                                            <small class="text-muted d-block">
+                                                {{ ucwords(str_replace('_', ' ', $payment->paymentMethod->type)) }}
+                                            </small>
+                                        @endif
+                                    @else
+                                        -
+                                    @endif
                                 </td>
 
                                 <td>

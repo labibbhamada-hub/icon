@@ -30,6 +30,33 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
+        $presenterParticipants = $participants
+            ->filter(
+                fn(Participant $participant) =>
+                $participant->registrationType?->category === 'presenter'
+            )
+            ->values();
+
+        $seminarParticipants = $participants
+            ->filter(
+                fn(Participant $participant) =>
+                $participant->registrationType?->category === 'participant'
+            )
+            ->values();
+
+        $seminarConferences = $seminarParticipants
+            ->pluck('conference')
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        $hasPresenterRegistration = $presenterParticipants->isNotEmpty();
+
+        $presenterConferenceIds = $presenterParticipants
+            ->pluck('conference_id')
+            ->unique()
+            ->values();
+
         /*
         |--------------------------------------------------------------------------
         | Payments
@@ -56,9 +83,7 @@ class DashboardController extends Controller
 
         $importantDates = ImportantDate::whereIn(
             'conference_id',
-            $participants
-                ->pluck('conference_id')
-                ->unique()
+            $presenterConferenceIds
         )
             ->where(
                 'is_active',
@@ -115,8 +140,18 @@ class DashboardController extends Controller
                 'is_active',
                 true
             )
+            ->whereIn(
+                'audience',
+                [
+                    'presenter',
+                    'seminar',
+                ]
+            )
             ->get()
-            ->keyBy('conference_id');
+            ->keyBy(
+                fn(ConferenceWhatsappGroup $group) =>
+                $group->conference_id . ':' . $group->audience
+            );
 
         /*
         |--------------------------------------------------------------------------
@@ -308,13 +343,13 @@ class DashboardController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | Ignore non-confirmed non-presenters
+            | Submission actions are only available to confirmed presenters
             |--------------------------------------------------------------------------
             */
 
             if (
                 $participant->registration_status !== 'confirmed'
-                && !$isPresenter
+                || !$isPresenter
             ) {
                 continue;
             }
@@ -392,10 +427,10 @@ class DashboardController extends Controller
                     case 'accepted':
 
                         /*
-    |--------------------------------------------------------------------------
-    | Abstract Accepted
-    |--------------------------------------------------------------------------
-    */
+                        |--------------------------------------------------------------------------
+                        | Abstract Accepted
+                        |--------------------------------------------------------------------------
+                        */
 
                         if ($submission->submission_stage === 'abstract') {
                             $candidate = [
@@ -574,8 +609,18 @@ class DashboardController extends Controller
                 continue;
             }
 
+            $audience = match ($participant->registrationType?->category) {
+                'presenter' => 'presenter',
+                'participant' => 'seminar',
+                default => null,
+            };
+
+            if ($audience === null) {
+                continue;
+            }
+
             $group = $whatsappGroups->get(
-                $participant->conference_id
+                $participant->conference_id . ':' . $audience
             );
 
             if ($group) {
@@ -627,6 +672,9 @@ class DashboardController extends Controller
                 'nextAction',
                 'participantMeetings',
                 'participantWhatsappGroups',
+                'presenterParticipants',
+                'seminarConferences',
+                'hasPresenterRegistration',
             )
         );
     }

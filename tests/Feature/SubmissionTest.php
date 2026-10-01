@@ -112,6 +112,24 @@ class SubmissionTest extends TestCase
         ]);
     }
 
+    private function createSeminarRegistrationType(
+        Conference $conference
+    ): ConferenceRegistrationType {
+        return ConferenceRegistrationType::create([
+            'conference_id' => $conference->id,
+            'name' => 'Seminar',
+            'code' => 'SEMINAR-TEST',
+            'category' => 'participant',
+            'fee' => 100000,
+            'currency' => 'IDR',
+            'included_papers' => 0,
+            'additional_paper_fee' => 0,
+            'payment_timing' => 'immediate',
+            'is_active' => true,
+            'sort_order' => 2,
+        ]);
+    }
+
     private function createTopic(
         Conference $conference
     ): Topic {
@@ -776,8 +794,27 @@ class SubmissionTest extends TestCase
         Storage::fake('local');
 
         $conference = $this->createOpenConference();
-        $participant = $this->createParticipant($conference);
-        $topic = $this->createTopic($conference);
+
+        $participant = $this->createParticipant(
+            $conference
+        );
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' =>
+            $registrationType->id,
+
+            'participant_type' =>
+            'presenter',
+        ]);
+
+        $topic = $this->createTopic(
+            $conference
+        );
 
         $participantUser = User::findOrFail($participant->user_id);
 
@@ -883,8 +920,27 @@ class SubmissionTest extends TestCase
         Mail::fake();
 
         $conference = $this->createOpenConference();
-        $participant = $this->createParticipant($conference);
-        $topic = $this->createTopic($conference);
+
+        $participant = $this->createParticipant(
+            $conference
+        );
+
+        $registrationType =
+            $this->createPresenterRegistrationType(
+                $conference
+            );
+
+        $participant->update([
+            'registration_type_id' =>
+            $registrationType->id,
+
+            'participant_type' =>
+            'presenter',
+        ]);
+
+        $topic = $this->createTopic(
+            $conference
+        );
 
         $participantUser = User::findOrFail(
             $participant->user_id
@@ -2861,6 +2917,137 @@ class SubmissionTest extends TestCase
 
         $response->assertSee(
             'Conference Attendance'
+        );
+    }
+
+    public function test_confirmed_seminar_cannot_access_submission_workflow(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $seminarRegistrationType =
+            $this->createSeminarRegistrationType($conference);
+
+        $participant = $this->createParticipant(
+            $conference
+        );
+
+        $participant->update([
+            'registration_type_id' =>
+            $seminarRegistrationType->id,
+            'participant_type' => 'participant',
+            'registration_status' => 'confirmed',
+        ]);
+
+        $topic = $this->createTopic(
+            $conference
+        );
+
+        $submission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic
+        );
+
+        $this->actingAs($participant->user)
+            ->get(
+                route(
+                    'participant.submissions.index'
+                )
+            )
+            ->assertForbidden();
+
+        $this->actingAs($participant->user)
+            ->get(
+                route(
+                    'participant.submissions.create'
+                )
+            )
+            ->assertForbidden();
+
+        $this->actingAs($participant->user)
+            ->get(
+                route(
+                    'participant.submissions.show',
+                    $submission
+                )
+            )
+            ->assertForbidden();
+    }
+
+    public function test_confirmed_seminar_cannot_store_submission(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $seminarRegistrationType =
+            $this->createSeminarRegistrationType($conference);
+
+        $participant = $this->createParticipant(
+            $conference
+        );
+
+        $participant->update([
+            'registration_type_id' =>
+            $seminarRegistrationType->id,
+            'participant_type' => 'participant',
+            'registration_status' => 'confirmed',
+        ]);
+
+        $topic = $this->createTopic(
+            $conference
+        );
+
+        $response = $this->actingAs(
+            $participant->user
+        )
+            ->post(
+                route(
+                    'participant.submissions.store'
+                ),
+                [
+                    'participant_id' =>
+                    $participant->id,
+
+                    'topic_id' =>
+                    $topic->id,
+
+                    'title' =>
+                    'Seminar Must Not Submit',
+
+                    'abstract' =>
+                    'This submission must be rejected because the registration is for seminar participation.',
+
+                    'keywords' =>
+                    'seminar, participant, security',
+
+                    'authors' => [
+                        [
+                            'name' =>
+                            $participant->full_name,
+
+                            'email' =>
+                            $participant->email,
+
+                            'institution' =>
+                            $participant->institution,
+
+                            'department' =>
+                            $participant->department,
+
+                            'is_corresponding' =>
+                            true,
+
+                            'sort_order' =>
+                            1,
+                        ],
+                    ],
+                ]
+            );
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseCount(
+            'submissions',
+            0
         );
     }
 }

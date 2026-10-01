@@ -8,6 +8,7 @@ class ConferenceWhatsappGroup extends Model
 {
     protected $fillable = [
         'conference_id',
+        'audience',
         'title',
         'group_url',
         'description',

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Conference;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,6 +42,37 @@ class AppServiceProvider extends ServiceProvider
                 $view->with(
                     'activeConference',
                     $activeConference
+                );
+            }
+        );
+
+        View::composer(
+            'layouts.participant',
+            function ($view) {
+
+                $showSubmissionMenu = false;
+
+                if (
+                    Auth::check()
+                    && Auth::user()->role === 'participant'
+                ) {
+                    $showSubmissionMenu = Auth::user()
+                        ->participants()
+                        ->whereHas(
+                            'registrationType',
+                            function ($query) {
+                                $query->where(
+                                    'category',
+                                    'presenter'
+                                );
+                            }
+                        )
+                        ->exists();
+                }
+
+                $view->with(
+                    'showSubmissionMenu',
+                    $showSubmissionMenu
                 );
             }
         );

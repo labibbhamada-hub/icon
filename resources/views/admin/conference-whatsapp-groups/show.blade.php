@@ -19,34 +19,6 @@
 
         </div>
 
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.conference-whatsapp-groups.index') }}">
-                            WhatsApp Groups
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Detail
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
 
 @endsection
@@ -65,7 +37,7 @@
             <div class="float-end">
 
                 <a href="{{ route('admin.conference-whatsapp-groups.edit', $conferenceWhatsappGroup) }}"
-                    class="btn btn-warning btn-sm rounded-0">
+                    class="btn btn-warning rounded-0">
                     <i class="bi bi-pencil me-1"></i>
                     Edit WhatsApp Group
                 </a>
@@ -99,79 +71,92 @@
 
                     </div>
 
-                    <table class="table table-borderless align-middle mb-0">
+                    <div class="row mb-2">
 
-                        <tbody>
+                        <div class="col-md-4 text-muted">
+                            Conference
+                        </div>
 
-                            <tr>
+                        <div class="col-md-8">
+                            @if ($conferenceWhatsappGroup->conference)
+                                <strong>
+                                    {{ $conferenceWhatsappGroup->conference->name }}
+                                </strong>
 
-                                <th width="180">
-                                    Conference
-                                </th>
+                                <small class="text-muted d-block">
+                                    {{ $conferenceWhatsappGroup->conference->short_name }}
+                                    ({{ $conferenceWhatsappGroup->conference->year }})
+                                </small>
+                            @else
+                                -
+                            @endif
+                        </div>
 
-                                <td>
+                    </div>
 
-                                    @if ($conferenceWhatsappGroup->conference)
-                                        <strong>
-                                            {{ $conferenceWhatsappGroup->conference->name }}
-                                        </strong>
+                    <div class="row mb-2">
 
-                                        <small class="text-muted d-block">
-                                            {{ $conferenceWhatsappGroup->conference->short_name }}
-                                            ({{ $conferenceWhatsappGroup->conference->year }})
-                                        </small>
-                                    @else
-                                        -
-                                    @endif
+                        <div class="col-md-4 text-muted">
+                            Audience
+                        </div>
 
-                                </td>
+                        <div class="col-md-8">
 
-                            </tr>
+                            @if ($conferenceWhatsappGroup->audience === 'presenter')
+                                <span class="badge text-bg-primary rounded-0">
+                                    Presenter
+                                </span>
+                            @elseif ($conferenceWhatsappGroup->audience === 'seminar')
+                                <span class="badge text-bg-success rounded-0">
+                                    Seminar
+                                </span>
+                            @else
+                                <span class="badge text-bg-secondary rounded-0">
+                                    Unknown
+                                </span>
+                            @endif
 
-                            <tr>
+                        </div>
 
-                                <th>
-                                    Group URL
-                                </th>
+                    </div>
 
-                                <td>
+                    <div class="row mb-2">
 
-                                    <a href="{{ $conferenceWhatsappGroup->group_url }}" target="_blank"
-                                        rel="noopener noreferrer">
-                                        {{ $conferenceWhatsappGroup->group_url }}
-                                    </a>
+                        <div class="col-md-4 text-muted">
+                            Group URL
+                        </div>
 
-                                </td>
+                        <div class="col-md-8">
+                            <a href="{{ $conferenceWhatsappGroup->group_url }}" target="_blank" rel="noopener noreferrer">
+                                {{ $conferenceWhatsappGroup->group_url }}
+                            </a>
+                        </div>
 
-                            </tr>
+                    </div>
 
-                            <tr>
+                    <div class="row mb-2">
 
-                                <th>
-                                    Created At
-                                </th>
+                        <div class="col-md-4 text-muted">
+                            Created At
+                        </div>
 
-                                <td>
-                                    {{ $conferenceWhatsappGroup->created_at->format('d M Y H:i') }}
-                                </td>
+                        <div class="col-md-8">
+                            {{ $conferenceWhatsappGroup->created_at->format('d M Y H:i') }}
+                        </div>
 
-                            </tr>
+                    </div>
 
-                            <tr>
+                    <div class="row mb-2">
 
-                                <th>
-                                    Last Updated
-                                </th>
+                        <div class="col-md-4 text-muted">
+                            Last Updated
+                        </div>
 
-                                <td>
-                                    {{ $conferenceWhatsappGroup->updated_at->format('d M Y H:i') }}
-                                </td>
+                        <div class="col-md-8">
+                            {{ $conferenceWhatsappGroup->updated_at->format('d M Y H:i') }}
+                        </div>
 
-                            </tr>
-
-                        </tbody>
-
-                    </table>
+                    </div>
 
                 </div>
 
@@ -221,15 +206,6 @@
                     No description available.
                 </p>
             @endif
-
-        </div>
-
-        <div class="card-footer rounded-0">
-
-            <a href="{{ route('admin.conference-whatsapp-groups.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                <i class="bi bi-arrow-left me-1"></i>
-                Back to WhatsApp Groups
-            </a>
 
         </div>
 

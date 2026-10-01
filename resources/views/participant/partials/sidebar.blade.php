@@ -45,13 +45,15 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('participant.submissions.index') }}"
-                        class="nav-link {{ request()->routeIs('participant.submissions.*') ? 'active' : '' }} rounded-0">
-                        <i class="nav-icon bi bi-file-earmark-text"></i>
-                        <p>My Submissions</p>
-                    </a>
-                </li>
+                @if ($showSubmissionMenu)
+                    <li class="nav-item">
+                        <a href="{{ route('participant.submissions.index') }}"
+                            class="nav-link {{ request()->routeIs('participant.submissions.*') ? 'active' : '' }} rounded-0">
+                            <i class="nav-icon bi bi-file-earmark-text"></i>
+                            <p>My Submissions</p>
+                        </a>
+                    </li>
+                @endif
 
                 <li class="nav-item">
                     <a href="{{ route('participant.certificates.index') }}"

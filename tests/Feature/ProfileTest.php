@@ -236,4 +236,35 @@ class ProfileTest extends TestCase
             )
             ->assertSessionHas('info');
     }
+
+    public function test_profile_requires_phone_and_institution(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $conference = $this->createConference();
+
+        $participant = $this->createParticipant(
+            $user,
+            $conference
+        );
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('participant.profile.edit'))
+            ->put(route('participant.profile.update'), [
+                'full_name' => $participant->full_name,
+                'country' => 'Indonesia',
+                'city' => 'Slawi',
+            ]);
+
+        $response
+            ->assertRedirect(route('participant.profile.edit'))
+            ->assertSessionHasErrors([
+                'phone',
+                'institution',
+            ]);
+    }
 }

@@ -26,6 +26,11 @@ class ConferenceWhatsappGroupRequest extends FormRequest
                 'exists:conferences,id',
             ],
 
+            'audience' => [
+                'required',
+                'in:presenter,seminar',
+            ],
+
             'title' => [
                 'required',
                 'string',
@@ -70,6 +75,12 @@ class ConferenceWhatsappGroupRequest extends FormRequest
 
             'is_active.required' =>
             'Status is required.',
+
+            'audience.required' =>
+            'Audience is required.',
+
+            'audience.in' =>
+            'The selected audience is invalid.',
         ];
     }
 
@@ -90,6 +101,9 @@ class ConferenceWhatsappGroupRequest extends FormRequest
 
             'is_active' =>
             'status',
+
+            'audience' =>
+            'audience',
         ];
     }
 }
