@@ -7,7 +7,8 @@
     <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
-                Important Dates Management </h1>
+                Important Dates Management
+            </h1>
         </div>
 
         <div class="col-sm-6">
@@ -135,6 +136,7 @@
                                             'review' => 'Review',
                                             'revision' => 'Revision',
                                             'camera_ready' => 'Camera Ready',
+                                            'publication' => 'Publication',
                                             'conference' => 'Conference',
                                             'other' => 'Other',
                                         ];
@@ -194,12 +196,14 @@
 
                                         <form action="{{ route('admin.important-dates.destroy', $importantDate) }}"
                                             method="POST" class="d-inline delete-form">
+
                                             @csrf
                                             @method('DELETE')
 
                                             <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
+
                                         </form>
 
                                     </div>

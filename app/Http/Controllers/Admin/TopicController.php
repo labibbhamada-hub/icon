@@ -65,6 +65,14 @@ class TopicController extends Controller
 
     public function destroy(Topic $topic)
     {
+        if ($topic->submissions()->exists()) {
+            return back()
+                ->with(
+                    'error',
+                    'Topic cannot be deleted because it is already used by submissions.'
+                );
+        }
+
         $topic->delete();
 
         return redirect()

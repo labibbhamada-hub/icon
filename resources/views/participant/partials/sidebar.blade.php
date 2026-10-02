@@ -1,7 +1,7 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
     <div class="sidebar-brand">
         <a href="{{ route('participant.dashboard') }}" class="brand-link">
-            <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="brand-image opacity-75 shadow rounded-0">
+            <img src="{{ asset('assets/images/logo/logo-bhamada-icon.jpeg') }}" class="brand-image shadow rounded-circle">
             <span class="brand-text fw-bold">BHAMADA ICON</span>
         </a>
     </div>

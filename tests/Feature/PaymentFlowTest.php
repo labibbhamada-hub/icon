@@ -316,4 +316,217 @@ class PaymentFlowTest extends TestCase
             $participant->registration_status
         );
     }
+
+    public function test_participant_cannot_submit_payment_for_another_participant(): void
+    {
+        Storage::fake('local');
+
+        $conference = $this->createOpenConference();
+
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
+
+        $paymentMethod = $this->createPaymentMethod(
+            $conference
+        );
+
+        $userA = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $userB = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participantA = $this->createPresenterParticipant(
+            $conference,
+            $registrationType,
+            $userA
+        );
+
+        $participantB = $this->createPresenterParticipant(
+            $conference,
+            $registrationType,
+            $userB
+        );
+
+        $response = $this
+            ->actingAs($userA)
+            ->post(
+                route('participant.payments.store'),
+                [
+                    'participant_id' => $participantB->id,
+                    'payment_method_id' => $paymentMethod->id,
+                    'proof_file' => UploadedFile::fake()->create(
+                        'payment-proof.pdf',
+                        100,
+                        'application/pdf'
+                    ),
+                    'paid_at' => now()->format('Y-m-d H:i:s'),
+                    'notes' => 'Unauthorized payment attempt.',
+                ]
+            );
+
+        $response->assertSessionHasErrors([
+            'participant_id',
+        ]);
+
+        $this->assertDatabaseMissing('payments', [
+            'participant_id' => $participantB->id,
+        ]);
+
+        $this->assertDatabaseCount(
+            'payments',
+            0
+        );
+
+        $this->assertNotSame(
+            $participantA->id,
+            $participantB->id
+        );
+    }
+
+    public function test_participant_payment_history_only_shows_owned_payments(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
+
+        $paymentMethod = $this->createPaymentMethod(
+            $conference
+        );
+
+        $userA = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $userB = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participantA = $this->createPresenterParticipant(
+            $conference,
+            $registrationType,
+            $userA
+        );
+
+        $participantB = $this->createPresenterParticipant(
+            $conference,
+            $registrationType,
+            $userB
+        );
+
+        $paymentA = Payment::create([
+            'participant_id' => $participantA->id,
+            'payment_method_id' => $paymentMethod->id,
+            'payment_code' => 'PAY-USER-A',
+            'amount' => 250000,
+            'proof_file' => 'payments/proofs/a.pdf',
+            'status' => 'pending',
+            'paid_at' => now(),
+        ]);
+
+        $paymentB = Payment::create([
+            'participant_id' => $participantB->id,
+            'payment_method_id' => $paymentMethod->id,
+            'payment_code' => 'PAY-USER-B',
+            'amount' => 250000,
+            'proof_file' => 'payments/proofs/b.pdf',
+            'status' => 'pending',
+            'paid_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($userA)
+            ->get(
+                route('participant.payments.index')
+            );
+
+        $response->assertSuccessful();
+
+        $response->assertViewHas(
+            'payments',
+            function ($payments) use ($paymentA, $paymentB) {
+                return $payments->count() === 1
+                    && $payments->first()->id === $paymentA->id
+                    && !$payments->contains(
+                        'id',
+                        $paymentB->id
+                    );
+            }
+        );
+    }
+
+    public function test_payment_method_from_another_conference_cannot_be_used(): void
+    {
+        Storage::fake('local');
+
+        $conferenceA = $this->createOpenConference();
+
+        $conferenceB = $this->createOpenConference();
+
+        $registrationTypeA =
+            $this->createPresenterRegistrationType(
+                $conferenceA
+            );
+
+        $paymentMethodA =
+            $this->createPaymentMethod(
+                $conferenceA
+            );
+
+        $paymentMethodB =
+            $this->createPaymentMethod(
+                $conferenceB
+            );
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createPresenterParticipant(
+            $conferenceA,
+            $registrationTypeA,
+            $user
+        );
+
+        $response = $this
+            ->actingAs($user)
+            ->post(
+                route('participant.payments.store'),
+                [
+                    'participant_id' => $participant->id,
+                    'payment_method_id' => $paymentMethodB->id,
+                    'proof_file' => UploadedFile::fake()->create(
+                        'payment-proof.pdf',
+                        100,
+                        'application/pdf'
+                    ),
+                    'paid_at' => now()->format('Y-m-d H:i:s'),
+                    'notes' => 'Wrong conference payment method.',
+                ]
+            );
+
+        $response->assertSessionHasErrors([
+            'payment_method_id',
+        ]);
+
+        $this->assertDatabaseCount(
+            'payments',
+            0
+        );
+
+        $this->assertNotSame(
+            $paymentMethodA->id,
+            $paymentMethodB->id
+        );
+    }
 }

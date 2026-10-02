@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PartnerRequest;
 use App\Models\Conference;
 use App\Models\Partner;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class PartnerController extends Controller
 {
@@ -32,13 +34,27 @@ class PartnerController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('logo')) {
-            $data['logo'] = $request
-                ->file('logo')
-                ->store('partners', 'public');
-        }
+        $logoFile = null;
 
-        Partner::create($data);
+        try {
+            if ($request->hasFile('logo')) {
+                $logoFile = $request
+                    ->file('logo')
+                    ->store('partners', 'public');
+
+                $data['logo'] = $logoFile;
+            }
+
+            DB::transaction(function () use ($data) {
+                Partner::create($data);
+            });
+        } catch (Throwable $e) {
+            if ($logoFile) {
+                Storage::disk('public')->delete($logoFile);
+            }
+
+            throw $e;
+        }
 
         return redirect()
             ->route('admin.partners.index')
@@ -78,19 +94,39 @@ class PartnerController extends Controller
     ) {
         $data = $request->validated();
 
-        if ($request->hasFile('logo')) {
+        $oldLogoFile = $partner->logo;
+        $newLogoFile = null;
 
-            if ($partner->logo) {
-                Storage::disk('public')
-                    ->delete($partner->logo);
+        try {
+            if ($request->hasFile('logo')) {
+                $newLogoFile = $request
+                    ->file('logo')
+                    ->store('partners', 'public');
+
+                $data['logo'] = $newLogoFile;
             }
 
-            $data['logo'] = $request
-                ->file('logo')
-                ->store('partners', 'public');
+            DB::transaction(function () use (
+                $partner,
+                $data
+            ) {
+                $partner->update($data);
+            });
+        } catch (Throwable $e) {
+            if ($newLogoFile) {
+                Storage::disk('public')->delete($newLogoFile);
+            }
+
+            throw $e;
         }
 
-        $partner->update($data);
+        if (
+            $newLogoFile
+            && $oldLogoFile
+            && $oldLogoFile !== $newLogoFile
+        ) {
+            Storage::disk('public')->delete($oldLogoFile);
+        }
 
         return redirect()
             ->route('admin.partners.index')
@@ -102,12 +138,15 @@ class PartnerController extends Controller
 
     public function destroy(Partner $partner)
     {
-        if ($partner->logo) {
-            Storage::disk('public')
-                ->delete($partner->logo);
-        }
+        $logoFile = $partner->logo;
 
-        $partner->delete();
+        DB::transaction(function () use ($partner) {
+            $partner->delete();
+        });
+
+        if ($logoFile) {
+            Storage::disk('public')->delete($logoFile);
+        }
 
         return redirect()
             ->route('admin.partners.index')

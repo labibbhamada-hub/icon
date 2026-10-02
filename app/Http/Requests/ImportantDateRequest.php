@@ -11,17 +11,28 @@ class ImportantDateRequest extends FormRequest
     {
         return true;
     }
+
     protected function prepareForValidation(): void
     {
         $this->merge([
             'is_active' => $this->boolean('is_active'),
         ]);
     }
+
     public function rules(): array
     {
         return [
-            'conference_id' => ['required', 'exists:conferences,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'conference_id' => [
+                'required',
+                'exists:conferences,id',
+            ],
+
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
             'type' => [
                 'required',
                 Rule::in([
@@ -31,17 +42,41 @@ class ImportantDateRequest extends FormRequest
                     'review',
                     'revision',
                     'camera_ready',
+                    'publication',
                     'conference',
                     'other',
                 ]),
             ],
-            'description' => ['nullable', 'string'],
-            'date' => ['required', 'date'],
-            'end_date' => ['nullable', 'date', 'after_or_equal:date'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['required', 'boolean'],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
+            'date' => [
+                'required',
+                'date',
+            ],
+
+            'end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:date',
+            ],
+
+            'sort_order' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+
+            'is_active' => [
+                'required',
+                'boolean',
+            ],
         ];
     }
+
     public function attributes(): array
     {
         return [

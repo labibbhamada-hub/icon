@@ -7,6 +7,7 @@ use App\Models\ConferenceAttendance;
 use App\Models\ConferenceAttendanceOption;
 use App\Models\ConferenceRegistrationType;
 use App\Models\ConferenceSetting;
+use App\Models\ImportantDate;
 use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,6 +52,17 @@ class AttendanceTest extends TestCase
             'conference_id' => $conference->id,
             'type' => 'online',
             'sort_order' => 1,
+        ]);
+
+        ImportantDate::create([
+            'conference_id' => $conference->id,
+            'title' => 'Test Conference',
+            'type' => 'conference',
+            'description' => 'Test conference event.',
+            'date' => now()->toDateString(),
+            'end_date' => now()->toDateString(),
+            'sort_order' => 1,
+            'is_active' => true,
         ]);
 
         return $conference;

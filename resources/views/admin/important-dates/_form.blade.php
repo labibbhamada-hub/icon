@@ -57,6 +57,7 @@
                     'review' => 'Review',
                     'revision' => 'Revision',
                     'camera_ready' => 'Camera Ready',
+                    'publication' => 'Publication',
                     'conference' => 'Conference',
                     'other' => 'Other',
                 ];
@@ -164,7 +165,5 @@
                 </div>
             @enderror
         </div>
-
     </div>
-
 </div>

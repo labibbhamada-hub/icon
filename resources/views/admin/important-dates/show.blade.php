@@ -120,6 +120,7 @@
                             'review' => 'Review',
                             'revision' => 'Revision',
                             'camera_ready' => 'Camera Ready',
+                            'publication' => 'Publication',
                             'conference' => 'Conference',
                             'other' => 'Other',
                         ];
@@ -150,13 +151,11 @@
                             <tbody>
 
                                 <tr>
-
                                     <th width="180">
                                         Conference
                                     </th>
 
                                     <td>
-
                                         @if ($importantDate->conference)
                                             <strong>
                                                 {{ $importantDate->conference->name }}
@@ -169,13 +168,10 @@
                                         @else
                                             -
                                         @endif
-
                                     </td>
-
                                 </tr>
 
                                 <tr>
-
                                     <th>
                                         Start Date
                                     </th>
@@ -183,29 +179,23 @@
                                     <td>
                                         {{ $importantDate->date->format('d F Y') }}
                                     </td>
-
                                 </tr>
 
                                 <tr>
-
                                     <th>
                                         End Date
                                     </th>
 
                                     <td>
-
                                         @if ($importantDate->end_date)
                                             {{ $importantDate->end_date->format('d F Y') }}
                                         @else
                                             -
                                         @endif
-
                                     </td>
-
                                 </tr>
 
                                 <tr>
-
                                     <th>
                                         Sort Order
                                     </th>
@@ -213,11 +203,9 @@
                                     <td>
                                         {{ $importantDate->sort_order }}
                                     </td>
-
                                 </tr>
 
                                 <tr>
-
                                     <th>
                                         Created At
                                     </th>
@@ -225,11 +213,9 @@
                                     <td>
                                         {{ $importantDate->created_at->format('d M Y H:i') }}
                                     </td>
-
                                 </tr>
 
                                 <tr>
-
                                     <th>
                                         Last Updated
                                     </th>
@@ -237,7 +223,6 @@
                                     <td>
                                         {{ $importantDate->updated_at->format('d M Y H:i') }}
                                     </td>
-
                                 </tr>
 
                             </tbody>

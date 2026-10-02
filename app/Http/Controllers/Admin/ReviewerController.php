@@ -91,14 +91,25 @@ class ReviewerController extends Controller
         ReviewerRequest $request,
         Reviewer $reviewer
     ) {
-        $reviewer->update(
-            $request->validated()
-        );
+        $data = $request->validated();
+
+        if (
+            (int) $reviewer->conference_id !==
+            (int) $data['conference_id']
+            && $reviewer->reviews()->exists()
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Reviewer cannot be moved to another conference because review records already exist.'
+                );
+        }
+
+        $reviewer->update($data);
 
         return redirect()
-            ->route(
-                'admin.reviewers.index'
-            )
+            ->route('admin.reviewers.index')
             ->with(
                 'success',
                 'Reviewer updated successfully.'
@@ -107,6 +118,14 @@ class ReviewerController extends Controller
 
     public function destroy(Reviewer $reviewer)
     {
+        if ($reviewer->reviews()->exists()) {
+            return back()
+                ->with(
+                    'error',
+                    'Reviewer cannot be deleted because review records already exist.'
+                );
+        }
+
         $reviewer->delete();
 
         return redirect()

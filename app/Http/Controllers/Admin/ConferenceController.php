@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ConferenceRequest;
 use App\Models\Conference;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ConferenceController extends Controller
 {
@@ -25,25 +27,39 @@ class ConferenceController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('logo')) {
+        $uploadedFiles = [];
 
-            $data['logo'] = $request
-                ->file('logo')
-                ->store('conference/logo', 'public');
+        try {
+            if ($request->hasFile('logo')) {
+                $uploadedFiles['logo'] = $request
+                    ->file('logo')
+                    ->store('conference/logo', 'public');
+
+                $data['logo'] = $uploadedFiles['logo'];
+            }
+
+            if ($request->hasFile('banner')) {
+                $uploadedFiles['banner'] = $request
+                    ->file('banner')
+                    ->store('conference/banner', 'public');
+
+                $data['banner'] = $uploadedFiles['banner'];
+            }
+
+            DB::transaction(function () use ($data) {
+                $conference = Conference::create($data);
+
+                $conference->setting()->create([
+                    'is_active' => false,
+                ]);
+            });
+        } catch (Throwable $e) {
+            foreach ($uploadedFiles as $file) {
+                Storage::disk('public')->delete($file);
+            }
+
+            throw $e;
         }
-
-        if ($request->hasFile('banner')) {
-
-            $data['banner'] = $request
-                ->file('banner')
-                ->store('conference/banner', 'public');
-        }
-
-        $conference = Conference::create($data);
-
-        $conference->setting()->create([
-            'is_active' => false,
-        ]);
 
         return redirect()
             ->route('admin.conferences.index')
@@ -60,33 +76,57 @@ class ConferenceController extends Controller
         return view('admin.conferences.edit', compact('conference'));
     }
 
-    public function update(ConferenceRequest $request, Conference $conference)
-    {
+    public function update(
+        ConferenceRequest $request,
+        Conference $conference
+    ) {
         $data = $request->validated();
 
-        if ($request->hasFile('logo')) {
+        $oldFiles = [];
+        $newFiles = [];
 
-            if ($conference->logo) {
-                Storage::disk('public')->delete($conference->logo);
+        try {
+            if ($request->hasFile('logo')) {
+                $newFiles['logo'] = $request
+                    ->file('logo')
+                    ->store('conference/logo', 'public');
+
+                $data['logo'] = $newFiles['logo'];
+
+                if ($conference->logo) {
+                    $oldFiles['logo'] = $conference->logo;
+                }
             }
 
-            $data['logo'] = $request
-                ->file('logo')
-                ->store('conference/logo', 'public');
-        }
+            if ($request->hasFile('banner')) {
+                $newFiles['banner'] = $request
+                    ->file('banner')
+                    ->store('conference/banner', 'public');
 
-        if ($request->hasFile('banner')) {
+                $data['banner'] = $newFiles['banner'];
 
-            if ($conference->banner) {
-                Storage::disk('public')->delete($conference->banner);
+                if ($conference->banner) {
+                    $oldFiles['banner'] = $conference->banner;
+                }
             }
 
-            $data['banner'] = $request
-                ->file('banner')
-                ->store('conference/banner', 'public');
+            DB::transaction(function () use (
+                $conference,
+                $data
+            ) {
+                $conference->update($data);
+            });
+        } catch (Throwable $e) {
+            foreach ($newFiles as $file) {
+                Storage::disk('public')->delete($file);
+            }
+
+            throw $e;
         }
 
-        $conference->update($data);
+        foreach ($oldFiles as $file) {
+            Storage::disk('public')->delete($file);
+        }
 
         return redirect()
             ->route('admin.conferences.index')
@@ -98,15 +138,73 @@ class ConferenceController extends Controller
 
     public function destroy(Conference $conference)
     {
+        $hasWorkflowData =
+            $conference->participants()->exists()
+            || $conference->submissions()->exists()
+            || $conference->reviewers()->exists()
+            || $conference->certificates()->exists()
+            || $conference->attendances()->exists();
+
+        if ($hasWorkflowData) {
+            return back()
+                ->with(
+                    'error',
+                    'Conference cannot be deleted because workflow records already exist.'
+                );
+        }
+
+        $conference->load([
+            'configuration',
+            'paymentMethods',
+            'partners',
+            'speakers',
+        ]);
+
+        $filesToDelete = [];
+
         if ($conference->logo) {
-            Storage::disk('public')->delete($conference->logo);
+            $filesToDelete[] = $conference->logo;
         }
 
         if ($conference->banner) {
-            Storage::disk('public')->delete($conference->banner);
+            $filesToDelete[] = $conference->banner;
         }
 
-        $conference->delete();
+        if ($conference->configuration) {
+            if ($conference->configuration->logo) {
+                $filesToDelete[] = $conference->configuration->logo;
+            }
+
+            if ($conference->configuration->signature_file) {
+                $filesToDelete[] = $conference->configuration->signature_file;
+            }
+        }
+
+        foreach ($conference->paymentMethods as $paymentMethod) {
+            if ($paymentMethod->qr_code_file) {
+                $filesToDelete[] = $paymentMethod->qr_code_file;
+            }
+        }
+
+        foreach ($conference->partners as $partner) {
+            if ($partner->logo) {
+                $filesToDelete[] = $partner->logo;
+            }
+        }
+
+        foreach ($conference->speakers as $speaker) {
+            if ($speaker->photo) {
+                $filesToDelete[] = $speaker->photo;
+            }
+        }
+
+        DB::transaction(function () use ($conference) {
+            $conference->delete();
+        });
+
+        foreach ($filesToDelete as $file) {
+            Storage::disk('public')->delete($file);
+        }
 
         return redirect()
             ->route('admin.conferences.index')

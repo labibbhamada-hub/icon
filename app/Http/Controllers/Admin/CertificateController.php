@@ -97,10 +97,10 @@ class CertificateController extends Controller
             );
 
         /*
-    |--------------------------------------------------------------------------
-    | Certificate setting
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Certificate setting
+        |--------------------------------------------------------------------------
+        */
 
         if (
             !$participant->conference?->setting?->certificate_enabled
@@ -115,13 +115,13 @@ class CertificateController extends Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Submission
-    |--------------------------------------------------------------------------
-    |
-    | A submission may only be linked to a presenter certificate.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Submission
+        |--------------------------------------------------------------------------
+        |
+        | A submission may only be linked to a presenter certificate.
+        |
+        */
 
         if (
             $validated['type'] !== 'presenter'
@@ -158,13 +158,13 @@ class CertificateController extends Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Presenter certificate
-    |--------------------------------------------------------------------------
-    |
-    | Presenter certificates are tied to a published submission.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Presenter certificate
+        |--------------------------------------------------------------------------
+        |
+        | Presenter certificates are tied to a published submission.
+        |
+        */
 
         if (
             $validated['type'] === 'presenter'
@@ -179,19 +179,19 @@ class CertificateController extends Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Certificate eligibility
-    |--------------------------------------------------------------------------
-    |
-    | Check the business rules for the selected certificate type:
-    |
-    | participant -> confirmed registration + verified attendance
-    | presenter   -> published submission + verified attendance
-    | speaker     -> confirmed speaker registration + verified attendance
-    | committee   -> confirmed committee registration + verified attendance
-    | reviewer    -> reviewer assignment + all assigned reviews completed
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Certificate eligibility
+        |--------------------------------------------------------------------------
+        |
+        | Check the business rules for the selected certificate type:
+        |
+        | participant -> confirmed registration + verified attendance
+        | presenter   -> published submission + verified attendance
+        | speaker     -> confirmed speaker registration + verified attendance
+        | committee   -> confirmed committee registration + verified attendance
+        | reviewer    -> reviewer assignment + all assigned reviews completed
+        |
+        */
 
         $eligibility = $certificateEligibilityService->evaluate(
             $participant,
@@ -209,10 +209,10 @@ class CertificateController extends Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Duplicate protection
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Duplicate protection
+        |--------------------------------------------------------------------------
+        */
 
         $existingCertificate = null;
 
@@ -266,10 +266,10 @@ class CertificateController extends Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Create certificate
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Create certificate
+        |--------------------------------------------------------------------------
+        */
 
         $certificate = DB::transaction(
             function () use (
@@ -302,10 +302,10 @@ class CertificateController extends Controller
         );
 
         /*
-    |--------------------------------------------------------------------------
-    | Generate PDF
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Generate PDF
+        |--------------------------------------------------------------------------
+        */
 
         $certificate->load([
             'participant',
@@ -313,9 +313,30 @@ class CertificateController extends Controller
             'submission',
         ]);
 
-        $this->generatePdf(
-            $certificate
-        );
+        try {
+            $this->generatePdf(
+                $certificate
+            );
+        } catch (\Throwable $e) {
+            /*
+            |--------------------------------------------------------------------------
+            | PDF generation failed
+            |--------------------------------------------------------------------------
+            |
+            | generatePdf() already cleans up the newly created PDF when its
+            | own file/database operation fails. Remove the certificate record
+            | as well so an incomplete certificate is not left in the database.
+            |
+            */
+
+            try {
+                $certificate->delete();
+            } catch (\Throwable $deleteException) {
+                report($deleteException);
+            }
+
+            throw $e;
+        }
 
         return redirect()
             ->route(
@@ -367,16 +388,30 @@ class CertificateController extends Controller
     public function destroy(
         Certificate $certificate
     ) {
-        if (
-            $certificate->file_path
-        ) {
-            Storage::disk('public')
-                ->delete(
-                    $certificate->file_path
-                );
-        }
+        $filePath =
+            $certificate->file_path;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete database record first
+        |--------------------------------------------------------------------------
+        |
+        | If the database delete fails, the PDF remains available.
+        |
+        */
 
         $certificate->delete();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete PDF only after database delete succeeds
+        |--------------------------------------------------------------------------
+        */
+
+        if ($filePath) {
+            Storage::disk('public')
+                ->delete($filePath);
+        }
 
         return redirect()
             ->route(
@@ -456,45 +491,92 @@ class CertificateController extends Controller
             'landscape'
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Create a unique new PDF path
+        |--------------------------------------------------------------------------
+        |
+        | Do not overwrite the existing PDF. The old PDF remains available
+        | until the database successfully references the new PDF.
+        |
+        */
+
         $fileName =
             $certificate->certificate_number .
+            '-' .
+            Str::uuid() .
             '.pdf';
 
         $filePath =
             'certificates/' .
             $fileName;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Delete old PDF if regenerating
-        |--------------------------------------------------------------------------
-        */
+        $oldFile =
+            $certificate->file_path;
 
-        if (
-            $certificate->file_path
-        ) {
+        try {
+            /*
+            |--------------------------------------------------------------------------
+            | Write new PDF
+            |--------------------------------------------------------------------------
+            */
+
             Storage::disk('public')
-                ->delete(
-                    $certificate->file_path
+                ->put(
+                    $filePath,
+                    $pdf->output()
                 );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update database reference
+            |--------------------------------------------------------------------------
+            */
+
+            $certificate->update([
+                'file_path' =>
+                $filePath,
+            ]);
+        } catch (\Throwable $e) {
+            /*
+            |--------------------------------------------------------------------------
+            | Cleanup newly created PDF
+            |--------------------------------------------------------------------------
+            |
+            | The old PDF is intentionally not touched here.
+            |
+            */
+
+            Storage::disk('public')
+                ->delete($filePath);
+
+            throw $e;
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Save PDF
+        | Remove old PDF only after the database update succeeds
         |--------------------------------------------------------------------------
         */
 
-        Storage::disk('public')
-            ->put(
-                $filePath,
-                $pdf->output()
-            );
+        if (
+            $oldFile
+            && $oldFile !== $filePath
+        ) {
+            try {
+                Storage::disk('public')
+                    ->delete($oldFile);
+            } catch (\Throwable $e) {
+                /*
+                |--------------------------------------------------------------------------
+                | The database already points to the new valid PDF.
+                | Failure to clean the old PDF should not invalidate it.
+                |--------------------------------------------------------------------------
+                */
 
-        $certificate->update([
-            'file_path' =>
-            $filePath,
-        ]);
+                report($e);
+            }
+        }
 
         return $filePath;
     }

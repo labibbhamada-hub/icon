@@ -123,13 +123,13 @@
 
             {{-- User --}}
             <li class="nav-item dropdown user-menu">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}"
-                        class="user-image rounded-circle shadow" alt="{{ auth()->user()->name }}" />
-
+                <a href="#" class="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+                    data-bs-toggle="dropdown" aria-expanded="false" title="Open user menu">
+                    <i class="bi bi-person-circle"></i>
                     <span class="d-none d-md-inline">
                         {{ auth()->user()->name }}
                     </span>
+                    <i class="bi bi-chevron-down ms-1"></i>
                 </a>
 
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end rounded-0 overflow-hidden">

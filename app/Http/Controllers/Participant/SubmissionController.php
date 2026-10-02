@@ -281,15 +281,33 @@ class SubmissionController extends Controller
                     as $index => $author
                 ) {
                     $submission->authors()->create([
-                        'title_prefix' => $author['title_prefix'] ?? null,
-                        'name' => $author['name'],
-                        'title_suffix' => $author['title_suffix'] ?? null,
-                        'orcid' => $author['orcid'] ?? null,
-                        'email' => $author['email'] ?? null,
-                        'institution' => $author['institution'] ?? null,
-                        'department' => $author['department'] ?? null,
-                        'is_corresponding' => !empty($author['is_corresponding']),
-                        'sort_order' => $author['sort_order'] ?? $index + 1,
+                        'title_prefix' =>
+                        $author['title_prefix'] ?? null,
+
+                        'name' =>
+                        $author['name'],
+
+                        'title_suffix' =>
+                        $author['title_suffix'] ?? null,
+
+                        'orcid' =>
+                        $author['orcid'] ?? null,
+
+                        'email' =>
+                        $author['email'] ?? null,
+
+                        'institution' =>
+                        $author['institution'] ?? null,
+
+                        'department' =>
+                        $author['department'] ?? null,
+
+                        'is_corresponding' =>
+                        !empty($author['is_corresponding']),
+
+                        'sort_order' =>
+                        $author['sort_order']
+                            ?? $index + 1,
                     ]);
                 }
 
@@ -339,10 +357,10 @@ class SubmissionController extends Controller
         ]);
 
         /*
-    |--------------------------------------------------------------------------
-    | Latest Payment
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Latest Payment
+        |--------------------------------------------------------------------------
+        */
 
         $payment = Payment::where(
             'participant_id',
@@ -482,36 +500,50 @@ class SubmissionController extends Controller
         $oldFile =
             $submission->paper_file;
 
-        $newFile =
-            $request
-            ->file('paper_file')
-            ->store(
-                'submissions/papers',
-                'local'
+        $newFile = null;
+
+        try {
+            $newFile =
+                $request
+                ->file('paper_file')
+                ->store(
+                    'submissions/papers',
+                    'local'
+                );
+
+            DB::transaction(
+                function () use (
+                    $submission,
+                    $newFile
+                ) {
+                    $submission->update([
+                        'paper_file' =>
+                        $newFile,
+
+                        'submission_stage' =>
+                        'full_paper',
+
+                        'status' =>
+                        'submitted',
+
+                        'submitted_at' =>
+                        now(),
+                    ]);
+                }
             );
-
-        DB::transaction(
-            function () use (
-                $submission,
-                $newFile
-            ) {
-                $submission->update([
-                    'paper_file' =>
-                    $newFile,
-
-                    'submission_stage' =>
-                    'full_paper',
-
-                    'status' =>
-                    'submitted',
-
-                    'submitted_at' =>
-                    now(),
-                ]);
+        } catch (\Throwable $e) {
+            if ($newFile) {
+                Storage::disk('local')
+                    ->delete($newFile);
             }
-        );
 
-        if ($oldFile) {
+            throw $e;
+        }
+
+        if (
+            $oldFile
+            && $oldFile !== $newFile
+        ) {
             Storage::disk('local')
                 ->delete($oldFile);
         }
@@ -853,101 +885,112 @@ class SubmissionController extends Controller
         $oldFile =
             $submission->revised_file;
 
-        $newFile =
-            $request
-            ->file('revised_file')
-            ->store(
-                'submissions/revisions',
-                'local'
-            );
+        $newFile = null;
 
-        DB::transaction(
-            function () use (
-                $submission,
-                $oldFile,
-                $newFile
-            ) {
-                $reviewStage =
-                    $submission->submission_stage;
+        try {
+            $newFile =
+                $request
+                ->file('revised_file')
+                ->store(
+                    'submissions/revisions',
+                    'local'
+                );
 
-                $currentRound =
-                    Review::where(
-                        'submission_id',
-                        $submission->id
-                    )
-                    ->where(
-                        'review_stage',
-                        $reviewStage
-                    )
-                    ->max('review_round');
-
-                $nextRound =
-                    $currentRound
-                    ? $currentRound + 1
-                    : 1;
-
-                $submission->update([
-                    'revised_file' =>
-                    $newFile,
-
-                    'status' =>
-                    'under_review',
-                ]);
-
-                $oldReviews =
-                    Review::where(
-                        'submission_id',
-                        $submission->id
-                    )
-                    ->where(
-                        'review_stage',
-                        $reviewStage
-                    )
-                    ->where(
-                        'review_round',
-                        $currentRound
-                    )
-                    ->get();
-
-                foreach (
-                    $oldReviews
-                    as $oldReview
+            DB::transaction(
+                function () use (
+                    $submission,
+                    $newFile
                 ) {
-                    Review::create([
-                        'submission_id' =>
-                        $submission->id,
+                    $reviewStage =
+                        $submission->submission_stage;
 
-                        'reviewer_id' =>
-                        $oldReview->reviewer_id,
+                    $currentRound =
+                        Review::where(
+                            'submission_id',
+                            $submission->id
+                        )
+                        ->where(
+                            'review_stage',
+                            $reviewStage
+                        )
+                        ->max('review_round');
 
-                        'review_stage' =>
-                        $reviewStage,
+                    $nextRound =
+                        $currentRound
+                        ? $currentRound + 1
+                        : 1;
 
-                        'review_round' =>
-                        $nextRound,
+                    $submission->update([
+                        'revised_file' =>
+                        $newFile,
 
-                        'score' =>
-                        null,
-
-                        'comment' =>
-                        null,
-
-                        'recommendation' =>
-                        null,
-
-                        'reviewed_at' =>
-                        null,
+                        'status' =>
+                        'under_review',
                     ]);
-                }
 
-                if ($oldFile) {
-                    Storage::disk('local')
-                        ->delete(
-                            $oldFile
-                        );
+                    $oldReviews =
+                        Review::where(
+                            'submission_id',
+                            $submission->id
+                        )
+                        ->where(
+                            'review_stage',
+                            $reviewStage
+                        )
+                        ->where(
+                            'review_round',
+                            $currentRound
+                        )
+                        ->get();
+
+                    foreach (
+                        $oldReviews
+                        as $oldReview
+                    ) {
+                        Review::create([
+                            'submission_id' =>
+                            $submission->id,
+
+                            'reviewer_id' =>
+                            $oldReview->reviewer_id,
+
+                            'review_stage' =>
+                            $reviewStage,
+
+                            'review_round' =>
+                            $nextRound,
+
+                            'score' =>
+                            null,
+
+                            'comment' =>
+                            null,
+
+                            'recommendation' =>
+                            null,
+
+                            'reviewed_at' =>
+                            null,
+                        ]);
+                    }
                 }
+            );
+        } catch (\Throwable $e) {
+            if ($newFile) {
+                Storage::disk('local')
+                    ->delete($newFile);
             }
-        );
+
+            throw $e;
+        }
+
+        if (
+            $oldFile
+            && $oldFile !== $newFile
+        ) {
+            Storage::disk('local')
+                ->delete($oldFile);
+        }
 
         return redirect()
             ->route(
@@ -1203,35 +1246,53 @@ class SubmissionController extends Controller
         $oldFile =
             $submission->camera_ready_file;
 
-        $newFile =
-            $request
-            ->file('camera_ready_file')
-            ->store(
-                'submissions/camera-ready',
-                'local'
-            );
+        $newFile = null;
 
-        DB::transaction(
-            function () use (
-                $submission,
-                $oldFile,
-                $newFile
-            ) {
-                $submission->update([
-                    'camera_ready_file' => $newFile,
-                    'camera_ready_correction_reason' => null,
-                    'camera_ready_status' => 'submitted',
-                    'status' => 'camera_ready',
-                ]);
+        try {
+            $newFile =
+                $request
+                ->file('camera_ready_file')
+                ->store(
+                    'submissions/camera-ready',
+                    'local'
+                );
 
-                if ($oldFile) {
-                    Storage::disk('local')
-                        ->delete(
-                            $oldFile
-                        );
+            DB::transaction(
+                function () use (
+                    $submission,
+                    $newFile
+                ) {
+                    $submission->update([
+                        'camera_ready_file' =>
+                        $newFile,
+
+                        'camera_ready_correction_reason' =>
+                        null,
+
+                        'camera_ready_status' =>
+                        'submitted',
+
+                        'status' =>
+                        'camera_ready',
+                    ]);
                 }
+            );
+        } catch (\Throwable $e) {
+            if ($newFile) {
+                Storage::disk('local')
+                    ->delete($newFile);
             }
-        );
+
+            throw $e;
+        }
+
+        if (
+            $oldFile
+            && $oldFile !== $newFile
+        ) {
+            Storage::disk('local')
+                ->delete($oldFile);
+        }
 
         return redirect()
             ->route(
@@ -1316,9 +1377,10 @@ class SubmissionController extends Controller
     private function getOwnedSubmissionParticipant(
         Submission $submission
     ): Participant {
-        $participant = Participant::with(
-            'registrationType'
-        )
+        $participant =
+            Participant::with(
+                'registrationType'
+            )
             ->where(
                 'user_id',
                 Auth::id()
@@ -1341,8 +1403,9 @@ class SubmissionController extends Controller
         return $participant;
     }
 
-    private function getSubmissionDeadline($conferenceId): ?ImportantDate
-    {
+    private function getSubmissionDeadline(
+        $conferenceId
+    ): ?ImportantDate {
         return ImportantDate::where(
             'conference_id',
             $conferenceId

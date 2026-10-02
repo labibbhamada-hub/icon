@@ -26,7 +26,12 @@ class ReviewerRequest extends FormRequest
 
             'user_id' => [
                 'required',
-                'exists:users,id',
+
+                Rule::exists('users', 'id')
+                    ->where(function ($query) {
+                        $query->where('role', 'reviewer');
+                    }),
+
                 Rule::unique('reviewers', 'user_id')
                     ->where(function ($query) {
                         return $query->where(

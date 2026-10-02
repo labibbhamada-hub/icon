@@ -92,14 +92,31 @@ class ConferenceRegistrationTypeController extends Controller
     ) {
         $data = $request->validated();
 
-        $conferenceRegistrationType->update(
-            $data
-        );
+        $hasParticipants = $conferenceRegistrationType
+            ->participants()
+            ->exists();
+
+        if (
+            $hasParticipants
+            && (
+                (int) $conferenceRegistrationType->conference_id !==
+                (int) $data['conference_id']
+                || $conferenceRegistrationType->category !==
+                $data['category']
+            )
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Registration type conference and category cannot be changed because it is already used by participants.'
+                );
+        }
+
+        $conferenceRegistrationType->update($data);
 
         return redirect()
-            ->route(
-                'admin.registration-types.index'
-            )
+            ->route('admin.registration-types.index')
             ->with(
                 'success',
                 'Registration type updated successfully.'

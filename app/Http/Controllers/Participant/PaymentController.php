@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Services\PaymentCalculationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -48,7 +49,10 @@ class PaymentController extends Controller
             'conference.setting',
             'conference.paymentMethods' => function ($query) {
                 $query
-                    ->where('is_active', true)
+                    ->where(
+                        'is_active',
+                        true
+                    )
                     ->orderBy('sort_order')
                     ->orderBy('name');
             },
@@ -78,17 +82,25 @@ class PaymentController extends Controller
                 }
             )
             ->get()
-            ->filter(function (Participant $participant) use (
-                $paymentCalculationService
-            ) {
-                return $paymentCalculationService
-                    ->canPay($participant);
-            })
-            ->filter(function (Participant $participant) {
-                return !$this->hasPendingPayment(
-                    $participant
-                );
-            })
+            ->filter(
+                function (
+                    Participant $participant
+                ) use (
+                    $paymentCalculationService
+                ) {
+                    return $paymentCalculationService
+                        ->canPay($participant);
+                }
+            )
+            ->filter(
+                function (
+                    Participant $participant
+                ) {
+                    return !$this->hasPendingPayment(
+                        $participant
+                    );
+                }
+            )
             ->values();
 
         return view(
@@ -161,7 +173,9 @@ class PaymentController extends Controller
             $paymentCalculationService
             ->calculate($participant);
 
-        if ($calculation['outstanding_amount'] <= 0) {
+        if (
+            $calculation['outstanding_amount'] <= 0
+        ) {
             return back()
                 ->withInput()
                 ->with(
@@ -170,60 +184,90 @@ class PaymentController extends Controller
                 );
         }
 
-        DB::beginTransaction();
+        /*
+        |--------------------------------------------------------------------------
+        | Store proof file before starting the DB transaction
+        |--------------------------------------------------------------------------
+        |
+        | Filesystem operations cannot be rolled back by the database.
+        | If the database operation fails, the newly created file is removed
+        | manually in the catch block.
+        |
+        */
+
+        $proofFile = $request
+            ->file('proof_file')
+            ->store(
+                'payments/proofs',
+                'local'
+            );
 
         try {
-            $paymentCode =
-                $this->generatePaymentCode();
+            DB::transaction(
+                function () use (
+                    $data,
+                    $participant,
+                    $calculation,
+                    $proofFile
+                ) {
+                    Payment::create([
+                        'participant_id' =>
+                        $participant->id,
 
-            $proofFile = $request
-                ->file('proof_file')
-                ->store(
-                    'payments/proofs',
-                    'local'
-                );
+                        'payment_method_id' =>
+                        $data['payment_method_id'],
 
-            Payment::create([
-                'participant_id' =>
-                $participant->id,
+                        'payment_code' =>
+                        $this->generatePaymentCode(),
 
-                'payment_method_id' =>
-                $data['payment_method_id'],
+                        'amount' =>
+                        $calculation['outstanding_amount'],
 
-                'payment_code' =>
-                $paymentCode,
+                        'proof_file' =>
+                        $proofFile,
 
-                'amount' =>
-                $calculation['outstanding_amount'],
+                        'status' =>
+                        'pending',
 
-                'proof_file' =>
-                $proofFile,
+                        'notes' =>
+                        $data['notes'] ?? null,
 
-                'status' =>
-                'pending',
-
-                'notes' =>
-                $data['notes'] ?? null,
-
-                'paid_at' =>
-                $data['paid_at'],
-            ]);
-
-            DB::commit();
-
-            return redirect()
-                ->route(
-                    'participant.payments.index'
-                )
-                ->with(
-                    'success',
-                    'Payment proof submitted successfully.'
-                );
+                        'paid_at' =>
+                        $data['paid_at'],
+                    ]);
+                }
+            );
         } catch (Throwable $e) {
-            DB::rollBack();
+            /*
+            |--------------------------------------------------------------------------
+            | DB transaction failed
+            |--------------------------------------------------------------------------
+            |
+            | The payment record was not committed, so the new proof file
+            | has no valid database reference and must be removed.
+            |
+            */
+
+            Storage::disk('local')
+                ->delete($proofFile);
 
             throw $e;
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DB transaction succeeded
+        |--------------------------------------------------------------------------
+        */
+
+        return redirect()
+            ->route(
+                'participant.payments.index'
+            )
+            ->with(
+                'success',
+                'Payment proof submitted successfully.'
+            );
     }
 
     private function hasPendingPayment(

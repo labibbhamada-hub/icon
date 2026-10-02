@@ -22,6 +22,7 @@ class DashboardController extends Controller
             'submissions.topic',
             'payments',
             'attendances',
+            'certificates',
         ])
             ->where(
                 'user_id',
@@ -81,9 +82,14 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        $importantDateConferenceIds = $participants
+            ->pluck('conference_id')
+            ->unique()
+            ->values();
+
         $importantDates = ImportantDate::whereIn(
             'conference_id',
-            $presenterConferenceIds
+            $importantDateConferenceIds
         )
             ->where(
                 'is_active',
@@ -98,6 +104,8 @@ class DashboardController extends Controller
                     'revision',
                     'camera_ready',
                     'conference',
+                    'publication',
+                    'other',
                 ]
             )
             ->orderBy('date')

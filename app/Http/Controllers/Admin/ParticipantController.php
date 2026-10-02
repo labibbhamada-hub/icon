@@ -134,6 +134,24 @@ class ParticipantController extends Controller
             'The selected registration type does not belong to the selected conference.'
         );
 
+        if (
+            (int) $participant->conference_id !==
+            (int) $data['conference_id']
+            && (
+                $participant->submissions()->exists()
+                || $participant->payments()->exists()
+                || $participant->certificates()->exists()
+                || $participant->attendances()->exists()
+            )
+        ) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Participant cannot be moved to another conference because related records already exist.'
+                );
+        }
+
         $participant->update($data);
 
         return redirect()

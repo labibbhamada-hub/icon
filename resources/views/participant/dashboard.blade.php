@@ -374,19 +374,22 @@
 
                     @foreach ($seminarConferences as $conference)
                         @php
-                            $startDate = $conference->start_date
-                                ? \Illuminate\Support\Carbon::parse($conference->start_date)->startOfDay()
+                            $conferenceDates = $importantDates->get($conference->id, collect());
+
+                            $conferenceEvent = $conferenceDates->firstWhere('type', 'conference');
+
+                            $startDate = $conferenceEvent?->date
+                                ? \Illuminate\Support\Carbon::parse($conferenceEvent->date)->startOfDay()
                                 : null;
 
-                            $endDate = $conference->end_date
-                                ? \Illuminate\Support\Carbon::parse($conference->end_date)->endOfDay()
-                                : null;
+                            $endDate = $conferenceEvent?->end_date
+                                ? \Illuminate\Support\Carbon::parse($conferenceEvent->end_date)->endOfDay()
+                                : $startDate?->copy()->endOfDay();
                         @endphp
 
                         <div class="border rounded-0 p-3 mb-3">
 
                             <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
-
                                 <div>
                                     <h5 class="fw-bold mb-1">
                                         {{ $conference->name }}
@@ -404,39 +407,64 @@
                                 <span class="badge text-bg-primary rounded-0">
                                     Conference
                                 </span>
-
                             </div>
 
                             <hr>
 
-                            <div class="row g-3">
+                            @if ($conferenceDates->isNotEmpty())
+                                <div class="list-group list-group-flush">
 
-                                <div class="col-md-6">
-                                    <small class="text-muted d-block">
-                                        Start Date
-                                    </small>
+                                    @foreach ($conferenceDates as $importantDate)
+                                        <div class="list-group-item px-0">
 
-                                    <strong>
-                                        {{ $startDate?->format('d F Y') ?? '—' }}
-                                    </strong>
+                                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                                <div class="flex-grow-1">
+
+                                                    <div class="fw-semibold">
+                                                        {{ $importantDate->title }}
+                                                    </div>
+
+                                                    @if ($importantDate->description)
+                                                        <div class="small text-muted mt-1">
+                                                            {{ $importantDate->description }}
+                                                        </div>
+                                                    @endif
+
+                                                </div>
+
+                                                <span class="badge text-bg-light border rounded-0">
+                                                    {{ ucwords(str_replace('_', ' ', $importantDate->type)) }}
+                                                </span>
+                                            </div>
+
+                                            <div class="small text-muted mt-2">
+                                                <i class="bi bi-calendar3 me-1"></i>
+
+                                                @if (
+                                                    $importantDate->end_date &&
+                                                        !\Illuminate\Support\Carbon::parse($importantDate->date)->isSameDay(
+                                                            \Illuminate\Support\Carbon::parse($importantDate->end_date)))
+                                                    {{ \Illuminate\Support\Carbon::parse($importantDate->date)->format('d F Y') }}
+                                                    -
+                                                    {{ \Illuminate\Support\Carbon::parse($importantDate->end_date)->format('d F Y') }}
+                                                @else
+                                                    {{ \Illuminate\Support\Carbon::parse($importantDate->date)->format('d F Y') }}
+                                                @endif
+                                            </div>
+
+                                        </div>
+                                    @endforeach
+
                                 </div>
-
-                                <div class="col-md-6">
-                                    <small class="text-muted d-block">
-                                        End Date
-                                    </small>
-
-                                    <strong>
-                                        {{ $endDate?->format('d F Y') ?? '—' }}
-                                    </strong>
+                            @else
+                                <div class="text-muted">
+                                    No conference schedule available.
                                 </div>
-
-                            </div>
+                            @endif
 
                             @if ($startDate && $endDate)
                                 <div class="border rounded-0 p-3 mt-3 text-center" data-conference-countdown
                                     data-start="{{ $startDate->timestamp }}" data-end="{{ $endDate->timestamp }}">
-
                                     <small class="text-muted d-block" data-countdown-label>
                                         Starts In
                                     </small>
@@ -444,7 +472,6 @@
                                     <strong class="fs-4" data-countdown-value>
                                         —
                                     </strong>
-
                                 </div>
                             @endif
 
@@ -702,6 +729,42 @@
 
                                         @php
                                             $attendance = $participant->attendances->first();
+
+                                            $conferenceDates = $importantDates->get(
+                                                $participant->conference_id,
+                                                collect(),
+                                            );
+
+                                            $conferenceEvent = $conferenceDates->firstWhere('type', 'conference');
+
+                                            $attendanceStart = $conferenceEvent?->date
+                                                ? \Illuminate\Support\Carbon::parse(
+                                                    $conferenceEvent->date,
+                                                )->startOfDay()
+                                                : null;
+
+                                            $attendanceEnd = $conferenceEvent?->end_date
+                                                ? \Illuminate\Support\Carbon::parse(
+                                                    $conferenceEvent->end_date,
+                                                )->endOfDay()
+                                                : $attendanceStart?->copy()->endOfDay();
+
+                                            $now = now();
+
+                                            $attendanceNotStarted = $attendanceStart && $now->lt($attendanceStart);
+
+                                            $attendanceOpen =
+                                                $attendanceStart &&
+                                                $attendanceEnd &&
+                                                $now->between($attendanceStart, $attendanceEnd);
+
+                                            $attendanceClosed = $attendanceEnd && $now->gt($attendanceEnd);
+
+                                            $attendanceCertificate = $participant->certificates->first(
+                                                fn($certificate) => $certificate->type === 'participant' &&
+                                                    $certificate->conference_id === $participant->conference_id &&
+                                                    is_null($certificate->submission_id),
+                                            );
                                         @endphp
 
                                         <dt class="col-sm-5">
@@ -710,15 +773,41 @@
 
                                         <dd class="col-sm-7">
 
-                                            @if (!$attendance || $attendance->attendance_status === 'not_checked_in')
-                                                <div class="">
+                                            @if ($participant->registration_status !== 'confirmed')
+                                                <span class="badge text-bg-secondary rounded-0">
+                                                    Registration Not Confirmed
+                                                </span>
+                                            @elseif ($attendanceNotStarted)
+                                                <div>
+                                                    <span class="badge text-bg-secondary rounded-0">
+                                                        Not Available
+                                                    </span>
 
+                                                    @if ($attendanceStart)
+                                                        <small class="text-muted d-block mt-1">
+                                                            Check-in opens on
+                                                            {{ $attendanceStart->format('d F Y') }}.
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            @elseif ($attendanceClosed && !$attendance)
+                                                <div>
+                                                    <span class="badge text-bg-secondary rounded-0">
+                                                        Attendance Closed
+                                                    </span>
+
+                                                    <small class="text-muted d-block mt-1">
+                                                        The conference attendance period has ended.
+                                                    </small>
+                                                </div>
+                                            @elseif (!$attendance || $attendance->attendance_status === 'not_checked_in')
+                                                <div>
                                                     <span class="badge text-bg-secondary rounded-0">
                                                         Not Checked In
                                                     </span>
 
-                                                    @if ($participant->registration_status === 'confirmed')
-                                                        <div class="">
+                                                    @if ($attendanceOpen)
+                                                        <div class="mt-1">
                                                             <form method="POST"
                                                                 action="{{ route('participant.attendance.check-in', $participant) }}"
                                                                 class="d-inline">
@@ -731,45 +820,45 @@
                                                                 </button>
                                                             </form>
                                                         </div>
+                                                    @endif
+                                                </div>
+                                            @elseif ($attendance->attendance_status === 'checked_in' || $attendance->attendance_status === 'verified')
+                                                <div>
+                                                    @if ($attendance->attendance_status === 'verified')
+                                                        <span class="badge text-bg-success rounded-0">
+                                                            Verified
+                                                        </span>
                                                     @else
-                                                        <div class="">
-                                                            <small class="text-muted">
-                                                                Check-in is available after registration is confirmed.
-                                                            </small>
-                                                        </div>
+                                                        <span class="badge text-bg-success rounded-0">
+                                                            Checked In
+                                                        </span>
                                                     @endif
 
-                                                </div>
-                                            @elseif ($attendance->attendance_status === 'checked_in')
-                                                <div>
-
-                                                    <span class="badge text-bg-warning rounded-0">
-                                                        Waiting for Verification
-                                                    </span>
-
                                                     <small class="text-muted d-block mt-1">
                                                         Checked in at
                                                         {{ $attendance->checked_in_at?->format('d F Y H:i') ?? '-' }}
                                                     </small>
 
-                                                </div>
-                                            @elseif ($attendance->attendance_status === 'verified')
-                                                <div>
+                                                    @if ($attendance->attendance_status === 'verified' && $attendance->verified_at)
+                                                        <small class="text-muted d-block">
+                                                            Verified at
+                                                            {{ $attendance->verified_at->format('d F Y H:i') }}
+                                                        </small>
+                                                    @endif
 
-                                                    <span class="badge text-bg-success rounded-0">
-                                                        Verified
-                                                    </span>
-
-                                                    <small class="text-muted d-block mt-1">
-                                                        Checked in at
-                                                        {{ $attendance->checked_in_at?->format('d F Y H:i') ?? '-' }}
-                                                    </small>
-
-                                                    <small class="text-muted d-block">
-                                                        Verified at
-                                                        {{ $attendance->verified_at?->format('d F Y H:i') ?? '-' }}
-                                                    </small>
-
+                                                    @if ($attendanceCertificate)
+                                                        <div class="mt-2">
+                                                            <a href="{{ route('participant.certificates.download', $attendanceCertificate) }}"
+                                                                class="btn btn-success btn-sm rounded-0">
+                                                                <i class="bi bi-award me-1"></i>
+                                                                Download Certificate
+                                                            </a>
+                                                        </div>
+                                                    @else
+                                                        <small class="text-muted d-block mt-2">
+                                                            Your attendance certificate is being prepared.
+                                                        </small>
+                                                    @endif
                                                 </div>
                                             @else
                                                 <span class="badge text-bg-secondary rounded-0">

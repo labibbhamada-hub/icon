@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SpeakerRequest;
 use App\Models\Conference;
 use App\Models\Speaker;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class SpeakerController extends Controller
 {
@@ -35,13 +37,27 @@ class SpeakerController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request
-                ->file('photo')
-                ->store('speakers', 'public');
-        }
+        $photoFile = null;
 
-        Speaker::create($data);
+        try {
+            if ($request->hasFile('photo')) {
+                $photoFile = $request
+                    ->file('photo')
+                    ->store('speakers', 'public');
+
+                $data['photo'] = $photoFile;
+            }
+
+            DB::transaction(function () use ($data) {
+                Speaker::create($data);
+            });
+        } catch (Throwable $e) {
+            if ($photoFile) {
+                Storage::disk('public')->delete($photoFile);
+            }
+
+            throw $e;
+        }
 
         return redirect()
             ->route('admin.speakers.index')
@@ -66,7 +82,13 @@ class SpeakerController extends Controller
         $conferences = Conference::orderByDesc('year')
             ->get();
 
-        return view('admin.speakers.edit', compact('speaker', 'conferences'));
+        return view(
+            'admin.speakers.edit',
+            compact(
+                'speaker',
+                'conferences'
+            )
+        );
     }
 
     public function update(
@@ -75,19 +97,39 @@ class SpeakerController extends Controller
     ) {
         $data = $request->validated();
 
-        if ($request->hasFile('photo')) {
+        $oldPhotoFile = $speaker->photo;
+        $newPhotoFile = null;
 
-            if ($speaker->photo) {
-                Storage::disk('public')
-                    ->delete($speaker->photo);
+        try {
+            if ($request->hasFile('photo')) {
+                $newPhotoFile = $request
+                    ->file('photo')
+                    ->store('speakers', 'public');
+
+                $data['photo'] = $newPhotoFile;
             }
 
-            $data['photo'] = $request
-                ->file('photo')
-                ->store('speakers', 'public');
+            DB::transaction(function () use (
+                $speaker,
+                $data
+            ) {
+                $speaker->update($data);
+            });
+        } catch (Throwable $e) {
+            if ($newPhotoFile) {
+                Storage::disk('public')->delete($newPhotoFile);
+            }
+
+            throw $e;
         }
 
-        $speaker->update($data);
+        if (
+            $newPhotoFile
+            && $oldPhotoFile
+            && $oldPhotoFile !== $newPhotoFile
+        ) {
+            Storage::disk('public')->delete($oldPhotoFile);
+        }
 
         return redirect()
             ->route('admin.speakers.index')
@@ -99,11 +141,15 @@ class SpeakerController extends Controller
 
     public function destroy(Speaker $speaker)
     {
-        if ($speaker->photo) {
-            Storage::disk('public')->delete($speaker->photo);
-        }
+        $photoFile = $speaker->photo;
 
-        $speaker->delete();
+        DB::transaction(function () use ($speaker) {
+            $speaker->delete();
+        });
+
+        if ($photoFile) {
+            Storage::disk('public')->delete($photoFile);
+        }
 
         return redirect()
             ->route('admin.speakers.index')

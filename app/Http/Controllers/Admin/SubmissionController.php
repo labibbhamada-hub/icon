@@ -16,12 +16,12 @@ use App\Models\Topic;
 use App\Notifications\ConferenceNotification;
 use App\Services\CertificateGenerationService;
 use App\Services\PublicationEligibilityService;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SubmissionController extends Controller
 {
@@ -36,7 +36,10 @@ class SubmissionController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('admin.submissions.index', compact('submissions'));
+        return view(
+            'admin.submissions.index',
+            compact('submissions')
+        );
     }
 
     public function create()
@@ -67,49 +70,104 @@ class SubmissionController extends Controller
     {
         $data = $request->validated();
 
-        DB::transaction(function () use (
-            $request,
-            $data
-        ) {
-            $data['submission_code'] =
-                $this->generateSubmissionCode();
+        /*
+        |--------------------------------------------------------------------------
+        | Store file before DB transaction
+        |--------------------------------------------------------------------------
+        |
+        | Filesystem changes cannot be rolled back by the DB transaction.
+        | Therefore, create the new file first and remove it manually if
+        | the database transaction fails.
+        |
+        */
 
-            if (
-                $data['status'] === 'submitted'
-                && empty($data['submitted_at'])
-            ) {
-                $data['submitted_at'] = now();
-            }
+        $paperFile = null;
 
+        try {
             if ($request->hasFile('paper_file')) {
-                $data['paper_file'] = $request
+                $paperFile = $request
                     ->file('paper_file')
                     ->store(
                         'submissions/papers',
                         'local'
                     );
+
+                $data['paper_file'] = $paperFile;
             }
 
-            unset($data['authors']);
+            $submission = DB::transaction(
+                function () use (
+                    $request,
+                    $data
+                ) {
+                    $data['submission_code'] =
+                        $this->generateSubmissionCode();
 
-            $submission = Submission::create($data);
+                    if (
+                        $data['status'] === 'submitted'
+                        && empty($data['submitted_at'])
+                    ) {
+                        $data['submitted_at'] = now();
+                    }
 
-            foreach (
-                $request->validated('authors') as $index => $author
-            ) {
-                $submission->authors()->create([
-                    'title_prefix' => $author['title_prefix'] ?? null,
-                    'name' => $author['name'],
-                    'title_suffix' => $author['title_suffix'] ?? null,
-                    'email' => $author['email'] ?? null,
-                    'orcid' => $author['orcid'] ?? null,
-                    'institution' => $author['institution'] ?? null,
-                    'department' => $author['department'] ?? null,
-                    'is_corresponding' => !empty($author['is_corresponding']),
-                    'sort_order' => $author['sort_order'] ?? $index + 1,
-                ]);
+                    unset($data['authors']);
+
+                    $submission = Submission::create(
+                        $data
+                    );
+
+                    foreach (
+                        $request->validated('authors')
+                        as $index => $author
+                    ) {
+                        $submission->authors()->create([
+                            'title_prefix' =>
+                            $author['title_prefix'] ?? null,
+
+                            'name' =>
+                            $author['name'],
+
+                            'title_suffix' =>
+                            $author['title_suffix'] ?? null,
+
+                            'email' =>
+                            $author['email'] ?? null,
+
+                            'orcid' =>
+                            $author['orcid'] ?? null,
+
+                            'institution' =>
+                            $author['institution'] ?? null,
+
+                            'department' =>
+                            $author['department'] ?? null,
+
+                            'is_corresponding' =>
+                            !empty($author['is_corresponding']),
+
+                            'sort_order' =>
+                            $author['sort_order']
+                                ?? $index + 1,
+                        ]);
+                    }
+
+                    return $submission;
+                }
+            );
+        } catch (\Throwable $e) {
+            /*
+            |--------------------------------------------------------------------------
+            | Remove newly uploaded file when DB transaction fails
+            |--------------------------------------------------------------------------
+            */
+
+            if ($paperFile) {
+                Storage::disk('local')
+                    ->delete($paperFile);
             }
-        });
+
+            throw $e;
+        }
 
         return redirect()
             ->route('admin.submissions.index')
@@ -149,8 +207,9 @@ class SubmissionController extends Controller
         );
     }
 
-    public function edit(Submission $submission)
-    {
+    public function edit(
+        Submission $submission
+    ) {
         $submission->load('authors');
 
         $conferences = Conference::orderByDesc('year')
@@ -171,7 +230,15 @@ class SubmissionController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return view('admin.submissions.edit', compact('submission', 'conferences', 'participants', 'topics'));
+        return view(
+            'admin.submissions.edit',
+            compact(
+                'submission',
+                'conferences',
+                'participants',
+                'topics'
+            )
+        );
     }
 
     public function update(
@@ -192,56 +259,136 @@ class SubmissionController extends Controller
 
         $data = $request->validated();
 
-        DB::transaction(function () use (
-            $request,
-            $data,
-            $submission
-        ) {
-            if (
-                $data['status'] === 'submitted'
-                && empty($data['submitted_at'])
-                && !$submission->submitted_at
-            ) {
-                $data['submitted_at'] = now();
-            }
+        /*
+        |--------------------------------------------------------------------------
+        | File replacement lifecycle
+        |--------------------------------------------------------------------------
+        |
+        | Old file must remain available until the DB update succeeds.
+        |
+        */
+
+        $oldFile = $submission->paper_file;
+        $newFile = null;
+
+        try {
+            /*
+            |--------------------------------------------------------------------------
+            | Store new file first
+            |--------------------------------------------------------------------------
+            */
 
             if ($request->hasFile('paper_file')) {
-
-                if ($submission->paper_file) {
-                    Storage::disk('local')
-                        ->delete($submission->paper_file);
-                }
-
-                $data['paper_file'] = $request
+                $newFile = $request
                     ->file('paper_file')
                     ->store(
                         'submissions/papers',
                         'local'
                     );
+
+                $data['paper_file'] = $newFile;
             }
 
-            unset($data['authors']);
+            DB::transaction(
+                function () use (
+                    $request,
+                    $data,
+                    $submission
+                ) {
+                    if (
+                        $data['status'] === 'submitted'
+                        && empty($data['submitted_at'])
+                        && !$submission->submitted_at
+                    ) {
+                        $data['submitted_at'] = now();
+                    }
 
-            $submission->update($data);
+                    unset($data['authors']);
 
-            $submission->authors()->delete();
+                    $submission->update(
+                        $data
+                    );
 
-            foreach (
-                $request->validated('authors') as $index => $author
-            ) {
-                $submission->authors()->create([
-                    'title_prefix' => $author['title_prefix'] ?? null,
-                    'name' => $author['name'],
-                    'title_suffix' => $author['title_suffix'] ?? null,
-                    'email' => $author['email'] ?? null,
-                    'orcid' => $author['orcid'] ?? null,
-                    'institution' => $author['institution'] ?? null,
-                    'department' => $author['department'] ?? null,
-                    'is_corresponding' => !empty($author['is_corresponding']),
-                    'sort_order' => $author['sort_order'] ?? $index + 1,
-                ]);
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Rebuild authors
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $submission->authors()->delete();
+
+                    foreach (
+                        $request->validated('authors')
+                        as $index => $author
+                    ) {
+                        $submission->authors()->create([
+                            'title_prefix' =>
+                            $author['title_prefix'] ?? null,
+
+                            'name' =>
+                            $author['name'],
+
+                            'title_suffix' =>
+                            $author['title_suffix'] ?? null,
+
+                            'email' =>
+                            $author['email'] ?? null,
+
+                            'orcid' =>
+                            $author['orcid'] ?? null,
+
+                            'institution' =>
+                            $author['institution'] ?? null,
+
+                            'department' =>
+                            $author['department'] ?? null,
+
+                            'is_corresponding' =>
+                            !empty($author['is_corresponding']),
+
+                            'sort_order' =>
+                            $author['sort_order']
+                                ?? $index + 1,
+                        ]);
+                    }
+                }
+            );
+        } catch (\Throwable $e) {
+            /*
+            |--------------------------------------------------------------------------
+            | DB failed
+            |--------------------------------------------------------------------------
+            |
+            | New file has no valid DB reference, so remove it.
+            | Old file remains untouched.
+            |
+            */
+
+            if ($newFile) {
+                Storage::disk('local')
+                    ->delete($newFile);
             }
-        });
+
+            throw $e;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DB succeeded
+        |--------------------------------------------------------------------------
+        |
+        | Only now is it safe to remove the old file.
+        |
+        */
+
+        if (
+            $newFile
+            && $oldFile
+            && $oldFile !== $newFile
+        ) {
+            Storage::disk('local')
+                ->delete($oldFile);
+        }
 
         return redirect()
             ->route(
@@ -257,33 +404,36 @@ class SubmissionController extends Controller
     public function destroy(
         Submission $submission
     ) {
+        $files = array_filter([
+            $submission->paper_file,
+            $submission->revised_file,
+            $submission->camera_ready_file,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete DB record first
+        |--------------------------------------------------------------------------
+        */
+
         DB::transaction(
-            function () use ($submission) {
-
-                if ($submission->paper_file) {
-                    Storage::disk('local')
-                        ->delete(
-                            $submission->paper_file
-                        );
-                }
-
-                if ($submission->revised_file) {
-                    Storage::disk('local')
-                        ->delete(
-                            $submission->revised_file
-                        );
-                }
-
-                if ($submission->camera_ready_file) {
-                    Storage::disk('local')
-                        ->delete(
-                            $submission->camera_ready_file
-                        );
-                }
-
+            function () use (
+                $submission
+            ) {
                 $submission->delete();
             }
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete physical files after DB deletion succeeds
+        |--------------------------------------------------------------------------
+        */
+
+        foreach (array_unique($files) as $file) {
+            Storage::disk('local')
+                ->delete($file);
+        }
 
         return redirect()
             ->route(
@@ -311,9 +461,7 @@ class SubmissionController extends Controller
                 );
         }
 
-        if (
-            !$submission->camera_ready_file
-        ) {
+        if (!$submission->camera_ready_file) {
             return back()
                 ->with(
                     'error',
@@ -342,18 +490,26 @@ class SubmissionController extends Controller
                 ->with(
                     'error',
                     'Cannot publish this submission: ' .
-                        implode(' ', $eligibility['reasons'])
+                        implode(
+                            ' ',
+                            $eligibility['reasons']
+                        )
                 );
         }
 
-        DB::transaction(function () use (
-            $submission
-        ) {
-            $submission->update([
-                'camera_ready_status' => 'approved',
-                'status' => 'published',
-            ]);
-        });
+        DB::transaction(
+            function () use (
+                $submission
+            ) {
+                $submission->update([
+                    'camera_ready_status' =>
+                    'approved',
+
+                    'status' =>
+                    'published',
+                ]);
+            }
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -369,15 +525,15 @@ class SubmissionController extends Controller
                 );
         } catch (\Throwable $e) {
             /*
-        |--------------------------------------------------------------------------
-        | Certificate failure should not undo publication
-        |--------------------------------------------------------------------------
-        |
-        | The paper has already been approved and published.
-        | Certificate can be generated again from the Admin certificate
-        | management page.
-        |
-        */
+            |--------------------------------------------------------------------------
+            | Certificate failure should not undo publication
+            |--------------------------------------------------------------------------
+            |
+            | The paper has already been approved and published.
+            | Certificate can be generated again from the Admin certificate
+            | management page.
+            |
+            */
 
             report($e);
 
@@ -446,8 +602,10 @@ class SubmissionController extends Controller
             );
     }
 
-    public function requestCameraReadyCorrection(Request $request, Submission $submission)
-    {
+    public function requestCameraReadyCorrection(
+        Request $request,
+        Submission $submission
+    ) {
         if (
             $submission->submission_stage !== 'full_paper'
             || $submission->status !== 'camera_ready'
@@ -468,16 +626,23 @@ class SubmissionController extends Controller
         ]);
 
         $submission->update([
-            'status' => 'accepted',
-            'camera_ready_status' => 'revision',
-            'camera_ready_correction_reason' => $validated['correction_reason'],
+            'status' =>
+            'accepted',
+
+            'camera_ready_status' =>
+            'revision',
+
+            'camera_ready_correction_reason' =>
+            $validated['correction_reason'],
         ]);
 
         $submission->load([
             'participant.user',
         ]);
 
-        if ($submission->participant?->email) {
+        if (
+            $submission->participant?->email
+        ) {
             Mail::to(
                 $submission->participant->email
             )->queue(
@@ -488,26 +653,33 @@ class SubmissionController extends Controller
             );
         }
 
-        if ($submission->participant?->phone) {
+        if (
+            $submission->participant?->phone
+        ) {
             SendCameraReadyCorrectionWhatsApp::dispatch(
                 $submission->participant->id,
                 $submission->id
             );
         }
 
-        if ($submission->participant?->user) {
-            $submission->participant->user->notify(
-                new ConferenceNotification(
-                    'Camera-Ready Correction Required',
-                    'Your camera-ready paper requires correction. Please review the correction reason and upload the corrected manuscript.',
-                    'Upload Camera Ready',
-                    route(
-                        'participant.submissions.camera-ready',
-                        $submission
-                    ),
-                    'warning'
-                )
-            );
+        if (
+            $submission->participant?->user
+        ) {
+            $submission
+                ->participant
+                ->user
+                ->notify(
+                    new ConferenceNotification(
+                        'Camera-Ready Correction Required',
+                        'Your camera-ready paper requires correction. Please review the correction reason and upload the corrected manuscript.',
+                        'Upload Camera Ready',
+                        route(
+                            'participant.submissions.camera-ready',
+                            $submission
+                        ),
+                        'warning'
+                    )
+                );
         }
 
         return redirect()
@@ -524,9 +696,11 @@ class SubmissionController extends Controller
     private function generateSubmissionCode(): string
     {
         do {
-            $code = 'ICON26-' . strtoupper(
-                Str::random(8)
-            );
+            $code =
+                'ICON26-' .
+                strtoupper(
+                    Str::random(8)
+                );
         } while (
             Submission::where(
                 'submission_code',
@@ -548,20 +722,29 @@ class SubmissionController extends Controller
             404
         );
 
-        return Storage::disk('local')->response(
-            $submission->camera_ready_file,
-            basename($submission->camera_ready_file),
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' .
-                    basename($submission->camera_ready_file) .
-                    '"',
-            ]
-        );
+        return Storage::disk('local')
+            ->response(
+                $submission->camera_ready_file,
+                basename(
+                    $submission->camera_ready_file
+                ),
+                [
+                    'Content-Type' =>
+                    'application/pdf',
+
+                    'Content-Disposition' =>
+                    'inline; filename="' .
+                        basename(
+                            $submission->camera_ready_file
+                        ) .
+                        '"',
+                ]
+            );
     }
 
-    public function downloadPaper(Submission $submission)
-    {
+    public function downloadPaper(
+        Submission $submission
+    ) {
         abort_unless(
             $submission->paper_file
                 && Storage::disk('local')->exists(
@@ -570,14 +753,18 @@ class SubmissionController extends Controller
             404
         );
 
-        return Storage::disk('local')->download(
-            $submission->paper_file,
-            basename($submission->paper_file)
-        );
+        return Storage::disk('local')
+            ->download(
+                $submission->paper_file,
+                basename(
+                    $submission->paper_file
+                )
+            );
     }
 
-    public function downloadRevisedPaper(Submission $submission)
-    {
+    public function downloadRevisedPaper(
+        Submission $submission
+    ) {
         abort_unless(
             $submission->revised_file
                 && Storage::disk('local')->exists(
@@ -586,22 +773,32 @@ class SubmissionController extends Controller
             404
         );
 
-        return Storage::disk('local')->download(
-            $submission->revised_file,
-            basename($submission->revised_file)
-        );
+        return Storage::disk('local')
+            ->download(
+                $submission->revised_file,
+                basename(
+                    $submission->revised_file
+                )
+            );
     }
 
-    public function export(Request $request)
-    {
-        $conferenceId = $request->integer('conference_id');
+    public function export(
+        Request $request
+    ) {
+        $conferenceId =
+            $request->integer(
+                'conference_id'
+            );
 
-        $suffix = $conferenceId
+        $suffix =
+            $conferenceId
             ? '-conference-' . $conferenceId
             : '-all';
 
         return Excel::download(
-            new SubmissionsExport($conferenceId),
+            new SubmissionsExport(
+                $conferenceId
+            ),
             'submissions' .
                 $suffix .
                 '-' .

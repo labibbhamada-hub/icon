@@ -139,12 +139,32 @@ class PaymentController extends Controller
                 );
         }
 
-        if ($payment->proof_file) {
-            Storage::disk('local')
-                ->delete($payment->proof_file);
-        }
+        $proofFile = $payment->proof_file;
 
-        $payment->delete();
+        /*
+        |--------------------------------------------------------------------------
+        | Delete database record first
+        |--------------------------------------------------------------------------
+        |
+        | If the database delete fails, the payment record and proof file
+        | both remain intact.
+        |
+        */
+
+        DB::transaction(function () use ($payment) {
+            $payment->delete();
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete proof file only after database delete succeeds
+        |--------------------------------------------------------------------------
+        */
+
+        if ($proofFile) {
+            Storage::disk('local')
+                ->delete($proofFile);
+        }
 
         return redirect()
             ->route('admin.payments.index')

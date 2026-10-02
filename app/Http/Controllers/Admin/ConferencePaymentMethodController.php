@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Conference;
 use App\Models\ConferencePaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class ConferencePaymentMethodController extends Controller
 {
@@ -42,18 +44,37 @@ class ConferencePaymentMethodController extends Controller
     ) {
         $validated = $this->validateData($request);
 
-        if ($request->hasFile('qr_code_file')) {
-            $validated['qr_code_file'] = $request
-                ->file('qr_code_file')
-                ->store(
-                    'conference-payment-methods/qr-codes',
-                    'public'
-                );
-        }
+        $qrCodeFile = null;
 
-        $conference->paymentMethods()->create(
-            $validated
-        );
+        try {
+            if ($request->hasFile('qr_code_file')) {
+                $qrCodeFile = $request
+                    ->file('qr_code_file')
+                    ->store(
+                        'conference-payment-methods/qr-codes',
+                        'public'
+                    );
+
+                $validated['qr_code_file'] = $qrCodeFile;
+            }
+
+            DB::transaction(function () use (
+                $conference,
+                $validated
+            ) {
+                $conference->paymentMethods()->create(
+                    $validated
+                );
+            });
+        } catch (Throwable $e) {
+            if ($qrCodeFile) {
+                Storage::disk('public')->delete(
+                    $qrCodeFile
+                );
+            }
+
+            throw $e;
+        }
 
         return redirect()
             ->route(
@@ -90,24 +111,48 @@ class ConferencePaymentMethodController extends Controller
             $paymentMethod
         );
 
-        if ($request->hasFile('qr_code_file')) {
-            if ($paymentMethod->qr_code_file) {
+        $oldQrCodeFile = $paymentMethod->qr_code_file;
+        $newQrCodeFile = null;
+
+        try {
+            if ($request->hasFile('qr_code_file')) {
+                $newQrCodeFile = $request
+                    ->file('qr_code_file')
+                    ->store(
+                        'conference-payment-methods/qr-codes',
+                        'public'
+                    );
+
+                $validated['qr_code_file'] = $newQrCodeFile;
+            }
+
+            DB::transaction(function () use (
+                $paymentMethod,
+                $validated
+            ) {
+                $paymentMethod->update(
+                    $validated
+                );
+            });
+        } catch (Throwable $e) {
+            if ($newQrCodeFile) {
                 Storage::disk('public')->delete(
-                    $paymentMethod->qr_code_file
+                    $newQrCodeFile
                 );
             }
 
-            $validated['qr_code_file'] = $request
-                ->file('qr_code_file')
-                ->store(
-                    'conference-payment-methods/qr-codes',
-                    'public'
-                );
+            throw $e;
         }
 
-        $paymentMethod->update(
-            $validated
-        );
+        if (
+            $newQrCodeFile
+            && $oldQrCodeFile
+            && $oldQrCodeFile !== $newQrCodeFile
+        ) {
+            Storage::disk('public')->delete(
+                $oldQrCodeFile
+            );
+        }
 
         return redirect()
             ->route(
@@ -124,13 +169,19 @@ class ConferencePaymentMethodController extends Controller
         Conference $conference,
         ConferencePaymentMethod $paymentMethod
     ) {
-        if ($paymentMethod->qr_code_file) {
+        $qrCodeFile = $paymentMethod->qr_code_file;
+
+        DB::transaction(function () use (
+            $paymentMethod
+        ) {
+            $paymentMethod->delete();
+        });
+
+        if ($qrCodeFile) {
             Storage::disk('public')->delete(
-                $paymentMethod->qr_code_file
+                $qrCodeFile
             );
         }
-
-        $paymentMethod->delete();
 
         return redirect()
             ->route(

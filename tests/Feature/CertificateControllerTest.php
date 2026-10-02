@@ -81,9 +81,10 @@ class CertificateControllerTest extends TestCase
     private function createParticipant(
         Conference $conference,
         ?ConferenceRegistrationType $registrationType = null,
-        string $participantType = 'regular'
+        string $participantType = 'regular',
+        ?User $user = null
     ): Participant {
-        $user = User::factory()->create([
+        $user ??= User::factory()->create([
             'role' => 'participant',
             'status' => 'active',
         ]);
@@ -712,6 +713,144 @@ class CertificateControllerTest extends TestCase
 
         Storage::disk('public')->assertExists(
             $certificate->file_path
+        );
+    }
+
+    public function test_participant_cannot_access_another_participants_certificate(): void
+    {
+        $conference = $this->createConference();
+
+        $userA = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $userB = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participantA = $this->createParticipant(
+            $conference,
+            null,
+            'regular',
+            $userA
+        );
+
+        $participantB = $this->createParticipant(
+            $conference,
+            null,
+            'regular',
+            $userB
+        );
+
+        $certificate = Certificate::create([
+            'participant_id' => $participantB->id,
+            'conference_id' => $conference->id,
+            'submission_id' => null,
+            'certificate_number' => 'CERT-USER-B',
+            'type' => 'participant',
+            'file_path' => 'certificates/cert-user-b.pdf',
+            'issued_at' => now(),
+        ]);
+
+        Storage::disk('public')->put(
+            $certificate->file_path,
+            'fake certificate'
+        );
+
+        $this->actingAs($userA)
+            ->get(
+                route(
+                    'participant.certificates.show',
+                    $certificate
+                )
+            )
+            ->assertForbidden();
+
+        $this->actingAs($userA)
+            ->get(
+                route(
+                    'participant.certificates.download',
+                    $certificate
+                )
+            )
+            ->assertForbidden();
+
+        $this->assertNotSame(
+            $participantA->id,
+            $participantB->id
+        );
+    }
+
+    public function test_participant_certificate_index_only_shows_owned_certificates(): void
+    {
+        $conference = $this->createConference();
+
+        $userA = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $userB = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participantA = $this->createParticipant(
+            $conference,
+            null,
+            'regular',
+            $userA
+        );
+
+        $participantB = $this->createParticipant(
+            $conference,
+            null,
+            'regular',
+            $userB
+        );
+
+        $certificateA = Certificate::create([
+            'participant_id' => $participantA->id,
+            'conference_id' => $conference->id,
+            'submission_id' => null,
+            'certificate_number' => 'CERT-USER-A',
+            'type' => 'participant',
+            'file_path' => null,
+            'issued_at' => now(),
+        ]);
+
+        $certificateB = Certificate::create([
+            'participant_id' => $participantB->id,
+            'conference_id' => $conference->id,
+            'submission_id' => null,
+            'certificate_number' => 'CERT-USER-B',
+            'type' => 'participant',
+            'file_path' => null,
+            'issued_at' => now(),
+        ]);
+
+        $response = $this->actingAs($userA)
+            ->get(
+                route('participant.certificates.index')
+            );
+
+        $response->assertSuccessful();
+
+        $response->assertViewHas(
+            'certificates',
+            function ($certificates) use (
+                $certificateA,
+                $certificateB
+            ) {
+                return $certificates->count() === 1
+                    && $certificates->first()->id === $certificateA->id
+                    && !$certificates->contains(
+                        'id',
+                        $certificateB->id
+                    );
+            }
         );
     }
 }

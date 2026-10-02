@@ -3,26 +3,14 @@
 @section('title', 'My Certificates')
 
 @section('header')
-    <div class="row align-items-center">
+    <div class="row">
         <div class="col-sm-6">
-            <h3 class="mb-0">
+            <h1 class="mb-0 fs-3">
                 My Certificates
-            </h3>
-            <p class="text-muted mb-0 mt-1">
+            </h1>
+            <p class="text-muted mb-0">
                 Download your conference certificates.
             </p>
-        </div>
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-                <li class="breadcrumb-item active">
-                    Certificates
-                </li>
-            </ol>
         </div>
     </div>
 @endsection
