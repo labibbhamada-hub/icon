@@ -3,43 +3,21 @@
 @section('title', 'Submission Detail')
 
 @section('header')
-
     <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.index') }}"
-                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
-
+            <div class="d-flex gap-2">
+                <a href="{{ route('participant.submissions.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Submission Detail
                 </h1>
             </div>
-
             <p class="text-muted mb-0">
                 View your conference submission details.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.submissions.index') }}">
-                        My Submissions
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Detail
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')
@@ -52,48 +30,6 @@
                 <i class="bi bi-file-earmark-text me-2"></i>
                 {{ $submission->submission_code }}
             </h3>
-
-            <div class="float-end">
-
-                {{-- Original Paper --}}
-                @if ($submission->paper_file)
-                    <a href="{{ route('participant.submissions.paper.download', $submission) }}"
-                        class="btn btn-outline-danger btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>
-                        Full Paper
-                    </a>
-                @endif
-
-                {{-- Revised File --}}
-                @if ($submission->revised_file)
-                    <a href="{{ route('participant.submissions.revision.download', $submission) }}"
-                        class="btn btn-outline-warning btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>
-                        Revised Paper
-                    </a>
-                @endif
-
-                {{-- Camera Ready --}}
-                @if ($submission->camera_ready_file)
-                    <a href="{{ route('participant.submissions.camera-ready.download', $submission) }}"
-                        class="btn btn-outline-success btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>
-                        Camera Ready
-                    </a>
-                @endif
-
-                {{-- LOA is only available for accepted FULL PAPER --}}
-                @if (
-                    $submission->submission_stage === 'full_paper' &&
-                        in_array($submission->status, ['accepted', 'camera_ready', 'published'], true))
-                    <a href="{{ route('participant.submissions.loa', $submission) }}"
-                        class="btn btn-success btn-sm rounded-0">
-                        <i class="bi bi-file-earmark-check me-1"></i>
-                        View LOA
-                    </a>
-                @endif
-
-            </div>
         </div>
 
         <div class="card-body">
@@ -103,7 +39,7 @@
             </h3>
 
             {{-- Stage --}}
-            <div class="mb-2">
+            <div class="">
 
                 @if ($submission->submission_stage === 'abstract')
                     <span class="badge text-bg-secondary rounded-0">
@@ -118,7 +54,7 @@
             </div>
 
             {{-- Status --}}
-            <div class="mb-2">
+            <div class="">
 
                 @if ($submission->status === 'draft')
                     <span class="badge text-bg-secondary rounded-0">
@@ -190,7 +126,7 @@
                             </div>
 
                             <a href="{{ route('participant.submissions.revision', $submission) }}"
-                                class="btn btn-warning btn-sm rounded-0">
+                                class="btn btn-warning rounded-0">
                                 <i class="bi bi-arrow-repeat me-1"></i>
                                 Submit Revision
                             </a>
@@ -219,7 +155,7 @@
                             </div>
 
                             <a href="{{ route('participant.submissions.full-paper', $submission) }}"
-                                class="btn btn-primary btn-sm rounded-0 text-nowrap">
+                                class="btn btn-primary rounded-0 text-nowrap">
                                 <i class="bi bi-upload me-1"></i>
                                 Submit Full Paper
                             </a>
@@ -251,7 +187,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.submissions.video.edit', $submission) }}"
-                                    class="btn btn-primary btn-sm rounded-0 text-nowrap">
+                                    class="btn btn-primary rounded-0 text-nowrap">
                                     <i class="bi bi-camera-video me-1"></i>
                                     Submit Presentation Video
                                 </a>
@@ -279,7 +215,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.payments.create') }}"
-                                    class="btn btn-warning btn-sm rounded-0 text-nowrap">
+                                    class="btn btn-warning rounded-0 text-nowrap">
                                     <i class="bi bi-credit-card me-1"></i>
                                     Submit Payment
                                 </a>
@@ -306,7 +242,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.payments.index') }}"
-                                    class="btn btn-warning btn-sm rounded-0 text-nowrap">
+                                    class="btn btn-warning rounded-0 text-nowrap">
                                     <i class="bi bi-credit-card me-1"></i>
                                     View Payment
                                 </a>
@@ -333,7 +269,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.payments.create') }}"
-                                    class="btn btn-danger btn-sm rounded-0 text-nowrap">
+                                    class="btn btn-danger rounded-0 text-nowrap">
                                     <i class="bi bi-credit-card me-1"></i>
                                     Submit Payment
                                 </a>
@@ -360,7 +296,7 @@
                                 </div>
 
                                 <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
-                                    class="btn btn-success btn-sm rounded-0 text-nowrap">
+                                    class="btn btn-success rounded-0 text-nowrap">
                                     <i class="bi bi-upload me-1"></i>
                                     Submit Camera Ready
                                 </a>
@@ -504,21 +440,35 @@
             <ol class="mb-2">
 
                 @foreach ($submission->authors as $author)
-                    <li class="mb-2">
+                    <li class="mb-3">
 
-                        <strong>
-                            {{ $author->name }}
-                        </strong>
+                        <div>
+                            <strong>
+                                {{ $author->name }}
+                            </strong>
 
-                        @if ($author->is_corresponding)
-                            <span class="badge text-bg-success rounded-0 ms-1">
-                                Corresponding
-                            </span>
+                            @if ($author->is_corresponding)
+                                <span class="badge text-bg-success rounded-0 ms-1">
+                                    Corresponding
+                                </span>
+                            @endif
+                        </div>
+
+                        @if ($author->email)
+                            <small class="text-muted d-block">
+                                Email: {{ $author->email }}
+                            </small>
                         @endif
 
                         @if ($author->institution)
                             <small class="text-muted d-block">
-                                {{ $author->institution }}
+                                Institution: {{ $author->institution }}
+                            </small>
+                        @endif
+
+                        @if ($author->department)
+                            <small class="text-muted d-block">
+                                Department: {{ $author->department }}
                             </small>
                         @endif
 
@@ -528,6 +478,54 @@
             </ol>
 
         </div>
+
+        @if (
+            $submission->paper_file ||
+                $submission->revised_file ||
+                $submission->camera_ready_file ||
+                ($submission->submission_stage === 'full_paper' &&
+                    in_array($submission->status, ['accepted', 'camera_ready', 'published'], true)))
+
+            <div class="card-footer">
+                {{-- Original Paper --}}
+                @if ($submission->paper_file)
+                    <a href="{{ route('participant.submissions.paper.download', $submission) }}"
+                        class="btn btn-outline-danger rounded-0">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
+                        Full Paper
+                    </a>
+                @endif
+
+                {{-- Revised File --}}
+                @if ($submission->revised_file)
+                    <a href="{{ route('participant.submissions.revision.download', $submission) }}"
+                        class="btn btn-outline-warning rounded-0">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
+                        Revised Paper
+                    </a>
+                @endif
+
+                {{-- Camera Ready --}}
+                @if ($submission->camera_ready_file)
+                    <a href="{{ route('participant.submissions.camera-ready.download', $submission) }}"
+                        class="btn btn-outline-success rounded-0">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
+                        Camera Ready
+                    </a>
+                @endif
+
+                {{-- LOA is only available for accepted FULL PAPER --}}
+                @if (
+                    $submission->submission_stage === 'full_paper' &&
+                        in_array($submission->status, ['accepted', 'camera_ready', 'published'], true))
+                    <a href="{{ route('participant.submissions.loa', $submission) }}" class="btn btn-success rounded-0">
+                        <i class="bi bi-file-earmark-check me-1"></i>
+                        View LOA
+                    </a>
+                @endif
+            </div>
+
+        @endif
 
     </div>
 

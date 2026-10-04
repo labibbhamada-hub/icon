@@ -145,10 +145,10 @@ class ReviewController extends Controller
         $currentRound = $currentRound ?: 1;
 
         /*
-    |--------------------------------------------------------------------------
-    | Prevent duplicate assignment in current stage + round
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Prevent duplicate assignment in current stage + round
+        |--------------------------------------------------------------------------
+        */
 
         $alreadyAssigned = Review::where(
             'submission_id',
@@ -177,6 +177,20 @@ class ReviewController extends Controller
                 );
         }
 
+        $hasExistingReviews = Review::where(
+            'submission_id',
+            $submission->id
+        )
+            ->where(
+                'review_stage',
+                $reviewStage
+            )
+            ->where(
+                'review_round',
+                $currentRound
+            )
+            ->exists();
+
         Review::create([
             'submission_id' => $submission->id,
             'reviewer_id' => $reviewerId,
@@ -187,6 +201,15 @@ class ReviewController extends Controller
             'recommendation' => null,
             'reviewed_at' => null,
         ]);
+
+        if (
+            !$hasExistingReviews
+            && $submission->status !== 'under_review'
+        ) {
+            $submission->update([
+                'status' => 'under_review',
+            ]);
+        }
 
         return redirect()
             ->route(

@@ -478,9 +478,9 @@ class DashboardController extends Controller
                                 'priority' => 3,
                                 'type' => 'success',
                                 'icon' => 'bi-camera-video',
-                                'title' => 'Submit Presentation Video',
+                                'title' => 'Submit Presentation Detail',
                                 'description' => 'Your full paper has been accepted. Please submit your presentation video using your own Google Drive link.',
-                                'button' => 'Submit Presentation Video',
+                                'button' => 'Submit Presentation Detail',
                                 'route' => route(
                                     'participant.submissions.video.edit',
                                     $submission

@@ -1079,10 +1079,7 @@ class SubmissionController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (
-            empty($submission->video_url)
-            || empty($submission->presenter_author_id)
-        ) {
+        if (empty($submission->video_url)) {
             return redirect()
                 ->route(
                     'participant.submissions.show',

@@ -2,42 +2,22 @@
 
 @section('title', 'Abstract Submission')
 
-@section('header') <div class="row align-items-top">
+@section('header')
+    <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.index') }}"
-                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
-
+            <div class="d-flex gap-2">
+                <a href="{{ route('participant.submissions.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Abstract Submission
                 </h1>
             </div>
-
             <p class="text-muted mb-0">
                 Submit your conference abstract.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.submissions.index') }}">
-                        My Submissions
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Create
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')
@@ -56,8 +36,8 @@
         </div>
     @endif
 
-    <form action="{{ route('participant.submissions.store') }}" method="POST" enctype="multipart/form-data">
-
+    <form action="{{ route('participant.submissions.store') }}" method="POST" enctype="multipart/form-data"
+        id="form-submit">
         @csrf
 
         {{-- Keep participant_id for backend authorization --}}
@@ -511,30 +491,35 @@
                             </div>
                         </div>
                     @endforeach
+
                 </div>
 
+            </div>
+
+            <div class="card-footer">
+                <div class="text-muted small">
+
+                    <i class="bi bi-shield-check me-1"></i>
+
+                    Please review your abstract information before submitting.
+
+                </div>
             </div>
 
         </div>
 
         {{-- Submit --}}
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-            <div class="text-muted small">
-
-                <i class="bi bi-shield-check me-1"></i>
-
-                Please review your abstract information before submitting.
-
-            </div>
-
-            <button type="submit" class="btn btn-success rounded-0">
-
-                <i class="bi bi-send me-1"></i>
-                Submit Abstract
-
+        <div class="text-end">
+            <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                <span id="btn-submit-text">
+                    <i class="bi bi-send me-1"></i>
+                    Submit Abstract
+                </span>
+                <span id="btn-submit-load" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Memproses...
+                </span>
             </button>
-
         </div>
 
     </form>
@@ -556,164 +541,460 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
             const container =
                 document.getElementById('authors-container');
+
             const addButton =
                 document.getElementById('add-author');
+
+            const conferenceSelect =
+                document.getElementById('conference_id');
+
+            const participantSelect =
+                document.getElementById('participant_id');
+
+            const topicSelect =
+                document.getElementById('topic_id');
+
+
             let authorIndex =
                 container.querySelectorAll('.author-item').length;
 
-            addButton.addEventListener('click', function() {
-                const wrapper =
-                    document.createElement('div');
 
-                wrapper.className =
-                    'author-item border rounded-0 p-3 mb-2';
+            /* ------------------------------------------------------------
+             * Filter Participant & Topic by Conference
+             * ------------------------------------------------------------ */
 
-                wrapper.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong>
-                    Author ${authorIndex + 1}
-                </strong>
+            function filterRelatedOptions() {
 
-                <button
-                    type="button"
-                    class="btn btn-outline-danger btn-sm rounded-0 remove-author">
-                    <i class="bi bi-trash"></i>
-                    Remove
-                </button>
-            </div>
+                const conferenceId =
+                    conferenceSelect.value;
 
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">
-                        Name
-                        <span class="text-danger">*</span>
-                    </label>
 
-                    <input
-                        type="text"
-                        name="authors[${authorIndex}][name]"
-                        class="form-control rounded-0"
-                        placeholder="Author name">
-                </div>
+                if (participantSelect) {
 
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">
-                        Email
-                    </label>
+                    Array
+                        .from(participantSelect.options)
+                        .forEach(function(option) {
 
-                    <input
-                        type="email"
-                        name="authors[${authorIndex}][email]"
-                        class="form-control rounded-0"
-                        placeholder="author@example.com">
-                </div>
+                            if (!option.value) {
+                                return;
+                            }
 
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">
-                        Institution
-                    </label>
+                            const belongsToConference =
+                                option.dataset.conference === conferenceId;
 
-                    <input
-                        type="text"
-                        name="authors[${authorIndex}][institution]"
-                        class="form-control rounded-0">
-                </div>
+                            option.hidden = !belongsToConference;
 
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">
-                        Department
-                    </label>
 
-                    <input
-                        type="text"
-                        name="authors[${authorIndex}][department]"
-                        class="form-control rounded-0">
-                </div>
+                            if (
+                                option.value === participantSelect.value &&
+                                !belongsToConference
+                            ) {
+                                participantSelect.value = '';
+                            }
 
-                <div class="col-md-4 mb-2">
+                        });
 
-                    <input
-                        type="hidden"
-                        name="authors[${authorIndex}][is_corresponding]"
-                        value="0">
+                }
 
-                    <div class="form-check form-switch mb-2">
 
-                        <input
-                            type="checkbox"
-                            name="authors[${authorIndex}][is_corresponding]"
-                            value="1"
-                            class="form-check-input rounded-0">
+                if (topicSelect) {
 
-                        <label class="form-check-label">
-                            Corresponding Author
-                        </label>
+                    Array
+                        .from(topicSelect.options)
+                        .forEach(function(option) {
+
+                            if (!option.value) {
+                                return;
+                            }
+
+                            const belongsToConference =
+                                option.dataset.conference === conferenceId;
+
+                            option.hidden = !belongsToConference;
+
+
+                            if (
+                                option.value === topicSelect.value &&
+                                !belongsToConference
+                            ) {
+                                topicSelect.value = '';
+                            }
+
+                        });
+
+                }
+
+            }
+
+
+            if (conferenceSelect) {
+
+                conferenceSelect.addEventListener(
+                    'change',
+                    filterRelatedOptions
+                );
+
+                filterRelatedOptions();
+
+            }
+
+
+            /* ------------------------------------------------------------
+             * Refresh Author Labels
+             * ------------------------------------------------------------ */
+
+            function refreshAuthorLabels() {
+
+                const authorItems =
+                    container.querySelectorAll('.author-item');
+
+
+                authorItems.forEach(function(item, index) {
+
+                    const authorLabel =
+                        item.querySelector('.author-label');
+
+
+                    if (authorLabel) {
+
+                        authorLabel.textContent =
+                            `Author ${index + 1}`;
+
+                    }
+
+
+                    item.dataset.authorIndex =
+                        index;
+
+                });
+
+            }
+
+
+            /* ------------------------------------------------------------
+             * Corresponding Author
+             * ------------------------------------------------------------ */
+
+            function updateCorrespondingAuthors(activeCheckbox) {
+
+                if (activeCheckbox.checked) {
+
+                    container
+                        .querySelectorAll('.corresponding-author')
+                        .forEach(function(otherCheckbox) {
+
+                            if (otherCheckbox !== activeCheckbox) {
+                                otherCheckbox.checked = false;
+                            }
+
+                        });
+
+                    return;
+
+                }
+
+
+                const checkedCount =
+                    container.querySelectorAll(
+                        '.corresponding-author:checked'
+                    ).length;
+
+
+                if (checkedCount === 0) {
+                    activeCheckbox.checked = true;
+                }
+
+            }
+
+
+            container.addEventListener(
+                'change',
+                function(event) {
+
+                    const checkbox =
+                        event.target.closest(
+                            '.corresponding-author'
+                        );
+
+
+                    if (!checkbox) {
+                        return;
+                    }
+
+
+                    updateCorrespondingAuthors(
+                        checkbox
+                    );
+
+                }
+            );
+
+
+            /* ------------------------------------------------------------
+             * Add Author
+             * ------------------------------------------------------------ */
+
+            addButton.addEventListener(
+                'click',
+                function() {
+
+                    const authorItem =
+                        document.createElement('div');
+
+
+                    authorItem.className =
+                        'author-item border rounded-0 p-3 mb-2';
+
+
+                    authorItem.dataset.authorIndex =
+                        authorIndex;
+
+
+                    authorItem.innerHTML = `
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        <strong class="author-label">
+                            Author ${authorIndex + 1}
+                        </strong>
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm rounded-0 remove-author"
+                        >
+                            <i class="bi bi-trash"></i>
+                            Remove
+                        </button>
 
                     </div>
 
-                </div>
 
-                <div class="col-md-2 mb-2">
+                    <div class="row">
 
-                    <label class="form-label">
-                        Order
-                    </label>
+                        <div class="col-md-6 mb-2">
 
-                    <input
-                        type="number"
-                        name="authors[${authorIndex}][sort_order]"
-                        value="${authorIndex + 1}"
-                        min="1"
-                        class="form-control rounded-0">
+                            <label class="form-label">
+                                Name
+                                <span class="text-danger">*</span>
+                            </label>
 
-                </div>
+                            <input
+                                type="text"
+                                name="authors[${authorIndex}][name]"
+                                class="form-control rounded-0"
+                                placeholder="Author name"
+                            >
 
-            </div>
-        `;
+                        </div>
 
-                container.appendChild(wrapper);
 
-                authorIndex++;
+                        <div class="col-md-6 mb-2">
 
-            });
+                            <label class="form-label">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                name="authors[${authorIndex}][email]"
+                                class="form-control rounded-0"
+                                placeholder="author@example.com"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-2">
+
+                            <label class="form-label">
+                                Institution
+                            </label>
+
+                            <input
+                                type="text"
+                                name="authors[${authorIndex}][institution]"
+                                class="form-control rounded-0"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-2">
+
+                            <label class="form-label">
+                                Department
+                            </label>
+
+                            <input
+                                type="text"
+                                name="authors[${authorIndex}][department]"
+                                class="form-control rounded-0"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-4 mb-2">
+
+                            <input
+                                type="hidden"
+                                name="authors[${authorIndex}][is_corresponding]"
+                                value="0"
+                            >
+
+                            <div class="form-check form-switch mt-2">
+
+                                <input
+                                    type="checkbox"
+                                    name="authors[${authorIndex}][is_corresponding]"
+                                    value="1"
+                                    class="form-check-input corresponding-author rounded-0"
+                                >
+
+                                <label class="form-check-label">
+                                    Corresponding Author
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-2 mb-2">
+
+                            <label class="form-label">
+                                Order
+                            </label>
+
+                            <input
+                                type="number"
+                                name="authors[${authorIndex}][sort_order]"
+                                value="${authorIndex + 1}"
+                                min="1"
+                                class="form-control rounded-0"
+                            >
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                    container.appendChild(
+                        authorItem
+                    );
+
+
+                    authorIndex++;
+
+
+                    refreshAuthorLabels();
+
+                }
+            );
+
+
+            /* ------------------------------------------------------------
+             * Remove Author
+             * ------------------------------------------------------------ */
 
             container.addEventListener(
                 'click',
                 function(event) {
 
-                    const button =
-                        event.target.closest('.remove-author');
+                    const removeButton =
+                        event.target.closest(
+                            '.remove-author'
+                        );
 
-                    if (!button) {
+
+                    if (!removeButton) {
                         return;
                     }
 
-                    button.closest('.author-item').remove();
 
-                    refreshLabels();
+                    const authorItems =
+                        container.querySelectorAll(
+                            '.author-item'
+                        );
+
+
+                    if (authorItems.length <= 1) {
+
+                        Swal.fire({
+                            title: 'Author Required',
+                            text: 'At least one author is required.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#198754',
+                        });
+
+                        return;
+                    }
+
+
+                    const authorItem =
+                        removeButton.closest(
+                            '.author-item'
+                        );
+
+
+                    const wasCorresponding =
+                        authorItem.querySelector(
+                            '.corresponding-author'
+                        )?.checked;
+
+
+                    authorItem.remove();
+
+
+                    refreshAuthorLabels();
+
+
+                    if (
+                        wasCorresponding &&
+                        !container.querySelector(
+                            '.corresponding-author:checked'
+                        )
+                    ) {
+
+                        const firstCheckbox =
+                            container.querySelector(
+                                '.corresponding-author'
+                            );
+
+
+                        if (firstCheckbox) {
+                            firstCheckbox.checked = true;
+                        }
+
+                    }
+
                 }
             );
 
-            function refreshLabels() {
 
-                container
-                    .querySelectorAll('.author-item')
-                    .forEach(function(item, index) {
-
-                        const title =
-                            item.querySelector('strong');
-
-                        if (title) {
-                            title.textContent =
-                                `Author ${index + 1}`;
-                        }
-
-                    });
-
-            }
+            refreshAuthorLabels();
 
         });
+    </script>
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
     </script>
 @endpush

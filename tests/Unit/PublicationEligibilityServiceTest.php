@@ -7,7 +7,6 @@ use App\Models\ConferenceAttendance;
 use App\Models\ConferenceRegistrationType;
 use App\Models\Participant;
 use App\Models\Submission;
-use App\Models\SubmissionAuthor;
 use App\Models\Topic;
 use App\Models\User;
 use App\Services\PublicationEligibilityService;
@@ -122,16 +121,6 @@ class PublicationEligibilityServiceTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $author = SubmissionAuthor::create([
-            'submission_id' => $submission->id,
-            'name' => $participant->full_name,
-            'email' => $participant->email,
-            'institution' => $participant->institution,
-            'is_corresponding' => true,
-            'sort_order' => 1,
-        ]);
-
-        $submission->presenter_author_id = $author->id;
         $submission->camera_ready_status = 'submitted';
         $submission->save();
 

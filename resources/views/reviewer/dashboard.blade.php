@@ -135,12 +135,12 @@
                                     <td class="align-top">
                                         @if (!$review->reviewed_at)
                                             <a href="{{ route('reviewer.reviews.edit', $review) }}"
-                                                class="btn btn-primary btn-sm rounded-0">
+                                                class="btn btn-primary rounded-0">
                                                 <i class="bi bi-clipboard-check"></i>
                                             </a>
                                         @else
                                             <a href="{{ route('reviewer.reviews.show', $review) }}"
-                                                class="btn btn-info btn-sm rounded-0">
+                                                class="btn btn-info rounded-0">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif

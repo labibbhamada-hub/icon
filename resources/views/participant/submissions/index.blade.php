@@ -48,7 +48,6 @@
                         <tr>
                             <th width="40">No</th>
                             <th>Submission</th>
-                            <th>Conference</th>
                             <th>Topic</th>
                             <th>Status</th>
                             <th>Submitted</th>
@@ -70,14 +69,6 @@
 
                                     <small class="text-muted d-block">
                                         {{ \Illuminate\Support\Str::limit($submission->title, 70) }}
-                                    </small>
-                                </td>
-
-                                <td class="align-top">
-                                    {{ $submission->conference?->short_name ?? '—' }}
-
-                                    <small class="text-muted d-block">
-                                        {{ $submission->conference?->year ?? '' }}
                                     </small>
                                 </td>
 
@@ -131,7 +122,7 @@
 
                                 <td class="align-top">
                                     <a href="{{ route('participant.submissions.show', $submission) }}"
-                                        class="btn btn-info btn-sm rounded-0" title="View">
+                                        class="btn btn-info rounded-0" title="View">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>

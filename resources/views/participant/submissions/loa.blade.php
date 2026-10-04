@@ -3,59 +3,31 @@
 @section('title', 'Letter of Acceptance')
 
 @section('header')
-
-    <div class="row align-items-center">
+    <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.show', $submission) }}"
-                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
-
+            <div class="d-flex gap-2">
+                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Letter of Acceptance
                 </h1>
             </div>
-
             <p class="text-muted mb-0">
                 Official acceptance letter for your paper.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.submissions.index') }}">
-                        My Submissions
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    LOA
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')
 
     <div class="card rounded-0 overflow-hidden mb-3">
         <div class="card-header rounded-0">
-            <h3 class="card-title mb-0"> <i class="bi bi-file-earmark-check me-2"></i>
-                Letter of Acceptance </h3>
-
-            <div class="float-end">
-                <a href="{{ route('participant.submissions.loa.download', $submission) }}"
-                    class="btn btn-primary btn-sm rounded-0">
-                    <i class="bi bi-download me-1"></i>
-                    Download LOA
-                </a>
-            </div>
+            <h3 class="card-title mb-0">
+                <i class="bi bi-file-earmark-check me-2"></i>
+                Letter of Acceptance
+            </h3>
         </div>
 
         <div class="card-body">
@@ -218,6 +190,14 @@
             <p class="mb-0">
                 {{ $submission->conference?->name ?? 'ICON 2026' }}
             </p>
+        </div>
+
+        <div class="card-footer">
+            <a href="{{ route('participant.submissions.loa.download', $submission) }}"
+                class="btn btn-primary rounded-0">
+                <i class="bi bi-download me-1"></i>
+                Download LOA
+            </a>
         </div>
     </div>
 

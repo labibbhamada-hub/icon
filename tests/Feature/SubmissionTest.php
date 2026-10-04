@@ -2343,7 +2343,7 @@ class SubmissionTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_presenter_can_submit_video_link_with_selected_presenter(): void
+    public function test_presenter_can_submit_video_link(): void
     {
         $conference = $this->createOpenConference();
 
@@ -2378,15 +2378,6 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $author = \App\Models\SubmissionAuthor::create([
-            'submission_id' => $submission->id,
-            'name' => 'Presenter Test',
-            'email' => $participant->email,
-            'institution' => 'Test University',
-            'is_corresponding' => true,
-            'sort_order' => 1,
-        ]);
-
         $videoUrl =
             'https://drive.google.com/file/d/test-video-id/view';
 
@@ -2397,7 +2388,6 @@ class SubmissionTest extends TestCase
                     $submission
                 ),
                 [
-                    'presenter_author_id' => $author->id,
                     'video_url' => $videoUrl,
                 ]
             )
@@ -2411,17 +2401,16 @@ class SubmissionTest extends TestCase
         $submission->refresh();
 
         $this->assertSame(
-            $author->id,
-            $submission->presenter_author_id
-        );
-
-        $this->assertSame(
             $videoUrl,
             $submission->video_url
         );
 
         $this->assertNotNull(
             $submission->video_submitted_at
+        );
+
+        $this->assertNull(
+            $submission->presenter_author_id
         );
     }
 
@@ -2499,17 +2488,17 @@ class SubmissionTest extends TestCase
     {
         $conference = $this->createOpenConference();
 
-        $user = User::factory()->create();
-
         $registrationType =
             $this->createPresenterRegistrationType($conference);
+
+        $user = User::factory()->create();
 
         $participant = Participant::create([
             'user_id' => $user->id,
             'conference_id' => $conference->id,
             'registration_type_id' => $registrationType->id,
-            'registration_number' => 'REG-VIDEO-WRONG-PRESENTER',
-            'full_name' => 'Presenter Test',
+            'registration_number' => 'REG-VIDEO-OWNER',
+            'full_name' => 'Presenter Owner',
             'email' => $user->email,
             'institution' => 'Test Institution',
             'participant_type' => 'presenter',
@@ -2524,8 +2513,8 @@ class SubmissionTest extends TestCase
             'user_id' => $otherUser->id,
             'conference_id' => $conference->id,
             'registration_type_id' => $registrationType->id,
-            'registration_number' => 'REG-VIDEO-OTHER-PARTICIPANT',
-            'full_name' => 'Other Presenter Test',
+            'registration_number' => 'REG-VIDEO-OTHER',
+            'full_name' => 'Other Presenter',
             'email' => $otherUser->email,
             'institution' => 'Other Test Institution',
             'participant_type' => 'presenter',
@@ -2546,40 +2535,20 @@ class SubmissionTest extends TestCase
             ]
         );
 
-        $otherSubmission = $this->createSubmission(
-            $conference,
-            $otherParticipant,
-            $topic,
-            [
-                'submission_stage' => 'full_paper',
-                'status' => 'accepted',
-            ]
-        );
+        $videoUrl =
+            'https://drive.google.com/file/d/test-video-id/view';
 
-        $author = \App\Models\SubmissionAuthor::create([
-            'submission_id' => $otherSubmission->id,
-            'name' => 'Presenter From Another Paper',
-            'email' => $otherParticipant->email,
-            'institution' => 'Test University',
-            'is_corresponding' => true,
-            'sort_order' => 1,
-        ]);
-
-        $this->actingAs($user)
+        $this->actingAs($otherUser)
             ->put(
                 route(
                     'participant.submissions.video.update',
                     $submission
                 ),
                 [
-                    'presenter_author_id' => $author->id,
-                    'video_url' =>
-                    'https://drive.google.com/file/d/test-video-id/view',
+                    'video_url' => $videoUrl,
                 ]
             )
-            ->assertSessionHasErrors([
-                'presenter_author_id',
-            ]);
+            ->assertNotFound();
 
         $submission->refresh();
 
@@ -3049,5 +3018,108 @@ class SubmissionTest extends TestCase
             'submissions',
             0
         );
+    }
+
+    public function test_first_reviewer_assignment_sets_submission_under_review_and_second_assignment_keeps_status(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $participant = $this->createParticipant(
+            $conference
+        );
+
+        $topic = $this->createTopic(
+            $conference
+        );
+
+        $submission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic,
+            [
+                'submission_stage' => 'abstract',
+                'status' => 'submitted',
+            ]
+        );
+
+        $reviewer1 = $this->createReviewer(
+            $conference
+        );
+
+        $reviewer2 = $this->createReviewer(
+            $conference
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $this
+            ->actingAs($admin)
+            ->post(
+                route(
+                    'admin.submissions.reviews.store',
+                    $submission
+                ),
+                [
+                    'reviewer_id' => $reviewer1->id,
+                ]
+            )
+            ->assertRedirect(
+                route(
+                    'admin.submissions.show',
+                    $submission
+                )
+            );
+
+        $this->assertEquals(
+            'under_review',
+            $submission->fresh()->status
+        );
+
+        $this->assertDatabaseHas('reviews', [
+            'submission_id' => $submission->id,
+            'reviewer_id' => $reviewer1->id,
+            'review_stage' => 'abstract',
+            'review_round' => 1,
+            'reviewed_at' => null,
+        ]);
+
+        $this
+            ->actingAs($admin)
+            ->post(
+                route(
+                    'admin.submissions.reviews.store',
+                    $submission
+                ),
+                [
+                    'reviewer_id' => $reviewer2->id,
+                ]
+            )
+            ->assertRedirect(
+                route(
+                    'admin.submissions.show',
+                    $submission
+                )
+            );
+
+        $this->assertEquals(
+            'under_review',
+            $submission->fresh()->status
+        );
+
+        $this->assertDatabaseCount(
+            'reviews',
+            2
+        );
+
+        $this->assertDatabaseHas('reviews', [
+            'submission_id' => $submission->id,
+            'reviewer_id' => $reviewer2->id,
+            'review_stage' => 'abstract',
+            'review_round' => 1,
+            'reviewed_at' => null,
+        ]);
     }
 }

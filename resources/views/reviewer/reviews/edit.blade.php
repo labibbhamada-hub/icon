@@ -2,42 +2,22 @@
 
 @section('title', 'Review Submission')
 
-@section('header') <div class="row align-items-center">
+@section('header')
+    <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2"> <a href="{{ route('reviewer.reviews.index') }}"
-                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
-
+            <div class="d-flex gap-2">
+                <a href="{{ route('reviewer.reviews.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Review Submission
                 </h1>
             </div>
-
-            <p class="text-muted mb-0 mt-1">
+            <p class="text-muted mb-0">
                 Evaluate the assigned conference submission.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('reviewer.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('reviewer.reviews.index') }}">
-                        My Reviews
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Review
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')
@@ -55,7 +35,7 @@
         </div>
     @endif
 
-    <form action="{{ route('reviewer.reviews.update', $review) }}" method="POST">
+    <form action="{{ route('reviewer.reviews.update', $review) }}" method="POST" id="form-submit">
         @csrf
         @method('PUT')
 
@@ -65,16 +45,6 @@
                     <i class="bi bi-file-earmark-text me-2"></i>
                     Submission Information
                 </h3>
-
-                <div class="float-end">
-                    @if ($review->submission?->paper_file)
-                        <a href="{{ route('reviewer.reviews.paper.download', $review) }}" target="_blank"
-                            class="btn btn-danger btn-sm rounded-0">
-                            <i class="bi bi-file-earmark-pdf me-1"></i>
-                            Open Paper
-                        </a>
-                    @endif
-                </div>
             </div>
 
             <div class="card-body">
@@ -86,27 +56,83 @@
                     <span class="badge text-bg-primary rounded-0">
                         {{ $review->submission->submission_code }}
                     </span>
-
-                    @if ($review->submission->topic)
-                        <span class="badge text-bg-secondary rounded-0">
-                            {{ $review->submission->topic->name }}
-                        </span>
-                    @endif
-
-                    @if ($review->review_stage === 'abstract')
-                        <span class="badge text-bg-secondary rounded-0">
-                            Abstract Review
-                        </span>
-                    @elseif ($review->review_stage === 'full_paper')
-                        <span class="badge text-bg-primary rounded-0">
-                            Full Paper Review
-                        </span>
-                    @endif
-
+                </div>
+                <div>
                     <span class="badge text-bg-light border rounded-0">
                         Round {{ $review->review_round }}
                     </span>
                 </div>
+            </div>
+
+            {{-- Basic Information --}}
+            <div class="card-body border-top">
+
+                <div class="row mb-2">
+
+                    <div class="col-md-4">
+                        <strong>
+                            Conference
+                        </strong>
+                    </div>
+
+                    <div class="col-md-8">
+                        {{ $review->submission->conference?->name ?? '—' }}
+                    </div>
+
+                </div>
+
+                <div class="row mb-2">
+
+                    <div class="col-md-4">
+                        <strong>
+                            Submission Stage
+                        </strong>
+                    </div>
+
+                    <div class="col-md-8">
+
+                        @if ($review->review_stage === 'abstract')
+                            <span class="badge text-bg-secondary rounded-0">
+                                Abstract Review
+                            </span>
+                        @elseif ($review->review_stage === 'full_paper')
+                            <span class="badge text-bg-primary rounded-0">
+                                Full Paper Review
+                            </span>
+                        @endif
+
+                    </div>
+
+                </div>
+
+                <div class="row mb-2">
+
+                    <div class="col-md-4">
+                        <strong>
+                            Topic
+                        </strong>
+                    </div>
+
+                    <div class="col-md-8">
+                        {{ $review->submission->topic?->name ?? '—' }}
+                    </div>
+
+                </div>
+
+                <div class="row mb-2">
+
+                    <div class="col-md-4">
+                        <strong>
+                            Submitted At
+                        </strong>
+                    </div>
+
+                    <div class="col-md-8">
+                        {{ $review->submission->submitted_at?->format('d F Y H:i') ?? '—' }}
+                    </div>
+
+                </div>
+
             </div>
 
             <div class="card-body border-top">
@@ -117,32 +143,76 @@
                 <div>{!! nl2br(e($review->submission->abstract)) !!}</div>
             </div>
 
+            {{-- Keywords --}}
             <div class="card-body border-top">
+
+                <h5 class="fw-semibold mb-2">
+                    Keywords
+                </h5>
+
+                <p class="mb-2">
+                    {{ $review->submission->keywords }}
+                </p>
+
+            </div>
+
+            {{-- Authors --}}
+            <div class="card-body border-top">
+
                 <h5 class="fw-semibold mb-2">
                     Authors
                 </h5>
 
-                <ol>
-                    @foreach ($review->submission->authors as $author)
-                        <li class="mb-2">
-                            <strong>
-                                {{ $author->name }}
-                            </strong>
+                <ol class="mb-2">
 
-                            @if ($author->is_corresponding)
-                                <span class="badge text-bg-success rounded-0 ms-1">
-                                    Corresponding
-                                </span>
+                    @foreach ($review->submission->authors as $author)
+                        <li class="mb-3">
+
+                            <div>
+                                <strong>
+                                    {{ $author->name }}
+                                </strong>
+
+                                @if ($author->is_corresponding)
+                                    <span class="badge text-bg-success rounded-0 ms-1">
+                                        Corresponding
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if ($author->email)
+                                <small class="text-muted d-block">
+                                    Email: {{ $author->email }}
+                                </small>
                             @endif
 
                             @if ($author->institution)
                                 <small class="text-muted d-block">
-                                    {{ $author->institution }}
+                                    Institution: {{ $author->institution }}
                                 </small>
                             @endif
+
+                            @if ($author->department)
+                                <small class="text-muted d-block">
+                                    Department: {{ $author->department }}
+                                </small>
+                            @endif
+
                         </li>
                     @endforeach
+
                 </ol>
+
+            </div>
+
+            <div class="card-footer">
+                @if ($review->submission?->paper_file)
+                    <a href="{{ route('reviewer.reviews.paper.download', $review) }}" target="_blank"
+                        class="btn btn-danger rounded-0">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
+                        Open Paper
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -231,14 +301,37 @@
                     </div>
                 </div>
             </div>
-
-            <div class="card-footer rounded-0 text-end">
-                <button type="submit" class="btn btn-primary rounded-0">
+        </div>
+        <div class="text-end">
+            <button type="button" class="btn btn-primary rounded-0" id="btn-submit" onclick="form_submit()">
+                <span id="btn-submit-text">
                     <i class="bi bi-check-circle me-1"></i>
                     Submit Review
-                </button>
-            </div>
+                </span>
+                <span id="btn-submit-load" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Memproses...
+                </span>
+            </button>
         </div>
     </form>
 
 @endsection
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
+@endpush

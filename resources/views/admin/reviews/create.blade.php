@@ -3,71 +3,21 @@
 @section('title', 'Assign Reviewer')
 
 @section('header')
-
-    <div class="row">
-
+    <div class="row align-items-top">
         <div class="col-sm-6">
-
-            <div class="d-flex align-items-center gap-2">
-
-                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0"
-                    title="Back">
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
-
-                <div>
-
-                    <h1 class="mb-0 fs-3">
-                        Assign Reviewer
-                    </h1>
-
-                    <p class="text-muted mb-0">
-                        Assign an active reviewer to this submission.
-                    </p>
-
-                </div>
-
+                <h1 class="mb-0 fs-3">
+                    Assign Reviewer
+                </h1>
             </div>
-
+            <p class="text-muted mb-0">
+                Assign an active reviewer to this submission.
+            </p>
         </div>
-
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.submissions.index') }}">
-                            Submissions
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.submissions.show', $submission) }}">
-                            {{ $submission->submission_code }}
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Assign Reviewer
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
@@ -95,10 +45,10 @@
             <div class="card-body">
 
                 {{-- ====================================================
-            SUBMISSION SUMMARY
-        ===================================================== --}}
+                    SUBMISSION SUMMARY
+                ===================================================== --}}
 
-                <div class="border rounded-0 bg-light p-3 mb-4">
+                <div class="border rounded-0 bg-light p-3 mb-2">
 
                     <div class="row">
 
@@ -148,10 +98,10 @@
 
 
                 {{-- ====================================================
-            REVIEW ROUND
-        ===================================================== --}}
+                    REVIEW ROUND
+                ===================================================== --}}
 
-                <div class="row mb-3">
+                <div class="row mb-2">
 
                     <div class="col-md-4">
 
@@ -203,12 +153,14 @@
 
                 </div>
 
+            </div>
 
+            <div class="card-body border-top">
                 {{-- ====================================================
-            REVIEWER SELECT
-        ===================================================== --}}
+                    REVIEWER SELECT
+                ===================================================== --}}
 
-                <div class="mb-0">
+                <div class="mb-2">
 
                     <label for="reviewer_id" class="form-label">
                         Reviewer
@@ -254,7 +206,7 @@
 
 
                 @if ($reviewers->isEmpty())
-                    <div class="alert alert-warning rounded-0 mt-3 mb-0">
+                    <div class="alert alert-warning rounded-0 mt-2 mb-0">
 
                         <i class="bi bi-exclamation-triangle me-2"></i>
 
@@ -270,18 +222,10 @@
 
                     </div>
                 @endif
-
             </div>
 
-
-            <div class="card-footer rounded-0 d-flex justify-content-end gap-2">
-
-                <a href="{{ route('admin.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Cancel
-                </a>
-
-                <button type="submit" class="btn btn-success btn-sm rounded-0" @disabled($reviewers->isEmpty())>
+            <div class="card-footer text-end rounded-0">
+                <button type="submit" class="btn btn-success rounded-0" @disabled($reviewers->isEmpty())>
                     <i class="bi bi-person-plus me-1"></i>
                     Assign Reviewer
                 </button>

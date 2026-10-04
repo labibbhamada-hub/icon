@@ -36,10 +36,6 @@ class VideoSubmissionController extends Controller
             403
         );
 
-        $submission->load([
-            'authors',
-        ]);
-
         return view(
             'participant.submissions.video',
             compact(
@@ -79,24 +75,12 @@ class VideoSubmissionController extends Controller
 
         $validated = $request->validated();
 
-        $presenterAuthor = $submission
-            ->authors()
-            ->where(
-                'id',
-                $validated['presenter_author_id']
-            )
-            ->firstOrFail();
-
         DB::transaction(
             function () use (
                 $submission,
-                $validated,
-                $presenterAuthor
+                $validated
             ) {
                 $submission->update([
-                    'presenter_author_id' =>
-                    $presenterAuthor->id,
-
                     'video_url' =>
                     $validated['video_url'],
 

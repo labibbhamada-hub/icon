@@ -2,42 +2,22 @@
 
 @section('title', 'Submit Full Paper')
 
-@section('header') <div class="row align-items-top">
+@section('header')
+    <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2"> <a href="{{ route('participant.submissions.show', $submission) }}"
-                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
-
+            <div class="d-flex gap-2">
+                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Submit Full Paper
                 </h1>
             </div>
-
             <p class="text-muted mb-0">
                 Submit the full paper for your accepted abstract.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.submissions.index') }}">
-                        My Submissions
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Full Paper
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')
@@ -102,7 +82,7 @@
 
             </div>
 
-            <div class="alert alert-success rounded-0 mt-3 mb-0">
+            <div class="alert alert-success rounded-0 mt-2 mb-0">
 
                 <div class="d-flex align-items-start gap-2">
 
@@ -168,8 +148,7 @@
 
     {{-- Full Paper Upload --}}
     <form action="{{ route('participant.submissions.full-paper.upload', $submission) }}" method="POST"
-        enctype="multipart/form-data">
-
+        enctype="multipart/form-data" id="form-submit">
         @csrf
 
         <div class="card rounded-0 overflow-hidden mb-3">
@@ -224,23 +203,47 @@
 
             </div>
 
+            <div class="card-footer">
+                <div class="text-muted small">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Please make sure you upload the correct full paper before submitting.
+                </div>
+            </div>
+
         </div>
 
         {{-- Submit --}}
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-            <div class="text-muted small">
-                <i class="bi bi-shield-check me-1"></i>
-                Please make sure you upload the correct full paper before submitting.
-            </div>
-
-            <button type="submit" class="btn btn-success rounded-0">
-                <i class="bi bi-send me-1"></i>
-                Submit Full Paper
+        <div class="text-end">
+            <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                <span id="btn-submit-text">
+                    <i class="bi bi-send me-1"></i>
+                    Submit Full Paper
+                </span>
+                <span id="btn-submit-load" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Memproses...
+                </span>
             </button>
-
         </div>
 
     </form>
 
 @endsection
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
+@endpush

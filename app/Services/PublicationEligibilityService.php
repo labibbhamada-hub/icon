@@ -13,7 +13,6 @@ class PublicationEligibilityService
     ): array {
         $submission->loadMissing([
             'participant.registrationType',
-            'presenterAuthor',
         ]);
 
         $checks = [
@@ -116,12 +115,8 @@ class PublicationEligibilityService
             && $participant->registration_status === 'confirmed'
             && $participant->registrationType?->category === 'presenter';
 
-        $hasPresenterAuthor =
-            $submission->presenterAuthor !== null;
-
         $checks['presenter'] =
-            $hasValidPresenterParticipant
-            && $hasPresenterAuthor;
+            $hasValidPresenterParticipant;
 
         if (!$participant) {
             $reasons[] =
@@ -132,11 +127,6 @@ class PublicationEligibilityService
         ) {
             $reasons[] =
                 'The submission participant is not a confirmed presenter.';
-        }
-
-        if (!$hasPresenterAuthor) {
-            $reasons[] =
-                'A presenter has not been selected for this submission.';
         }
 
         /*

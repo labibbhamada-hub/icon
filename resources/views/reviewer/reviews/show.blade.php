@@ -2,45 +2,26 @@
 
 @section('title', 'Review Detail')
 
-@section('header') <div class="row align-items-center">
+@section('header')
+    <div class="row align-items-top">
         <div class="col-sm-6">
-            <div class="d-flex align-items-center gap-2"> <a href="{{ route('reviewer.reviews.index') }}"
-                    class="btn btn-secondary btn-sm rounded-0"> <i class="bi bi-arrow-left"></i> </a>
-
+            <div class="d-flex gap-2">
+                <a href="{{ route('reviewer.reviews.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Review Detail
                 </h1>
             </div>
-
-            <p class="text-muted mb-0 mt-1">
+            <p class="text-muted mb-0">
                 View your submitted review.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('reviewer.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('reviewer.reviews.index') }}">
-                        My Reviews
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Detail
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
-@section('content') <div class="row">
+@section('content')
+    <div class="row">
         <div class="col-lg-8">
             <div class="card rounded-0 overflow-hidden">
                 <div class="card-header rounded-0">
@@ -50,7 +31,7 @@
                     <div class="float-end">
                         @if (!$review->reviewed_at)
                             <a href="{{ route('reviewer.reviews.edit', $review) }}"
-                                class="btn btn-primary btn-sm rounded-0">
+                                class="btn btn-primary rounded-0">
                                 <i class="bi bi-pencil me-1"></i>
                                 Continue Review
                             </a>
@@ -143,7 +124,7 @@
                 @if ($review->submission?->paper_file)
                     <div class="card-footer rounded-0">
                         <a href="{{ route('reviewer.reviews.paper.download', $review) }}"
-                            class="btn btn-danger btn-sm rounded-0">
+                            class="btn btn-danger rounded-0">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper
                         </a>

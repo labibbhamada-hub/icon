@@ -1,57 +1,23 @@
 @extends('layouts.participant')
 
-@section('title', 'Video Submission')
+@section('title', 'Submit Presentation Detail')
 
 @section('header')
-
     <div class="row align-items-top">
-
         <div class="col-sm-6">
-
-            <div class="d-flex align-items-center gap-2">
-
-                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary btn-sm rounded-0">
+            <div class="d-flex gap-2">
+                <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
-
                 <h1 class="mb-0 fs-3">
-                    Video Submission
+                    Submit Presentation Detail
                 </h1>
-
             </div>
-
-            <p class="text-muted mb-0 mt-1">
+            <p class="text-muted mb-0">
                 Submit your presentation video using a Google Drive link.
             </p>
-
         </div>
-
-        <div class="col-sm-6">
-
-            <ol class="breadcrumb float-sm-end mb-0">
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.submissions.index') }}">
-                        My Submissions
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Video Submission
-                </li>
-
-            </ol>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
@@ -103,99 +69,9 @@
     </div>
 
 
-    <form action="{{ route('participant.submissions.video.update', $submission) }}" method="POST">
-
+    <form action="{{ route('participant.submissions.video.update', $submission) }}" method="POST" id="form-submit">
         @csrf
-
         @method('PUT')
-
-
-        {{-- Presenter --}}
-        <div class="card rounded-0 overflow-hidden mb-3">
-
-            <div class="card-header rounded-0">
-
-                <h3 class="card-title">
-
-                    <i class="bi bi-person-video3 me-2"></i>
-
-                    Presenter
-
-                </h3>
-
-            </div>
-
-            <div class="card-body">
-
-                <div class="alert alert-info rounded-0">
-
-                    <i class="bi bi-info-circle me-2"></i>
-
-                    Select one author who will present this paper during the conference.
-
-                </div>
-
-                <div class="row g-2">
-
-                    @foreach ($submission->authors as $author)
-                        <div class="col-md-6">
-
-                            <label class="d-block h-100">
-
-                                <input type="radio" name="presenter_author_id" value="{{ $author->id }}"
-                                    class="btn-check" @checked(old('presenter_author_id', $submission->presenter_author_id) == $author->id)>
-
-                                <div class="border rounded-0 p-3 h-100 video-option">
-
-                                    <div class="d-flex justify-content-between align-items-start gap-2">
-
-                                        <div>
-
-                                            <strong>
-                                                {{ $author->name }}
-                                            </strong>
-
-                                            @if ($author->institution)
-                                                <small class="text-muted d-block">
-                                                    {{ $author->institution }}
-                                                </small>
-                                            @endif
-
-                                        </div>
-
-                                        @if ($author->is_corresponding)
-                                            <span class="badge text-bg-primary rounded-0">
-                                                Corresponding
-                                            </span>
-                                        @endif
-
-                                    </div>
-
-                                    @if ($author->email)
-                                        <small class="text-muted d-block mt-2">
-                                            {{ $author->email }}
-                                        </small>
-                                    @endif
-
-                                </div>
-
-                            </label>
-
-                        </div>
-                    @endforeach
-
-                </div>
-
-                @error('presenter_author_id')
-                    <div class="text-danger small mt-2">
-                        {{ $message }}
-                    </div>
-                @enderror
-
-            </div>
-
-        </div>
-
 
         {{-- Video Link --}}
         <div class="card rounded-0 overflow-hidden mb-3">
@@ -203,11 +79,8 @@
             <div class="card-header rounded-0">
 
                 <h3 class="card-title">
-
-                    <i class="bi bi-google me-2"></i>
-
-                    Google Drive Video
-
+                    <i class="bi bi-camera-video me-2"></i>
+                    Presentation Video
                 </h3>
 
             </div>
@@ -317,24 +190,18 @@
 
         </div>
 
-
         {{-- Actions --}}
         <div class="text-end">
-
-            <a href="{{ route('participant.submissions.show', $submission) }}" class="btn btn-secondary rounded-0 me-1">
-
-                Cancel
-
-            </a>
-
-            <button type="submit" class="btn btn-success rounded-0">
-
-                <i class="bi bi-check-circle me-1"></i>
-
-                Save Video Submission
-
+            <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                <span id="btn-submit-text">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Submit Presentation Detail
+                </span>
+                <span id="btn-submit-load" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Memproses...
+                </span>
             </button>
-
         </div>
 
     </form>
@@ -357,4 +224,22 @@
             box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .15);
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
 @endpush

@@ -3,98 +3,28 @@
 @section('title', 'Submission Detail')
 
 @section('header')
-
-    <div class="row">
-
-        <div class="col-sm-6 d-flex align-items-center gap-2">
-
-            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-
-            <div>
-
+    <div class="row align-items-top">
+        <div class="col-sm-6">
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
                 <h1 class="mb-0 fs-3">
                     Submission Detail
                 </h1>
-
-                <p class="text-muted mb-0">
-                    Review submission information and workflow status.
-                </p>
-
             </div>
-
+            <p class="text-muted mb-0">
+                Review submission information and workflow status.
+            </p>
         </div>
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.submissions.index') }}">
-                            Submissions
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Detail
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
 
-    @php
-
-        $statusLabels = [
-            'draft' => 'Draft',
-            'submitted' => 'Submitted',
-            'under_review' => 'Under Review',
-            'revision' => 'Revision Required',
-            'accepted' => 'Accepted',
-            'rejected' => 'Rejected',
-            'camera_ready' => 'Camera Ready',
-            'published' => 'Published',
-        ];
-
-        $statusClasses = [
-            'draft' => 'secondary',
-            'submitted' => 'primary',
-            'under_review' => 'warning',
-            'revision' => 'warning',
-            'accepted' => 'success',
-            'rejected' => 'danger',
-            'camera_ready' => 'info',
-            'published' => 'dark',
-        ];
-
-        $statusLabel = $statusLabels[$submission->status] ?? ucfirst(str_replace('_', ' ', $submission->status));
-
-        $statusClass = $statusClasses[$submission->status] ?? 'secondary';
-
-    @endphp
-
-
     {{-- ============================================================
-SUBMISSION INFORMATION
-
-============================================================= --}}
+        SUBMISSION INFORMATION
+    ============================================================= --}}
 
     <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -105,50 +35,70 @@ SUBMISSION INFORMATION
                 Submission Information
             </h3>
 
-            @if ($submission->status !== 'published')
-                <div class="float-end">
-
-                    <a href="{{ route('admin.submissions.edit', $submission) }}" class="btn btn-warning btn-sm rounded-0">
-                        <i class="bi bi-pencil me-1"></i>
-                        Edit Submission
-                    </a>
-
-                </div>
-            @endif
-
         </div>
 
         <div class="card-body">
 
-            <div class="mb-3">
+            <div class="mb-2 d-flex flex-wrap gap-2">
 
-                <span class="badge text-bg-{{ $statusClass }} rounded-0">
+                {{-- Submission Stage --}}
+                @if ($submission->submission_stage === 'abstract')
+                    <span class="badge text-bg-secondary rounded-0">
+                        Abstract Stage
+                    </span>
+                @elseif ($submission->submission_stage === 'full_paper')
+                    <span class="badge text-bg-primary rounded-0">
+                        Full Paper Stage
+                    </span>
+                @else
+                    <span class="badge text-bg-dark rounded-0">
+                        Submission Stage
+                    </span>
+                @endif
 
-                    @if ($submission->status === 'published')
-                        <i class="bi bi-check-circle me-1"></i>
-                    @elseif ($submission->status === 'accepted')
-                        <i class="bi bi-check-circle me-1"></i>
-                    @elseif ($submission->status === 'rejected')
-                        <i class="bi bi-x-circle me-1"></i>
-                    @elseif ($submission->status === 'camera_ready')
-                        <i class="bi bi-file-earmark-check me-1"></i>
-                    @else
-                        <i class="bi bi-circle-fill me-1"></i>
-                    @endif
-
-                    {{ $statusLabel }}
-
-                </span>
+                {{-- Submission Status --}}
+                @if ($submission->status === 'draft')
+                    <span class="badge text-bg-secondary rounded-0">
+                        Draft
+                    </span>
+                @elseif ($submission->status === 'submitted')
+                    <span class="badge text-bg-primary rounded-0">
+                        Submitted
+                    </span>
+                @elseif ($submission->status === 'under_review')
+                    <span class="badge text-bg-warning rounded-0">
+                        Under Review
+                    </span>
+                @elseif ($submission->status === 'revision')
+                    <span class="badge text-bg-warning rounded-0">
+                        Revision Required
+                    </span>
+                @elseif ($submission->status === 'accepted')
+                    <span class="badge text-bg-success rounded-0">
+                        Accepted
+                    </span>
+                @elseif ($submission->status === 'rejected')
+                    <span class="badge text-bg-danger rounded-0">
+                        Rejected
+                    </span>
+                @elseif ($submission->status === 'camera_ready')
+                    <span class="badge text-bg-info rounded-0">
+                        Camera Ready
+                    </span>
+                @else
+                    <span class="badge text-bg-dark rounded-0">
+                        Published
+                    </span>
+                @endif
 
             </div>
-
 
             <div class="row">
 
                 {{-- Main Information --}}
                 <div class="col-lg-8">
 
-                    <div class="mb-4">
+                    <div class="mb-2">
 
                         <h4 class="fw-bold mb-0">
                             {{ $submission->title }}
@@ -156,6 +106,7 @@ SUBMISSION INFORMATION
 
                     </div>
 
+                    <hr>
 
                     <div class="row mb-2">
 
@@ -440,6 +391,17 @@ SUBMISSION INFORMATION
 
         </div>
 
+        @if ($submission->status !== 'published')
+            <div class="card-footer">
+
+                <a href="{{ route('admin.submissions.edit', $submission) }}" class="btn btn-warning rounded-0">
+                    <i class="bi bi-pencil me-1"></i>
+                    Edit Submission
+                </a>
+
+            </div>
+        @endif
+
     </div>
 
 
@@ -511,9 +473,8 @@ MANUSCRIPT INFORMATION
 
 
     {{-- ============================================================
-AUTHORS
-
-============================================================= --}}
+    AUTHORS
+    ============================================================= --}}
 
     <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -529,12 +490,19 @@ AUTHORS
 
         <div class="card-body p-0">
 
+            @php
+                $hasOrcid = $submission->authors->contains(function ($author) {
+                    return !empty($author->orcid);
+                });
+            @endphp
+
             <div class="table-responsive rounded-0">
 
                 <table class="table table-hover align-middle mb-0">
 
                     <thead>
                         <tr>
+
                             <th width="50">
                                 No
                             </th>
@@ -543,9 +511,11 @@ AUTHORS
                                 Author
                             </th>
 
-                            <th>
-                                ORCID
-                            </th>
+                            @if ($hasOrcid)
+                                <th>
+                                    ORCID
+                                </th>
+                            @endif
 
                             <th>
                                 Email
@@ -562,12 +532,14 @@ AUTHORS
                             <th>
                                 Role
                             </th>
+
                         </tr>
                     </thead>
 
                     <tbody>
 
                         @forelse ($submission->authors as $author)
+
                             <tr>
 
                                 <td>
@@ -586,17 +558,21 @@ AUTHORS
                                     @endif
                                 </td>
 
-                                <td>
-                                    @if ($author->orcid)
-                                        <span class="text-nowrap">
-                                            {{ $author->orcid }}
-                                        </span>
-                                    @else
-                                        <span class="text-muted">
-                                            -
-                                        </span>
-                                    @endif
-                                </td>
+                                @if ($hasOrcid)
+                                    <td>
+
+                                        @if ($author->orcid)
+                                            <span class="text-nowrap">
+                                                {{ $author->orcid }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">
+                                                -
+                                            </span>
+                                        @endif
+
+                                    </td>
+                                @endif
 
                                 <td>
 
@@ -647,11 +623,14 @@ AUTHORS
 
                             <tr>
 
-                                <td colspan="7" class="text-center text-muted py-4">
+                                <td colspan="{{ $hasOrcid ? 7 : 6 }}" class="text-center text-muted py-4">
+
                                     No authors available.
+
                                 </td>
 
                             </tr>
+
                         @endforelse
 
                     </tbody>
@@ -666,9 +645,8 @@ AUTHORS
 
 
     {{-- ============================================================
-REVIEWERS
-
-============================================================= --}}
+    REVIEWERS
+    ============================================================= --}}
 
     <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -681,8 +659,7 @@ REVIEWERS
 
             <div class="float-end">
 
-                <a href="{{ route('admin.submissions.reviews.create', $submission) }}"
-                    class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.submissions.reviews.create', $submission) }}" class="btn btn-success rounded-0">
                     <i class="bi bi-person-plus me-1"></i>
                     Assign Reviewer
                 </a>
@@ -726,7 +703,7 @@ REVIEWERS
                                 Recommendation
                             </th>
 
-                            <th width="80">
+                            <th>
                                 Action
                             </th>
 
@@ -824,12 +801,12 @@ REVIEWERS
 
                                         @if ($review->reviewed_at)
                                             <a href="{{ route('admin.reviews.show', $review) }}"
-                                                class="btn btn-info btn-sm rounded-0" title="View Review">
+                                                class="btn btn-info rounded-0" title="View Review">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @else
                                             <a href="{{ route('admin.reviews.edit', $review) }}"
-                                                class="btn btn-primary btn-sm rounded-0" title="Review">
+                                                class="btn btn-primary rounded-0" title="Review">
                                                 <i class="bi bi-clipboard-check"></i>
                                             </a>
 
@@ -839,7 +816,7 @@ REVIEWERS
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-0"
+                                                <button type="submit" class="btn btn-danger rounded-0"
                                                     title="Remove Reviewer">
                                                     <i class="bi bi-person-dash"></i>
                                                 </button>
@@ -864,12 +841,6 @@ REVIEWERS
                                     <div class="text-muted mt-2">
                                         No reviewers assigned yet.
                                     </div>
-
-                                    <a href="{{ route('admin.submissions.reviews.create', $submission) }}"
-                                        class="btn btn-success btn-sm rounded-0 mt-3">
-                                        <i class="bi bi-person-plus me-1"></i>
-                                        Assign First Reviewer
-                                    </a>
 
                                 </td>
 
@@ -1323,10 +1294,10 @@ CAMERA READY CORRECTION REASON
 @push('scripts')
     <script>
         /*
-    |--------------------------------------------------------------------------
-    | Remove Reviewer
-    |--------------------------------------------------------------------------
-    */
+                                |--------------------------------------------------------------------------
+                                | Remove Reviewer
+                                |--------------------------------------------------------------------------
+                                */
 
         document
             .querySelectorAll('.delete-review-form')

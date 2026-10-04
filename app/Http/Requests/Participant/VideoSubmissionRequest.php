@@ -39,21 +39,6 @@ class VideoSubmissionRequest extends FormRequest
         $submission = $this->route('submission');
 
         return [
-            'presenter_author_id' => [
-                'required',
-                'integer',
-
-                Rule::exists(
-                    'submission_authors',
-                    'id'
-                )->where(function ($query) use ($submission) {
-                    $query->where(
-                        'submission_id',
-                        $submission?->id
-                    );
-                }),
-            ],
-
             'video_url' => [
                 'required',
                 'url',
