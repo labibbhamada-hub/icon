@@ -7,8 +7,9 @@ Route::get('/', [App\Http\Controllers\LandingController::class, 'index']);
 Route::get('/certificate/verify', [App\Http\Controllers\CertificateVerificationController::class, 'index'])->name('certificates.verify');
 Route::get('/loa/verify/{submissionCode}', [App\Http\Controllers\LoaVerificationController::class, 'show'])->name('loa.verify');
 
+Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
+
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.store');
     Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register.store');

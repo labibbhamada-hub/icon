@@ -72,4 +72,46 @@ class AuthorizationTest extends TestCase
 
         $response->assertSuccessful();
     }
+
+    public function test_authenticated_admin_is_redirected_from_login_to_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('login'));
+
+        $response->assertRedirect(
+            route('admin.dashboard')
+        );
+    }
+
+    public function test_user_can_login_with_remember_me(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'remember@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'remember@example.com',
+            'password' => 'password',
+            'remember' => '1',
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertAuthenticatedAs($user);
+
+        $user->refresh();
+
+        $this->assertNotNull($user->remember_token);
+
+        $response->assertCookie(
+            \Illuminate\Support\Facades\Auth::getRecallerName()
+        );
+    }
 }

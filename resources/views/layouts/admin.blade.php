@@ -10,6 +10,15 @@
         @yield('title') | ICON 2026 CMS
     </title>
 
+    {{-- Inter Font --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Bootstrap --}}
@@ -21,9 +30,8 @@
     {{-- AdminLTE --}}
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
 
-    {{-- Custom --}}
-    {{-- <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}"> --}}
-    {{-- <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}"> --}}
+    {{-- Custom Admin --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
 
     @stack('styles')
 
