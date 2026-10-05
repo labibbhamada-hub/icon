@@ -2,6 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/debug/request', function () {
+    return response()->json([
+        'url' => request()->url(),
+        'scheme' => request()->getScheme(),
+        'is_secure' => request()->isSecure(),
+        'host' => request()->getHost(),
+        'forwarded_proto' => request()->header('X-Forwarded-Proto'),
+        'forwarded_host' => request()->header('X-Forwarded-Host'),
+    ]);
+});
+
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index']);
 
 Route::get('/certificate/verify', [App\Http\Controllers\CertificateVerificationController::class, 'index'])->name('certificates.verify');

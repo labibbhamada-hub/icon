@@ -1081,18 +1081,66 @@ body.landing-page {
     margin: 0;
 }
 
-/* Navigation wrapper */
-.landing-page .site-navbar .navbar-collapse {
+/* =========================================================
+   NAVBAR - VERTICAL ALIGNMENT
+========================================================= */
+
+.landing-page .site-navbar .container {
     display: flex;
     align-items: center;
 }
 
-/* Navigation list */
-.landing-page #navbar-items {
+.landing-page .site-navbar .navbar-brand {
     display: flex;
     align-items: center;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin: 0;
+}
+
+.landing-page .site-navbar .navbar-toggler {
+    align-self: center;
+    margin: 0;
+}
+
+
+/* =========================================================
+   DESKTOP NAVIGATION
+========================================================= */
+
+@media (min-width: 992px) {
+
+    /*
+     * Bootstrap 5 tetap mengontrol display
+     * dari .navbar-collapse.
+     */
+    .landing-page .site-navbar .navbar-collapse {
+        align-items: center;
+    }
+
+    .landing-page #navbarMenu .navbar-nav {
+        display: flex;
+        align-items: center;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .landing-page #navbarMenu .nav-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .landing-page #navbarMenu .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 40px;
+
+        margin: 0;
+        padding: 0 12px !important;
+
+        line-height: 1;
+    }
+
 }
 
 /* Navigation item */
@@ -1221,13 +1269,6 @@ body.landing-page {
         align-items: flex-start;
     }
 
-    .landing-page #navbar-items {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-    }
-
     .landing-page #navbar-items .nav-item {
         width: 100%;
     }
@@ -1270,4 +1311,161 @@ body.landing-page {
 .landing-page .site-navbar .navbar-toggler,
 .landing-page .site-nav-actions {
     align-self: center;
+}
+
+/* =========================================================
+   NAVBAR - FINAL ALIGNMENT
+========================================================= */
+
+.landing-page .site-nav .container {
+    display: flex;
+    align-items: center;
+}
+
+
+/* Brand */
+.landing-page .site-nav .site-branding {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+
+/* Navbar toggle */
+.landing-page .site-nav .navbar-toggler {
+    align-self: center;
+    margin: 0;
+}
+
+
+/* =========================================================
+   DESKTOP NAVBAR
+========================================================= */
+
+@media (min-width: 992px) {
+
+    /*
+     * IMPORTANT:
+     * Do not set display on .navbar-collapse.
+     * Bootstrap controls the collapse state.
+     */
+    .landing-page .site-nav .navbar-collapse {
+        align-items: center;
+    }
+
+    .landing-page .site-nav .navbar-nav {
+        display: flex;
+        align-items: center;
+
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .landing-page .site-nav .nav-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .landing-page .site-nav .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 40px;
+
+        margin: 0;
+        padding: 0 12px !important;
+
+        line-height: 1;
+    }
+
+    .landing-page .site-nav-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin-left: 12px;
+        gap: 8px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE NAVBAR
+========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .landing-page .site-nav .navbar-collapse {
+        margin-top: 10px;
+        padding-top: 10px;
+
+        border-top: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    /*
+     * DO NOT set display:flex here.
+     * Bootstrap must control show/hide.
+     */
+
+    .landing-page .site-nav .navbar-nav {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        margin: 0;
+        padding: 0;
+    }
+
+    .landing-page .site-nav .nav-item {
+        width: 100%;
+    }
+
+    .landing-page .site-nav .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        width: 100%;
+        min-height: 42px;
+
+        padding: 10px 0 !important;
+        margin: 0;
+
+        line-height: 1.4;
+
+        border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .landing-page .site-nav .nav-link:hover,
+    .landing-page .site-nav .nav-link:focus,
+    .landing-page .site-nav .nav-link.active {
+        color: var(--landing-gold);
+        border-bottom-color: var(--landing-gold);
+    }
+
+    .landing-page .site-nav-actions {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+
+        margin: 14px 0 4px;
+        gap: 8px;
+    }
+
+    .landing-page .site-nav-actions .btn {
+        flex: 1;
+
+        min-height: 40px;
+        height: 40px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 }
