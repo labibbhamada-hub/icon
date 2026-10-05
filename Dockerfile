@@ -1,31 +1,25 @@
 FROM php:8.3-fpm
 
-WORKDIR /var/www/html
+WORKDIR /var/www
 
 RUN apt-get update && apt-get install -y \
     git \
-    curl \
     unzip \
-    zip \
     libzip-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
-    libicu-dev \
-    libpq-dev \
-    && docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
+    curl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
         pdo_mysql \
         mbstring \
         exif \
         pcntl \
         bcmath \
         gd \
-        intl \
         zip \
         opcache \
     && apt-get clean \
@@ -33,8 +27,21 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN git config --global --add safe.directory /var/www/html
+COPY . /var/www
 
-EXPOSE 9000
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction
+
+RUN chown -R www-data:www-data \
+    /var/www/storage \
+    /var/www/bootstrap/cache
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 CMD ["php-fpm"]
