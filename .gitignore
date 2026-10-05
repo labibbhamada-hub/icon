@@ -5,6 +5,7 @@
 .env.backup
 .env.production
 .env.testing
+.env_docker
 
 .phpactor.json
 .phpunit.result.cache
