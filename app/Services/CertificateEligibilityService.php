@@ -192,7 +192,7 @@ class CertificateEligibilityService
     public function isEligible(
         Participant $participant,
         string $type,
-        ?Submission $submission = null
+        ?Submission $submission = null,
     ): bool {
         return $this->evaluate(
             $participant,

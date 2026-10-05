@@ -999,19 +999,24 @@ SUBMISSION FILES
     </div>
 
     {{-- ============================================================
+    PUBLICATION RECOMMENDATION
+    ============================================================= --}}
 
-PUBLICATION ELIGIBILITY
-============================================================= --}}
-
-    @if ($publicationEligibility)
-
+    @if ($publicationEligibility && $submission->submission_stage === 'full_paper' && $submission->status === 'accepted')
         @php
             $eligibilityChecks = [
-                'camera_ready' => 'Camera Ready',
+                'workflow' => 'Full Paper Accepted',
                 'video' => 'Presentation Video',
                 'presenter' => 'Presenter',
                 'attendance' => 'Conference Attendance',
+                'presenter_certificate' => 'Presenter Certificate',
             ];
+
+            $recommendationStatus = $submission->publication_recommendation_status ?? 'pending';
+
+            $isEligible = $publicationEligibility['eligible'] ?? false;
+
+            $isPending = $recommendationStatus === 'pending';
         @endphp
 
         <div class="card rounded-0 overflow-hidden mb-3">
@@ -1019,15 +1024,18 @@ PUBLICATION ELIGIBILITY
             <div class="card-header rounded-0">
 
                 <h3 class="card-title">
-                    <i class="bi bi-shield-check me-2"></i>
-                    Publication Eligibility
+
+                    <i class="bi bi-journal-check me-2"></i>
+
+                    Publication Recommendation
+
                 </h3>
 
             </div>
 
             <div class="card-body">
 
-                @if ($publicationEligibility['eligible'])
+                @if ($recommendationStatus === 'recommended')
                     <div class="alert alert-success rounded-0">
 
                         <div class="d-flex align-items-start gap-2">
@@ -1035,12 +1043,57 @@ PUBLICATION ELIGIBILITY
                             <i class="bi bi-check-circle-fill fs-5"></i>
 
                             <div>
+
                                 <strong>
-                                    This submission is eligible for publication.
+                                    Recommended for Publication
                                 </strong>
 
                                 <div class="small mt-1">
-                                    All required publication conditions have been satisfied.
+                                    This submission has already been recommended for publication.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                @elseif ($recommendationStatus === 'not_recommended')
+                    <div class="alert alert-danger rounded-0">
+
+                        <div class="d-flex align-items-start gap-2">
+
+                            <i class="bi bi-x-circle-fill fs-5"></i>
+
+                            <div>
+
+                                <strong>
+                                    Not Recommended for Publication
+                                </strong>
+
+                                <div class="small mt-1">
+                                    This submission has already been marked as not recommended for publication.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                @elseif ($isEligible)
+                    <div class="alert alert-success rounded-0">
+
+                        <div class="d-flex align-items-start gap-2">
+
+                            <i class="bi bi-check-circle-fill fs-5"></i>
+
+                            <div>
+
+                                <strong>
+                                    This submission is eligible for publication recommendation.
+                                </strong>
+
+                                <div class="small mt-1">
+                                    All required conditions have been satisfied.
                                 </div>
 
                             </div>
@@ -1056,12 +1109,13 @@ PUBLICATION ELIGIBILITY
                             <i class="bi bi-exclamation-triangle-fill fs-5"></i>
 
                             <div>
+
                                 <strong>
-                                    Publication is not available yet.
+                                    Publication recommendation is not available yet.
                                 </strong>
 
                                 <div class="small mt-1">
-                                    Complete the requirements below before publishing this submission.
+                                    Complete the requirements below before recommending this submission for publication.
                                 </div>
 
                             </div>
@@ -1117,7 +1171,7 @@ PUBLICATION ELIGIBILITY
 
                 </div>
 
-                @if (!$publicationEligibility['eligible'])
+                @if (!$isEligible && $isPending)
 
                     <div class="mt-3">
 
@@ -1139,15 +1193,57 @@ PUBLICATION ELIGIBILITY
 
                 @endif
 
+                @if ($isPending)
+                    <div class="border-top mt-4 pt-3">
+
+                        <h6 class="fw-bold mb-3">
+                            Recommendation Decision
+                        </h6>
+
+                        <div class="d-flex flex-wrap gap-2">
+
+                            <form action="{{ route('admin.submissions.publication-recommendation', $submission) }}"
+                                method="POST">
+                                @csrf
+                                @method('PATCH')
+
+                                <input type="hidden" name="recommendation" value="recommended">
+
+                                <button type="submit" class="btn btn-success rounded-0" @disabled(!$isEligible)
+                                    @if (!$isEligible) title="All publication recommendation requirements must be satisfied." @endif>
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Recommend for Publication
+                                </button>
+
+                            </form>
+
+                            <form action="{{ route('admin.submissions.publication-recommendation', $submission) }}"
+                                method="POST">
+                                @csrf
+                                @method('PATCH')
+
+                                <input type="hidden" name="recommendation" value="not_recommended">
+
+                                <button type="submit" class="btn btn-outline-danger rounded-0">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Not Recommended
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+                @endif
+
             </div>
 
         </div>
-
     @endif
 
     {{-- ============================================================
-CAMERA READY APPROVAL
-============================================================= --}}
+    CAMERA READY APPROVAL
+    ============================================================= --}}
 
     @if ($submission->status === 'camera_ready')
 
@@ -1294,10 +1390,10 @@ CAMERA READY CORRECTION REASON
 @push('scripts')
     <script>
         /*
-                                |--------------------------------------------------------------------------
-                                | Remove Reviewer
-                                |--------------------------------------------------------------------------
-                                */
+                                                    |--------------------------------------------------------------------------
+                                                    | Remove Reviewer
+                                                    |--------------------------------------------------------------------------
+                                                    */
 
         document
             .querySelectorAll('.delete-review-form')

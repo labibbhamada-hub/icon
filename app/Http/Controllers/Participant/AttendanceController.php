@@ -95,6 +95,13 @@ class AttendanceController extends Controller
             );
         }
 
+        $participant->loadMissing(
+            'registrationType'
+        );
+
+        $isPresenter =
+            $participant->registrationType?->category === 'presenter';
+
         /*
         |--------------------------------------------------------------------------
         | Check In
@@ -139,7 +146,12 @@ class AttendanceController extends Controller
         */
 
         try {
-            $certificateGenerationService
+            $certificate = $isPresenter
+                ? $certificateGenerationService
+                ->createForPresenterAttendance(
+                    $participant->fresh()
+                )
+                : $certificateGenerationService
                 ->createForParticipant(
                     $participant->fresh()
                 );
@@ -149,6 +161,20 @@ class AttendanceController extends Controller
             return back()->with(
                 'error',
                 'Attendance was recorded, but the certificate could not be generated yet. Please try again.'
+            );
+        }
+
+        if ($isPresenter) {
+            if ($certificate) {
+                return back()->with(
+                    'success',
+                    'Conference check-in recorded successfully. Your presenter certificate is ready to download.'
+                );
+            }
+
+            return back()->with(
+                'success',
+                'Conference check-in recorded successfully. Your presenter certificate will be available once an eligible full paper with a submitted presentation video is available.'
             );
         }
 

@@ -1299,185 +1299,19 @@ class SubmissionTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_request_camera_ready_correction_and_participant_can_resubmit(): void
+    public function test_participant_camera_ready_routes_have_been_removed(): void
     {
-        Storage::fake('local');
-        Mail::fake();
-        Queue::fake();
+        $this
+            ->get('/participant/submissions/1/camera-ready')
+            ->assertNotFound();
 
-        $conference = $this->createOpenConference();
+        $this
+            ->post('/participant/submissions/1/camera-ready')
+            ->assertNotFound();
 
-        $registrationType = ConferenceRegistrationType::create([
-            'conference_id' => $conference->id,
-            'name' => 'Presenter',
-            'code' => 'PRESENTER-TEST',
-            'category' => 'presenter',
-            'fee' => 250000,
-            'currency' => 'IDR',
-            'included_papers' => 1,
-            'additional_paper_fee' => 0,
-            'payment_timing' => 'immediate',
-            'is_active' => true,
-        ]);
-
-        $participant = $this->createParticipant($conference);
-
-        $participant->update([
-            'registration_type_id' => $registrationType->id,
-        ]);
-
-        $topic = $this->createTopic($conference);
-
-        $participant->user->markEmailAsVerified();
-
-        $submission = $this->createSubmission(
-            $conference,
-            $participant,
-            $topic,
-            [
-                'submission_stage' => 'full_paper',
-                'status' => 'camera_ready',
-                'video_url' => 'https://drive.google.com/file/d/test-video-id/view',
-                'camera_ready_file' => 'submissions/camera-ready/old-camera-ready.pdf',
-            ]
-        );
-
-        $author = \App\Models\SubmissionAuthor::create([
-            'submission_id' => $submission->id,
-            'name' => 'Presenter Test',
-            'email' => $participant->email,
-            'institution' => 'Test University',
-            'is_corresponding' => true,
-            'sort_order' => 1,
-        ]);
-
-        $submission->update([
-            'presenter_author_id' => $author->id,
-        ]);
-
-        $admin = User::factory()->create([
-            'role' => 'admin',
-            'status' => 'active',
-        ]);
-
-        $paymentMethod = ConferencePaymentMethod::create([
-            'conference_id' => $conference->id,
-            'type' => 'bank_transfer',
-            'name' => 'Bank Transfer',
-            'provider' => 'BRI',
-            'account_number' => '1234567890',
-            'account_name' => 'Test Conference',
-            'currency' => 'IDR',
-            'instructions' => 'Transfer to the test account.',
-            'is_active' => true,
-            'sort_order' => 1,
-        ]);
-
-        Payment::create([
-            'participant_id' => $participant->id,
-            'payment_method_id' => $paymentMethod->id,
-            'payment_code' => 'PAY-TEST-CAMERA-READY',
-            'amount' => 250000,
-            'proof_file' => 'payments/proofs/test-camera-ready.pdf',
-            'status' => 'verified',
-            'paid_at' => now(),
-            'verified_at' => now(),
-            'verified_by' => $admin->id,
-        ]);
-
-        Storage::disk('local')->put(
-            'submissions/camera-ready/old-camera-ready.pdf',
-            'OLD CAMERA READY'
-        );
-
-        $this->actingAs($admin)
-            ->patch(
-                route(
-                    'admin.submissions.camera-ready.correction',
-                    $submission
-                ),
-                [
-                    'correction_reason' =>
-                    'Please correct the author affiliation and update Figure 2.',
-                ]
-            )
-            ->assertRedirect(
-                route('admin.submissions.show', $submission)
-            );
-
-        Queue::assertPushed(
-            \App\Jobs\SendCameraReadyCorrectionWhatsApp::class
-        );
-
-        $submission->refresh();
-
-        $this->assertSame(
-            'accepted',
-            $submission->status
-        );
-
-        $this->assertSame(
-            'revision',
-            $submission->camera_ready_status
-        );
-
-        $this->assertSame(
-            'Please correct the author affiliation and update Figure 2.',
-            $submission->camera_ready_correction_reason
-        );
-
-        Mail::assertQueued(
-            \App\Mail\SubmissionStatusMail::class
-        );
-
-        $newFile = UploadedFile::fake()->create(
-            'camera-ready-v2.pdf',
-            200,
-            'application/pdf'
-        );
-
-        $this->actingAs($participant->user)
-            ->post(
-                route(
-                    'participant.submissions.camera-ready.upload',
-                    $submission
-                ),
-                [
-                    'camera_ready_file' => $newFile,
-                ]
-            )
-            ->assertRedirect(
-                route('participant.submissions.show', $submission)
-            );
-
-        $submission->refresh();
-
-        $this->assertSame(
-            'camera_ready',
-            $submission->status
-        );
-
-        $this->assertSame(
-            'submitted',
-            $submission->camera_ready_status
-        );
-
-        $this->assertNull(
-            $submission->camera_ready_correction_reason
-        );
-
-        $this->assertNotSame(
-            'submissions/camera-ready/old-camera-ready.pdf',
-            $submission->camera_ready_file
-        );
-
-        Storage::disk('local')->assertMissing(
-            'submissions/camera-ready/old-camera-ready.pdf'
-        );
-
-        Storage::disk('local')->assertExists(
-            $submission->camera_ready_file
-        );
+        $this
+            ->get('/participant/submissions/1/camera-ready/download')
+            ->assertNotFound();
     }
 
     public function test_admin_can_approve_camera_ready_and_set_approved_status(): void
@@ -2711,7 +2545,7 @@ class SubmissionTest extends TestCase
                 $topic,
                 [
                     'submission_stage' => 'full_paper',
-                    'status' => 'camera_ready',
+                    'status' => 'accepted',
                     'camera_ready_file' =>
                     'submissions/camera-ready/test-ui.pdf',
                     'video_url' =>
@@ -2757,7 +2591,7 @@ class SubmissionTest extends TestCase
         $response->assertOk();
 
         $response->assertSee(
-            'Publication Eligibility'
+            'Publication Recommendation'
         );
 
         $response->assertSee(
@@ -2769,12 +2603,11 @@ class SubmissionTest extends TestCase
         );
 
         $response->assertSee(
-            'Publication is not available yet.'
+            'Publication recommendation is not available yet.'
         );
 
-        $response->assertSee(
-            'Publication requirements are not yet satisfied.',
-            false
+        $response->assertSeeHtml(
+            'title="All publication recommendation requirements must be satisfied."'
         );
     }
 
@@ -2809,7 +2642,7 @@ class SubmissionTest extends TestCase
                 $topic,
                 [
                     'submission_stage' => 'full_paper',
-                    'status' => 'camera_ready',
+                    'status' => 'accepted',
                     'camera_ready_file' =>
                     'submissions/camera-ready/test-ui-ready.pdf',
                     'video_url' =>
@@ -2852,6 +2685,15 @@ class SubmissionTest extends TestCase
             'verified_by' => $admin->id,
         ]);
 
+        \App\Models\Certificate::create([
+            'participant_id' => $participant->id,
+            'conference_id' => $conference->id,
+            'submission_id' => $submission->id,
+            'certificate_number' => 'CERT-TEST-' . uniqid(),
+            'type' => 'presenter',
+            'issued_at' => now(),
+        ]);
+
         $response =
             $this->actingAs($admin)
             ->get(
@@ -2864,16 +2706,19 @@ class SubmissionTest extends TestCase
         $response->assertOk();
 
         $response->assertSee(
-            'Publication Eligibility'
+            'Publication Recommendation'
         );
 
         $response->assertSee(
-            'This submission is eligible for publication.'
+            'This submission is eligible for publication recommendation.'
         );
 
         $response->assertSee(
-            'Approve & Publish',
-            false
+            'Recommend for Publication'
+        );
+
+        $response->assertSee(
+            'Not Recommended'
         );
 
         $response->assertSee(
@@ -3121,5 +2966,147 @@ class SubmissionTest extends TestCase
             'review_round' => 1,
             'reviewed_at' => null,
         ]);
+    }
+
+    public function test_presenter_can_update_existing_video_link(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $user = User::factory()->create();
+
+        $registrationType =
+            $this->createPresenterRegistrationType($conference);
+
+        $participant = Participant::create([
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => 'REG-VIDEO-EDIT',
+            'full_name' => 'Presenter Edit Test',
+            'email' => $user->email,
+            'institution' => 'Test Institution',
+            'participant_type' => 'presenter',
+            'attendance_type' => 'online',
+            'registration_status' => 'confirmed',
+            'registered_at' => now(),
+        ]);
+
+        $topic = $this->createTopic($conference);
+
+        $submission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic,
+            [
+                'submission_stage' => 'full_paper',
+                'status' => 'accepted',
+                'video_url' =>
+                'https://drive.google.com/file/d/old-video/view',
+                'video_submitted_at' => now()->subMinutes(10),
+            ]
+        );
+
+        $oldSubmittedAt = $submission->video_submitted_at;
+
+        $newUrl =
+            'https://drive.google.com/file/d/new-video/view';
+
+        $this->actingAs($user)
+            ->get(
+                route(
+                    'participant.submissions.video.edit',
+                    $submission
+                )
+            )
+            ->assertOk()
+            ->assertSee(
+                'https://drive.google.com/file/d/old-video/view'
+            );
+
+        $this->actingAs($user)
+            ->put(
+                route(
+                    'participant.submissions.video.update',
+                    $submission
+                ),
+                [
+                    'video_url' => $newUrl,
+                ]
+            )
+            ->assertRedirect(
+                route(
+                    'participant.submissions.show',
+                    $submission
+                )
+            );
+
+        $submission->refresh();
+
+        $this->assertSame(
+            $newUrl,
+            $submission->video_url
+        );
+
+        $this->assertNotNull(
+            $submission->video_submitted_at
+        );
+
+        $this->assertTrue(
+            $submission->video_submitted_at->greaterThan(
+                $oldSubmittedAt
+            )
+        );
+    }
+
+    public function test_submission_detail_displays_submitted_video_link(): void
+    {
+        $conference = $this->createOpenConference();
+
+        $user = User::factory()->create();
+
+        $registrationType =
+            $this->createPresenterRegistrationType($conference);
+
+        $participant = Participant::create([
+            'user_id' => $user->id,
+            'conference_id' => $conference->id,
+            'registration_type_id' => $registrationType->id,
+            'registration_number' => 'REG-VIDEO-DETAIL',
+            'full_name' => 'Presenter Detail Test',
+            'email' => $user->email,
+            'institution' => 'Test Institution',
+            'participant_type' => 'presenter',
+            'attendance_type' => 'online',
+            'registration_status' => 'confirmed',
+            'registered_at' => now(),
+        ]);
+
+        $topic = $this->createTopic($conference);
+
+        $videoUrl =
+            'https://drive.google.com/file/d/detail-video/view';
+
+        $submission = $this->createSubmission(
+            $conference,
+            $participant,
+            $topic,
+            [
+                'submission_stage' => 'full_paper',
+                'status' => 'accepted',
+                'video_url' => $videoUrl,
+                'video_submitted_at' => now(),
+            ]
+        );
+
+        $this->actingAs($user)
+            ->get(
+                route(
+                    'participant.submissions.show',
+                    $submission
+                )
+            )
+            ->assertOk()
+            ->assertSee($videoUrl)
+            ->assertSee('Edit Video Link');
     }
 }

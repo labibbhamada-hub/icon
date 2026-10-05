@@ -20,6 +20,7 @@ class Submission extends Model
         'camera_ready_file',
         'video_url',
         'video_submitted_at',
+        'publication_recommendation_status',
         'camera_ready_correction_reason',
         'camera_ready_status',
         'status',
@@ -62,3 +63,4 @@ class Submission extends Model
         return $this->hasMany(Review::class);
     }
 }
+

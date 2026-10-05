@@ -3,74 +3,29 @@
 @section('title', 'Generate Certificate')
 
 @section('header')
-
-    <div class="row">
-
+    <div class="row align-items-top">
         <div class="col-sm-6">
-
-            <div class="d-flex align-items-center gap-2">
-
-                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
-
-                <div>
-
-                    <h1 class="mb-0 fs-3">
-                        Generate Certificate
-                    </h1>
-
-                    <p class="text-muted mb-0">
-                        Generate a certificate for a confirmed participant.
-                    </p>
-
-                </div>
-
+                <h1 class="mb-0 fs-3">
+                    Generate Certificate
+                </h1>
             </div>
-
+            <p class="text-muted mb-0">
+                Generate a certificate for a confirmed participant.
+            </p>
         </div>
-
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.certificates.index') }}">
-                            Certificates
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Generate
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
 
     <form action="{{ route('admin.certificates.store') }}" method="POST" id="certificate-form">
-
         @csrf
 
-
-        <div class="card rounded-0 overflow-hidden">
+        <div class="card rounded-0 overflow-hidden mb-3">
 
             <div class="card-header rounded-0">
 
@@ -88,13 +43,13 @@
             <div class="card-body">
 
                 {{-- ====================================================
-            PARTICIPANT & TYPE
-        ===================================================== --}}
+                    PARTICIPANT & TYPE
+                ===================================================== --}}
 
-                <div class="row g-3">
+                <div class="row">
 
                     {{-- Participant --}}
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 mb-2">
 
                         <label for="participant_id" class="form-label">
                             Participant
@@ -109,7 +64,14 @@
                             </option>
 
                             @foreach ($participants as $participant)
-                                <option value="{{ $participant->id }}" data-submissions='@json($participant->submissions->where('status', 'published')->values())'
+                                <option value="{{ $participant->id }}" data-submissions='@json(
+                                    $participant->submissions->filter(function ($submission) {
+                                            return $submission->status === 'published' ||
+                                                ($submission->submission_stage === 'full_paper' &&
+                                                    $submission->status === 'accepted' &&
+                                                    !empty($submission->video_url) &&
+                                                    !empty($submission->video_submitted_at));
+                                        })->values())'
                                     @selected(old('participant_id') == $participant->id)>
 
                                     {{ $participant->full_name }}
@@ -140,7 +102,7 @@
 
 
                     {{-- Certificate Type --}}
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 mb-2">
 
                         <label for="type" class="form-label">
                             Certificate Type
@@ -173,7 +135,7 @@
                         </select>
 
                         <div class="form-text">
-                            Presenter certificates require a published submission.
+                            Presenter certificates require an eligible submission.
                         </div>
 
                         @error('type')
@@ -188,19 +150,18 @@
 
             </div>
 
-
             {{-- ========================================================
-        SUBMISSION
-    ========================================================= --}}
+                SUBMISSION
+            ========================================================= --}}
 
             <div class="card-body border-top">
 
                 <div class="row">
 
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
 
                         <label for="submission_id" class="form-label">
-                            Published Submission
+                            Eligible Submission
                         </label>
 
                         <select name="submission_id" id="submission_id"
@@ -214,8 +175,8 @@
 
 
                         <div id="submission-help" class="form-text">
-                            Select Presenter certificate to choose a
-                            published submission.
+                            Select Presenter certificate to choose an
+                            eligible submission.
                         </div>
 
 
@@ -231,10 +192,9 @@
 
             </div>
 
-
             {{-- ========================================================
-        INFO
-    ========================================================= --}}
+                INFO
+            ========================================================= --}}
 
             <div class="card-body border-top">
 
@@ -254,9 +214,10 @@
 
                                 The certificate PDF will be generated
                                 automatically after submission. For presenter
-                                certificates, the selected submission must
-                                already have the <strong>Published</strong>
-                                status.
+                                certificates, the selected submission must be an
+                                eligible full paper with an accepted status and
+                                a submitted presentation video. Legacy published
+                                submissions remain supported.
 
                             </div>
 
@@ -268,24 +229,14 @@
 
             </div>
 
+        </div>
 
-            {{-- ========================================================
-        FOOTER
-    ========================================================= --}}
+        <div class="text-end">
 
-            <div class="card-footer rounded-0 d-flex justify-content-end gap-2">
-
-                <a href="{{ route('admin.certificates.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Cancel
-                </a>
-
-                <button type="submit" class="btn btn-success btn-sm rounded-0" id="generate-certificate-button">
-                    <i class="bi bi-award me-1"></i>
-                    Generate Certificate
-                </button>
-
-            </div>
+            <button type="submit" class="btn btn-success rounded-0" id="generate-certificate-button">
+                <i class="bi bi-award me-1"></i>
+                Generate Certificate
+            </button>
 
         </div>
 
@@ -375,7 +326,7 @@
 
 
                     submissionHelp.textContent =
-                        'Only published submissions belonging to the selected participant are available.';
+                        'Only eligible submissions belonging to the selected participant are available.';
 
 
                     const selectedOption =
@@ -390,7 +341,7 @@
                     ) {
 
                         submissionHelp.textContent =
-                            'Select a participant first to load published submissions.';
+                            'Select a participant first to load eligible submissions.';
 
                         return;
 
@@ -418,7 +369,7 @@
                     if (!submissions.length) {
 
                         submissionHelp.textContent =
-                            'No published submissions are available for this participant.';
+                            'No eligible submissions are available for this participant.';
 
                         return;
 
@@ -549,7 +500,7 @@
 
                                     title: 'Submission Required',
 
-                                    text: 'A Presenter certificate requires a published submission.',
+                                    text: 'A Presenter certificate requires an eligible submission.',
 
                                     icon: 'warning',
 
@@ -565,7 +516,7 @@
 
 
                             message +=
-                                ' The selected published submission will be linked to the certificate.';
+                                ' The selected eligible submission will be linked to the certificate.';
 
                         }
 

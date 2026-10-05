@@ -192,7 +192,14 @@ class SubmissionController extends Controller
 
         $publicationEligibility = null;
 
-        if ($submission->status === 'camera_ready') {
+        if (
+            $submission->submission_stage === 'full_paper'
+            && in_array(
+                $submission->status,
+                ['accepted', 'camera_ready'],
+                true
+            )
+        ) {
             $publicationEligibility =
                 $publicationEligibilityService
                 ->evaluate($submission);
@@ -442,6 +449,106 @@ class SubmissionController extends Controller
             ->with(
                 'success',
                 'Submission deleted successfully.'
+            );
+    }
+
+    public function updatePublicationRecommendation(
+        Request $request,
+        Submission $submission,
+        PublicationEligibilityService $publicationEligibilityService
+    ) {
+        $validated = $request->validate([
+            'recommendation' => [
+                'required',
+                'in:recommended,not_recommended',
+            ],
+        ]);
+
+        if (
+            $submission->submission_stage !== 'full_paper'
+            || $submission->status !== 'accepted'
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'Publication recommendation is only available for accepted full papers.'
+                );
+        }
+
+        if (
+            ($submission->publication_recommendation_status ?? 'pending')
+            !== 'pending'
+        ) {
+            return back()
+                ->with(
+                    'error',
+                    'Publication recommendation has already been recorded.'
+                );
+        }
+
+        if (
+            $validated['recommendation'] === 'recommended'
+        ) {
+            $eligibility =
+                $publicationEligibilityService
+                ->evaluate($submission);
+
+            if (!$eligibility['eligible']) {
+                return back()
+                    ->with(
+                        'error',
+                        'Cannot recommend this submission: ' .
+                            implode(
+                                ' ',
+                                $eligibility['reasons']
+                            )
+                    );
+            }
+        }
+
+        $updated = DB::transaction(function () use (
+            $submission,
+            $validated
+        ) {
+            return Submission::query()
+                ->whereKey($submission->id)
+                ->where(function ($query) {
+                    $query
+                        ->whereNull(
+                            'publication_recommendation_status'
+                        )
+                        ->orWhere(
+                            'publication_recommendation_status',
+                            'pending'
+                        );
+                })
+                ->update([
+                    'publication_recommendation_status' =>
+                    $validated['recommendation'],
+                ]);
+        });
+
+        if ($updated !== 1) {
+            return back()
+                ->with(
+                    'error',
+                    'Publication recommendation has already been recorded.'
+                );
+        }
+
+        $message =
+            $validated['recommendation'] === 'recommended'
+            ? 'Publication recommendation recorded successfully.'
+            : 'Submission marked as not recommended for publication.';
+
+        return redirect()
+            ->route(
+                'admin.submissions.show',
+                $submission
+            )
+            ->with(
+                'success',
+                $message
             );
     }
 

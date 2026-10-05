@@ -9,8 +9,11 @@ use App\Models\ConferenceRegistrationType;
 use App\Models\ConferenceSetting;
 use App\Models\ImportantDate;
 use App\Models\Participant;
+use App\Models\Submission;
+use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AttendanceTest extends TestCase
@@ -88,6 +91,26 @@ class AttendanceTest extends TestCase
         ]);
     }
 
+    private function createPresenterRegistrationType(
+        Conference $conference
+    ): ConferenceRegistrationType {
+        return ConferenceRegistrationType::create([
+            'conference_id' => $conference->id,
+            'name' => 'Presenter',
+            'code' => 'PRESENTER-' . uniqid(),
+            'category' => 'presenter',
+            'payment_timing' => 'immediate',
+            'fee' => 500000,
+            'included_papers' => 1,
+            'additional_paper_fee' => 0,
+            'currency' => 'IDR',
+            'description' => 'Test presenter registration type.',
+            'benefits' => 'Test presenter benefit.',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+    }
+
     private function createParticipant(
         Conference $conference,
         ConferenceRegistrationType $registrationType,
@@ -108,6 +131,35 @@ class AttendanceTest extends TestCase
             'participant_type' => 'participant',
             'registration_status' => $status,
             'registered_at' => now(),
+        ]);
+    }
+
+    private function createPresenterSubmission(
+        Conference $conference,
+        Participant $participant
+    ): Submission {
+        $topic = Topic::create([
+            'conference_id' => $conference->id,
+            'name' => 'Artificial Intelligence',
+            'description' => 'Test topic.',
+        ]);
+
+        return Submission::create([
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'topic_id' => $topic->id,
+            'submission_code' => 'TEST-PRESENTER-' . uniqid(),
+            'title' => 'Test Presenter Submission',
+            'abstract' => 'Test abstract.',
+            'keywords' => 'test, presenter',
+            'submission_stage' => 'full_paper',
+            'status' => 'accepted',
+            'video_url' =>
+            'https://drive.google.com/file/d/test-video-' .
+                uniqid() .
+                '/view',
+            'video_submitted_at' => now(),
+            'submitted_at' => now(),
         ]);
     }
 
@@ -148,6 +200,121 @@ class AttendanceTest extends TestCase
 
         $this->assertNotNull($attendance);
         $this->assertNotNull($attendance->checked_in_at);
+    }
+
+    public function test_confirmed_presenter_check_in_generates_presenter_certificate(): void
+    {
+        Storage::fake('public');
+
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $user
+        );
+
+        $participant->update([
+            'participant_type' => 'presenter',
+        ]);
+
+        $submission = $this->createPresenterSubmission(
+            $conference,
+            $participant
+        );
+
+        $response = $this
+            ->actingAs($user)
+            ->post(
+                route(
+                    'participant.attendance.check-in',
+                    $participant
+                )
+            );
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('conference_attendances', [
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'checked_in',
+        ]);
+
+        $this->assertDatabaseHas('certificates', [
+            'participant_id' => $participant->id,
+            'conference_id' => $conference->id,
+            'submission_id' => $submission->id,
+            'type' => 'presenter',
+        ]);
+
+        $this->assertDatabaseMissing('certificates', [
+            'participant_id' => $participant->id,
+            'conference_id' => $conference->id,
+            'submission_id' => null,
+            'type' => 'participant',
+        ]);
+    }
+
+    public function test_presenter_check_in_without_eligible_submission_does_not_generate_certificate(): void
+    {
+        Storage::fake('public');
+
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
+
+        $user = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $user
+        );
+
+        $participant->update([
+            'participant_type' => 'presenter',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(
+                route(
+                    'participant.attendance.check-in',
+                    $participant
+                )
+            );
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('conference_attendances', [
+            'conference_id' => $conference->id,
+            'participant_id' => $participant->id,
+            'attendance_status' => 'checked_in',
+        ]);
+
+        $this->assertDatabaseMissing('certificates', [
+            'participant_id' => $participant->id,
+            'conference_id' => $conference->id,
+            'type' => 'presenter',
+        ]);
+
+        $this->assertDatabaseMissing('certificates', [
+            'participant_id' => $participant->id,
+            'conference_id' => $conference->id,
+            'type' => 'participant',
+        ]);
     }
 
     public function test_pending_participant_cannot_check_in(): void

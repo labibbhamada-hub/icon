@@ -60,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('submissions/{submission}/camera-ready/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadCameraReady'])->name('submissions.camera-ready.download');
         Route::patch('submissions/{submission}/camera-ready/approve', [App\Http\Controllers\Admin\SubmissionController::class, 'approveCameraReady'])->name('submissions.camera-ready.approve');
         Route::patch('submissions/{submission}/camera-ready/correction', [App\Http\Controllers\Admin\SubmissionController::class, 'requestCameraReadyCorrection'])->name('submissions.camera-ready.correction');
+        Route::patch('submissions/{submission}/publication-recommendation', [App\Http\Controllers\Admin\SubmissionController::class, 'updatePublicationRecommendation'])->name('submissions.publication-recommendation');
         Route::get('/submissions/{submission}/paper/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadPaper'])->name('submissions.paper.download');
         Route::get('/submissions/{submission}/revised-paper/download', [App\Http\Controllers\Admin\SubmissionController::class, 'downloadRevisedPaper'])->name('submissions.revised-paper.download');
         Route::resource('submissions', App\Http\Controllers\Admin\SubmissionController::class);
@@ -148,12 +149,9 @@ Route::middleware(['auth', 'role:participant', 'verified'])
 
         Route::get('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'revision'])->name('submissions.revision');
         Route::post('/submissions/{submission}/revision', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadRevision'])->name('submissions.revision.upload');
-        Route::get('/submissions/{submission}/camera-ready', [App\Http\Controllers\Participant\SubmissionController::class, 'cameraReady'])->name('submissions.camera-ready');
-        Route::post('/submissions/{submission}/camera-ready', [App\Http\Controllers\Participant\SubmissionController::class, 'uploadCameraReady'])->name('submissions.camera-ready.upload');
 
         Route::get('/submissions/{submission}/paper/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadPaper'])->name('submissions.paper.download');
         Route::get('/submissions/{submission}/revision/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadRevision'])->name('submissions.revision.download');
-        Route::get('/submissions/{submission}/camera-ready/download', [App\Http\Controllers\Participant\SubmissionController::class, 'downloadCameraReady'])->name('submissions.camera-ready.download');
 
         Route::get('/certificates', [App\Http\Controllers\Participant\CertificateController::class, 'index'])->name('certificates.index');
         Route::get('/certificates/{certificate}', [App\Http\Controllers\Participant\CertificateController::class, 'show'])->name('certificates.show');

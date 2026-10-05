@@ -36,7 +36,7 @@
                             </th>
                             <th>Type</th>
                             <th>Issued</th>
-                            <th width="120">Action</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,11 +61,11 @@
                                 <td>
                                     @if ($certificate->file_path)
                                         <a href="{{ route('participant.certificates.show', $certificate) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View">
+                                            class="btn btn-info rounded-0" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a href="{{ route('participant.certificates.download', $certificate) }}"
-                                            class="btn btn-success btn-sm rounded-0" title="Download">
+                                            class="btn btn-success rounded-0" title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     @else

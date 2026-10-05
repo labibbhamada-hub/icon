@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Participant;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Participant\CameraReadyRequest;
 use App\Http\Requests\Participant\RevisionRequest;
 use App\Http\Requests\Participant\SubmissionRequest;
 use App\Http\Requests\Participant\FullPaperSubmissionRequest;
@@ -13,8 +12,6 @@ use App\Models\Participant;
 use App\Models\Review;
 use App\Models\Submission;
 use App\Models\Topic;
-use App\Models\Payment;
-use App\Services\PaymentCalculationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -362,18 +359,10 @@ class SubmissionController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $payment = Payment::where(
-            'participant_id',
-            $participant->id
-        )
-            ->latest()
-            ->first();
-
         return view(
             'participant.submissions.show',
             compact(
-                'submission',
-                'payment'
+                'submission'
             )
         );
     }
@@ -1003,305 +992,6 @@ class SubmissionController extends Controller
             );
     }
 
-    public function cameraReady(
-        Submission $submission,
-        PaymentCalculationService $paymentCalculationService
-    ) {
-        $participant =
-            $this->getOwnedSubmissionParticipant(
-                $submission
-            );
-
-        $participant->load([
-            'registrationType',
-            'submissions',
-            'payments',
-        ]);
-
-        $submission->load([
-            'conference.setting',
-        ]);
-
-        $cameraReadyDeadline =
-            $this->getCameraReadyDeadline(
-                $submission->conference_id
-            );
-
-        if (
-            !$submission->conference?->setting?->submission_enabled
-            || $submission->conference?->setting?->maintenance_mode
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Submission workflow is currently unavailable.'
-                );
-        }
-
-        if (
-            !$this->isCameraReadyOpen(
-                $submission->conference_id
-            )
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'The camera-ready submission deadline has passed for this conference.'
-                );
-        }
-
-        if (
-            $submission->submission_stage !== 'full_paper'
-            || $submission->status !== 'accepted'
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Camera-ready submission is only available for accepted full papers.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Video Submission Check
-        |--------------------------------------------------------------------------
-        */
-
-        if (empty($submission->video_url)) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Please complete the presentation video submission before submitting the camera-ready paper.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Payment Check
-        |--------------------------------------------------------------------------
-        */
-
-        $paymentCalculation =
-            $paymentCalculationService
-            ->calculate(
-                $participant
-            );
-
-        if (
-            $paymentCalculation['outstanding_amount'] > 0
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Camera-ready submission is only available after your payment has been completed.'
-                );
-        }
-
-        return view(
-            'participant.submissions.camera-ready',
-            compact(
-                'submission',
-                'participant',
-                'cameraReadyDeadline'
-            )
-        );
-    }
-
-    public function uploadCameraReady(
-        CameraReadyRequest $request,
-        Submission $submission,
-        PaymentCalculationService $paymentCalculationService
-    ) {
-        $participant =
-            $this->getOwnedSubmissionParticipant(
-                $submission
-            );
-
-        $participant->load([
-            'registrationType',
-            'submissions',
-            'payments',
-        ]);
-
-        $submission->load([
-            'conference.setting',
-        ]);
-
-        if (
-            !$submission->conference?->setting?->submission_enabled
-            || $submission->conference?->setting?->maintenance_mode
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Submission workflow is currently unavailable.'
-                );
-        }
-
-        if (
-            !$this->isCameraReadyOpen(
-                $submission->conference_id
-            )
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'The camera-ready submission deadline has passed for this conference.'
-                );
-        }
-
-        if (
-            $submission->submission_stage !== 'full_paper'
-            || $submission->status !== 'accepted'
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Camera-ready submission is only available for accepted full papers.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Video Submission Check
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            empty($submission->video_url)
-            || empty($submission->presenter_author_id)
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Please complete the presentation video submission before submitting the camera-ready paper.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Payment Check
-        |--------------------------------------------------------------------------
-        */
-
-        $paymentCalculation =
-            $paymentCalculationService
-            ->calculate(
-                $participant
-            );
-
-        if (
-            $paymentCalculation['outstanding_amount'] > 0
-        ) {
-            return redirect()
-                ->route(
-                    'participant.submissions.show',
-                    $submission
-                )
-                ->with(
-                    'error',
-                    'Camera-ready submission is only available after your payment has been completed.'
-                );
-        }
-
-        $oldFile =
-            $submission->camera_ready_file;
-
-        $newFile = null;
-
-        try {
-            $newFile =
-                $request
-                ->file('camera_ready_file')
-                ->store(
-                    'submissions/camera-ready',
-                    'local'
-                );
-
-            DB::transaction(
-                function () use (
-                    $submission,
-                    $newFile
-                ) {
-                    $submission->update([
-                        'camera_ready_file' =>
-                        $newFile,
-
-                        'camera_ready_correction_reason' =>
-                        null,
-
-                        'camera_ready_status' =>
-                        'submitted',
-
-                        'status' =>
-                        'camera_ready',
-                    ]);
-                }
-            );
-        } catch (\Throwable $e) {
-            if ($newFile) {
-                Storage::disk('local')
-                    ->delete($newFile);
-            }
-
-            throw $e;
-        }
-
-        if (
-            $oldFile
-            && $oldFile !== $newFile
-        ) {
-            Storage::disk('local')
-                ->delete($oldFile);
-        }
-
-        return redirect()
-            ->route(
-                'participant.submissions.show',
-                $submission
-            )
-            ->with(
-                'success',
-                'Camera-ready paper uploaded successfully.'
-            );
-    }
-
     public function downloadPaper(
         Submission $submission
     ) {
@@ -1344,29 +1034,6 @@ class SubmissionController extends Controller
             $submission->revised_file,
             basename(
                 $submission->revised_file
-            )
-        );
-    }
-
-    public function downloadCameraReady(
-        Submission $submission
-    ) {
-        $this->getOwnedSubmissionParticipant(
-            $submission
-        );
-
-        abort_unless(
-            $submission->camera_ready_file
-                && Storage::disk('local')->exists(
-                    $submission->camera_ready_file
-                ),
-            404
-        );
-
-        return Storage::disk('local')->download(
-            $submission->camera_ready_file,
-            basename(
-                $submission->camera_ready_file
             )
         );
     }
@@ -1530,59 +1197,6 @@ class SubmissionController extends Controller
     ): bool {
         $deadline =
             $this->getRevisionDeadline(
-                $conferenceId
-            );
-
-        if (!$deadline) {
-            return true;
-        }
-
-        $today =
-            now()->startOfDay();
-
-        $startDate =
-            $deadline->date
-            ->copy()
-            ->startOfDay();
-
-        if ($deadline->end_date) {
-            return $today->between(
-                $startDate,
-                $deadline->end_date
-                    ->copy()
-                    ->endOfDay()
-            );
-        }
-
-        return $today->lte(
-            $startDate
-        );
-    }
-
-    private function getCameraReadyDeadline(
-        $conferenceId
-    ): ?ImportantDate {
-        return ImportantDate::where(
-            'conference_id',
-            $conferenceId
-        )
-            ->where(
-                'type',
-                'camera_ready'
-            )
-            ->where(
-                'is_active',
-                true
-            )
-            ->orderByDesc('date')
-            ->first();
-    }
-
-    private function isCameraReadyOpen(
-        $conferenceId
-    ): bool {
-        $deadline =
-            $this->getCameraReadyDeadline(
                 $conferenceId
             );
 

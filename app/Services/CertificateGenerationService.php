@@ -166,6 +166,52 @@ class CertificateGenerationService
 
         return $certificate->fresh();
     }
+
+    /**
+     * Generate or return the presenter certificate
+     * for the latest eligible active submission
+     * when the presenter checks in.
+     */
+    public function createForPresenterAttendance(
+        Participant $participant
+    ): ?Certificate {
+        $submission = Submission::query()
+            ->where(
+                'participant_id',
+                $participant->id
+            )
+            ->where(
+                'conference_id',
+                $participant->conference_id
+            )
+            ->where(
+                'submission_stage',
+                'full_paper'
+            )
+            ->where(
+                'status',
+                'accepted'
+            )
+            ->whereNotNull(
+                'video_url'
+            )
+            ->whereNotNull(
+                'video_submitted_at'
+            )
+            ->orderByDesc(
+                'id'
+            )
+            ->first();
+
+        if (!$submission) {
+            return null;
+        }
+
+        return $this->createForSubmission(
+            $submission
+        );
+    }
+
     /**
      * Generate or return the presenter certificate
      * for a published submission.
@@ -190,9 +236,18 @@ class CertificateGenerationService
         |--------------------------------------------------------------------------
         */
 
-        if ($submission->status !== 'published') {
+        $isActiveEligible =
+            $submission->submission_stage === 'full_paper'
+            && $submission->status === 'accepted'
+            && !empty($submission->video_url)
+            && !empty($submission->video_submitted_at);
+
+        $isLegacyPublished =
+            $submission->status === 'published';
+
+        if (!($isActiveEligible || $isLegacyPublished)) {
             throw new \RuntimeException(
-                'A certificate can only be generated for a published submission.'
+                'A presenter certificate requires an accepted full paper with a submitted presentation video, or a legacy published submission.'
             );
         }
 

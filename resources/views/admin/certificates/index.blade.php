@@ -3,41 +3,16 @@
 @section('title', 'Certificates Management')
 
 @section('header')
-
-    <div class="row">
-
+    <div class="row align-items-top">
         <div class="col-sm-6">
-
             <h1 class="mb-0 fs-3">
                 Certificates Management
             </h1>
-
+            <p class="text-muted mb-0">
+                Manage certificate generation and publication for conference participants.
+            </p>
         </div>
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Certificates
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
@@ -53,14 +28,14 @@
 
             </h3>
 
-            <div class="float-end d-flex gap-1">
+            <div class="float-end">
 
-                <a href="{{ route('admin.certificates.export') }}" class="btn btn-dark btn-sm rounded-0">
+                <a href="{{ route('admin.certificates.export') }}" class="btn btn-dark rounded-0">
                     <i class="bi bi-file-earmark-excel me-1"></i>
                     Export Excel
                 </a>
 
-                <a href="{{ route('admin.certificates.create') }}" class="btn btn-success btn-sm rounded-0">
+                <a href="{{ route('admin.certificates.create') }}" class="btn btn-success rounded-0">
                     <i class="bi bi-plus-circle me-1"></i>
                     Generate Certificate
                 </a>

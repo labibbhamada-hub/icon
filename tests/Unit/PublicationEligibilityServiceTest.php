@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Certificate;
 use App\Models\Conference;
 use App\Models\ConferenceAttendance;
 use App\Models\ConferenceRegistrationType;
@@ -143,6 +144,19 @@ class PublicationEligibilityServiceTest extends TestCase
         ]);
     }
 
+    private function createPresenterCertificate(
+        Submission $submission
+    ): Certificate {
+        return Certificate::create([
+            'participant_id' => $submission->participant_id,
+            'conference_id' => $submission->conference_id,
+            'submission_id' => $submission->id,
+            'certificate_number' => 'CERT-TEST-' . uniqid(),
+            'type' => 'presenter',
+            'issued_at' => now(),
+        ]);
+    }
+
     private function createEligibleSubmission(): Submission
     {
         Storage::fake('local');
@@ -182,6 +196,21 @@ class PublicationEligibilityServiceTest extends TestCase
         );
 
         return $submission;
+    }
+
+    private function createActiveEligibleSubmission(): Submission
+    {
+        $submission = $this->createEligibleSubmission();
+
+        $submission->update([
+            'status' => 'accepted',
+        ]);
+
+        $this->createPresenterCertificate(
+            $submission
+        );
+
+        return $submission->fresh();
     }
 
     public function test_submission_is_eligible_when_all_publication_requirements_are_met(): void
@@ -357,10 +386,9 @@ class PublicationEligibilityServiceTest extends TestCase
         );
     }
 
-    public function test_submission_is_not_eligible_when_workflow_status_is_not_camera_ready(): void
+    public function test_accepted_full_paper_is_valid_active_workflow(): void
     {
-        $submission =
-            $this->createEligibleSubmission();
+        $submission = $this->createActiveEligibleSubmission();
 
         $submission->status = 'accepted';
         $submission->save();
@@ -369,16 +397,28 @@ class PublicationEligibilityServiceTest extends TestCase
             app(PublicationEligibilityService::class)
             ->evaluate($submission->fresh());
 
-        $this->assertFalse(
+        $this->assertTrue(
             $result['eligible']
         );
 
-        $this->assertFalse(
+        $this->assertTrue(
             $result['checks']['workflow']
         );
 
-        $this->assertContains(
-            'The submission must be in Camera Ready status.',
+        $this->assertTrue(
+            $result['checks']['video']
+        );
+
+        $this->assertTrue(
+            $result['checks']['attendance']
+        );
+
+        $this->assertTrue(
+            $result['checks']['presenter']
+        );
+
+        $this->assertSame(
+            [],
             $result['reasons']
         );
     }

@@ -22,7 +22,7 @@
 
 @section('content')
 
-    <div class="card rounded-0 overflow-hidden">
+    <div class="card rounded-0 overflow-hidden mb-3">
 
         <div class="card-header rounded-0">
 
@@ -195,129 +195,22 @@
                             </div>
 
                         </div>
-                    @elseif (!$payment)
-                        <div class="alert alert-warning rounded-0 mb-2">
+                    @else
+                        <div class="alert alert-info rounded-0 mb-2">
 
-                            <div class="d-flex justify-content-between align-items-center gap-3">
+                            <strong>
+                                Technical Meeting Presenter
+                            </strong>
 
-                                <div>
-
-                                    <strong>
-                                        Payment Required
-                                    </strong>
-
-                                    <div class="small">
-                                        Your presentation details have been completed. Please proceed with payment to
-                                        continue
-                                        to the next stage.
-                                    </div>
-
-                                </div>
-
-                                <a href="{{ route('participant.payments.create') }}"
-                                    class="btn btn-warning rounded-0 text-nowrap">
-                                    <i class="bi bi-credit-card me-1"></i>
-                                    Submit Payment
-                                </a>
-
-                            </div>
-
-                        </div>
-                    @elseif ($payment->status === 'pending')
-                        <div class="alert alert-warning rounded-0 mb-2">
-
-                            <div class="d-flex justify-content-between align-items-center gap-3">
-
-                                <div>
-
-                                    <strong>
-                                        Payment Verification
-                                    </strong>
-
-                                    <div class="small">
-                                        Your payment has been submitted and is currently waiting for administrative
-                                        verification.
-                                    </div>
-
-                                </div>
-
-                                <a href="{{ route('participant.payments.index') }}"
-                                    class="btn btn-warning rounded-0 text-nowrap">
-                                    <i class="bi bi-credit-card me-1"></i>
-                                    View Payment
-                                </a>
-
-                            </div>
-
-                        </div>
-                    @elseif ($payment->status === 'rejected')
-                        <div class="alert alert-danger rounded-0 mb-2">
-
-                            <div class="d-flex justify-content-between align-items-center gap-3">
-
-                                <div>
-
-                                    <strong>
-                                        Payment Rejected
-                                    </strong>
-
-                                    <div class="small">
-                                        Your payment was rejected. Please review the payment information and submit a new
-                                        payment.
-                                    </div>
-
-                                </div>
-
-                                <a href="{{ route('participant.payments.create') }}"
-                                    class="btn btn-danger rounded-0 text-nowrap">
-                                    <i class="bi bi-credit-card me-1"></i>
-                                    Submit Payment
-                                </a>
-
-                            </div>
-
-                        </div>
-                    @elseif ($payment->status === 'verified')
-                        <div class="alert alert-success rounded-0 mb-2">
-
-                            <div class="d-flex justify-content-between align-items-center gap-3">
-
-                                <div>
-
-                                    <strong>
-                                        Payment Verified
-                                    </strong>
-
-                                    <div class="small">
-                                        Your payment has been verified successfully. You may now submit your camera-ready
-                                        paper.
-                                    </div>
-
-                                </div>
-
-                                <a href="{{ route('participant.submissions.camera-ready', $submission) }}"
-                                    class="btn btn-success rounded-0 text-nowrap">
-                                    <i class="bi bi-upload me-1"></i>
-                                    Submit Camera Ready
-                                </a>
-
+                            <div class="small">
+                                Your presentation video has been submitted successfully.
+                                Please attend the Technical Meeting for Presenters according
+                                to the conference schedule.
                             </div>
 
                         </div>
                     @endif
 
-                @endif
-
-                {{-- Camera Ready --}}
-                @if ($submission->submission_stage === 'full_paper' && $submission->status === 'camera_ready')
-                    <div class="alert alert-info rounded-0 mb-2">
-
-                        <i class="bi bi-hourglass-split me-2"></i>
-
-                        Your camera-ready paper has been submitted and is currently
-                        waiting for administrative approval.
-
-                    </div>
                 @endif
 
                 {{-- Published --}}
@@ -528,5 +421,49 @@
         @endif
 
     </div>
+
+    @if ($submission->video_url)
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-top-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-video me-1"></i>
+                    Presentation Video
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">
+                        Video URL
+                    </label>
+
+                    <div class="input-group">
+                        <input type="text" class="form-control rounded-0" value="{{ $submission->video_url }}"
+                            readonly>
+
+                        <a href="{{ $submission->video_url }}" target="_blank" rel="noopener noreferrer"
+                            class="btn btn-outline-primary rounded-0">
+                            <i class="fas fa-external-link-alt me-1"></i>
+                            Open Video
+                        </a>
+                    </div>
+                </div>
+
+                @if ($submission->video_submitted_at)
+                    <div class="text-muted small mb-2">
+                        <i class="far fa-clock me-1"></i>
+                        Submitted at:
+                        {{ $submission->video_submitted_at->format('d F Y H:i') }}
+                    </div>
+                @endif
+
+                <a href="{{ route('participant.submissions.video.edit', $submission) }}"
+                    class="btn btn-primary rounded-0">
+                    <i class="fas fa-edit me-1"></i>
+                    Edit Video Link
+                </a>
+            </div>
+        </div>
+    @endif
 
 @endsection

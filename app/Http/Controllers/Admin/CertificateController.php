@@ -38,7 +38,21 @@ class CertificateController extends Controller
         $participants = Participant::with([
             'conference.setting',
             'conference.configuration',
-            'submissions',
+            'submissions' => function ($query) {
+                $query
+                    ->where(function ($query) {
+                        $query
+                            ->where('status', 'published')
+                            ->orWhere(function ($query) {
+                                $query
+                                    ->where('submission_stage', 'full_paper')
+                                    ->where('status', 'accepted')
+                                    ->whereNotNull('video_url')
+                                    ->whereNotNull('video_submitted_at');
+                            });
+                    })
+                    ->orderByDesc('id');
+            },
         ])
             ->where(
                 'registration_status',
@@ -150,10 +164,6 @@ class CertificateController extends Controller
                     'conference_id',
                     $participant->conference_id
                 )
-                ->where(
-                    'status',
-                    'published'
-                )
                 ->firstOrFail();
         }
 
@@ -162,7 +172,7 @@ class CertificateController extends Controller
         | Presenter certificate
         |--------------------------------------------------------------------------
         |
-        | Presenter certificates are tied to a published submission.
+        | Presenter certificates require an eligible full paper submission.
         |
         */
 
@@ -174,7 +184,7 @@ class CertificateController extends Controller
                 ->withInput()
                 ->with(
                     'error',
-                    'A presenter certificate requires a published submission.'
+                    'A presenter certificate requires an eligible full paper submission.'
                 );
         }
 
@@ -186,7 +196,7 @@ class CertificateController extends Controller
         | Check the business rules for the selected certificate type:
         |
         | participant -> confirmed registration + verified attendance
-        | presenter   -> published submission + verified attendance
+        | presenter   -> accepted full paper + video + verified attendance, or legacy published submission
         | speaker     -> confirmed speaker registration + verified attendance
         | committee   -> confirmed committee registration + verified attendance
         | reviewer    -> reviewer assignment + all assigned reviews completed

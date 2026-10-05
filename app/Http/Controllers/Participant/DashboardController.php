@@ -102,7 +102,6 @@ class DashboardController extends Controller
                     'abstract_submission',
                     'full_paper_submission',
                     'revision',
-                    'camera_ready',
                     'conference',
                     'publication',
                     'other',
@@ -490,12 +489,12 @@ class DashboardController extends Controller
                             $candidate = [
                                 'priority' => 5,
                                 'type' => 'info',
-                                'icon' => 'bi-file-earmark-check',
-                                'title' => 'Submit Camera-Ready Paper',
-                                'description' => 'Your presentation video has been submitted. Please upload the final camera-ready version of your paper.',
-                                'button' => 'Upload Camera Ready',
+                                'icon' => 'bi-calendar-event',
+                                'title' => 'Technical Meeting Presenter',
+                                'description' => 'Your presentation video has been submitted successfully. Please attend the Technical Meeting for Presenters according to the conference schedule.',
+                                'button' => 'View Submission',
                                 'route' => route(
-                                    'participant.submissions.camera-ready',
+                                    'participant.submissions.show',
                                     $submission
                                 ),
                             ];
@@ -525,21 +524,6 @@ class DashboardController extends Controller
                             'icon' => 'bi-clock',
                             'title' => 'Submission Received',
                             'description' => 'Your paper has been submitted successfully and is waiting for the review process.',
-                            'button' => 'View Submission',
-                            'route' => route(
-                                'participant.submissions.show',
-                                $submission
-                            ),
-                        ];
-                        break;
-
-                    case 'camera_ready':
-                        $candidate = [
-                            'priority' => 40,
-                            'type' => 'info',
-                            'icon' => 'bi-hourglass-split',
-                            'title' => 'Camera Ready Under Review',
-                            'description' => 'Your camera-ready paper has been submitted and is waiting for approval.',
                             'button' => 'View Submission',
                             'route' => route(
                                 'participant.submissions.show',
