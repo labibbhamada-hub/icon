@@ -1,0 +1,330 @@
+/* ======================================================
+   BHAMADA ICON - REGISTRATION / PRICING
+   Derived from the visual language of the supplied
+   conference template. No Bootstrap 3 dependency.
+====================================================== */
+
+.registration-template {
+    padding: 90px 0;
+    background: #ffffff;
+}
+
+.registration-template .container {
+    max-width: 1100px;
+}
+
+.registration-template-title {
+    margin: 0 0 55px;
+    color: #222222;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.registration-template-content {
+    align-items: flex-start;
+}
+
+.registration-template-intro {
+    padding-right: 55px;
+}
+
+.registration-template-kicker {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #8aa84d;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.registration-template-intro h4 {
+    margin: 0 0 18px;
+    color: #222222;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.registration-template-intro p {
+    max-width: 470px;
+    margin: 0;
+    color: #777777;
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+.registration-template-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid #e9e9e9;
+}
+
+.registration-template-meta > i {
+    color: #8aa84d;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.registration-template-meta span,
+.registration-template-meta strong {
+    display: block;
+}
+
+.registration-template-meta span {
+    margin-bottom: 4px;
+    color: #999999;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.registration-template-meta strong {
+    color: #222222;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.registration-template-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 34px;
+    padding: 12px 22px;
+    border: 1px solid #222222;
+    background: #222222;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.registration-template-submit:hover {
+    border-color: #8aa84d;
+    background: #8aa84d;
+    color: #ffffff;
+}
+
+.registration-template-list {
+    border-top: 1px solid #dcdcdc;
+}
+
+.registration-template-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.registration-template-item-main {
+    display: flex;
+    min-width: 0;
+    gap: 20px;
+}
+
+.registration-template-index {
+    flex: 0 0 34px;
+    color: #8aa84d;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.registration-template-item-copy {
+    min-width: 0;
+}
+
+.registration-template-category {
+    display: block;
+    margin-bottom: 7px;
+    color: #999999;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.registration-template-item-copy h4 {
+    margin: 0 0 8px;
+    color: #222222;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.registration-template-item-copy p {
+    max-width: 520px;
+    margin: 0 0 12px;
+    color: #777777;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.registration-template-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.registration-template-details span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #888888;
+    font-size: 11px;
+}
+
+.registration-template-details i {
+    color: #8aa84d;
+}
+
+.registration-template-item-side {
+    flex: 0 0 150px;
+    text-align: right;
+}
+
+.registration-template-item-side strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #222222;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.registration-template-item-side small {
+    display: block;
+    margin-bottom: 15px;
+    color: #999999;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.registration-template-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #222222;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.registration-template-link:hover {
+    color: #8aa84d;
+}
+
+.registration-template-empty {
+    padding: 65px 20px;
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: center;
+}
+
+.registration-template-empty i {
+    color: #8aa84d;
+    font-size: 36px;
+}
+
+.registration-template-empty h4 {
+    margin: 20px 0 8px;
+    color: #222222;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.registration-template-empty p {
+    margin: 0;
+    color: #888888;
+    font-size: 13px;
+}
+
+@media (max-width: 991.98px) {
+    .registration-template-title {
+        margin-bottom: 45px;
+    }
+
+    .registration-template-intro {
+        padding-right: 20px;
+    }
+
+    .registration-template-item {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .registration-template {
+        padding: 65px 0;
+    }
+
+    .registration-template-title {
+        font-size: 25px;
+        margin-bottom: 38px;
+    }
+
+    .registration-template-intro {
+        padding-right: 0;
+        margin-bottom: 45px;
+    }
+
+    .registration-template-list {
+        margin-top: 10px;
+    }
+
+    .registration-template-item {
+        flex-direction: column;
+        gap: 18px;
+        padding: 24px 0;
+    }
+
+    .registration-template-item-side {
+        width: 100%;
+        flex-basis: auto;
+        text-align: left;
+    }
+
+    .registration-template-link {
+        margin-top: 3px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .registration-template-title {
+        font-size: 22px;
+    }
+
+    .registration-template-intro h4 {
+        font-size: 21px;
+    }
+
+    .registration-template-item-main {
+        gap: 14px;
+    }
+
+    .registration-template-index {
+        flex-basis: 26px;
+    }
+
+    .registration-template-item-copy h4 {
+        font-size: 16px;
+    }
+
+    .registration-template-item-copy p {
+        font-size: 12px;
+    }
+}

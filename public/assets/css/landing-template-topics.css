@@ -1,0 +1,121 @@
+/* =========================================================
+   BHAMADA ICON — TOPICS / CONFERENCE TRACKS
+   Visual language adapted from the supplied conference template.
+   Bootstrap 5 compatible. No dependency on the old topic-card UI.
+========================================================= */
+
+.topics-template {
+    padding: 70px 0;
+    background: #ffffff;
+}
+
+.topics-template .topics-template-title {
+    color: #313131;
+    letter-spacing: 1px;
+    margin: 0 0 45px;
+    text-transform: uppercase;
+    text-align: left;
+    font-weight: 700;
+}
+
+.topics-template-grid {
+    row-gap: 30px;
+}
+
+.topics-template-item {
+    position: relative;
+    margin: 0 0 25px;
+    padding: 5px 10px 15px 45px;
+    min-height: 190px;
+    color: #313131;
+}
+
+.topics-template-number {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    color: #b5b5b5;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.topics-template-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 18px;
+    color: #000000;
+    border: 1px solid #000000;
+    background: #ffffff;
+}
+
+.topics-template-icon i {
+    font-size: 25px;
+    line-height: 1;
+}
+
+.topics-template-name {
+    margin: 0 0 8px;
+    color: #313131;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.topics-template-description {
+    margin: 0;
+    color: #4e4e4e;
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+.topics-template-empty {
+    margin: 0;
+    color: #4e4e4e;
+    font-size: 16px;
+}
+
+@media (min-width: 768px) {
+    .topics-template {
+        padding: 90px 0;
+    }
+
+    .topics-template .topics-template-title {
+        margin-bottom: 60px;
+    }
+
+    .topics-template-item {
+        min-height: 215px;
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .topics-template {
+        padding: 65px 0;
+    }
+
+    .topics-template .topics-template-title {
+        margin-bottom: 35px;
+    }
+
+    .topics-template-item {
+        min-height: auto;
+        margin-bottom: 20px;
+        padding-left: 40px;
+    }
+
+    .topics-template-name {
+        font-size: 16px;
+    }
+
+    .topics-template-description {
+        font-size: 13px;
+    }
+}

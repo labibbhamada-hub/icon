@@ -1,5 +1,4 @@
 services:
-
   app:
     build:
       context: .
@@ -24,12 +23,13 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
 
+      CACHE_STORE: ${CACHE_STORE}
+
     volumes:
       - icon_storage:/var/www/storage
 
     networks:
       - icon_network
-
 
   icon:
     build:
@@ -49,7 +49,6 @@ services:
       - icon_network
       - caddy_network
 
-
   mysql:
     image: mysql:8.4
 
@@ -68,15 +67,11 @@ services:
     networks:
       - icon_network
 
-
 volumes:
-
   icon_mysql_data:
   icon_storage:
 
-
 networks:
-
   icon_network:
 
   caddy_network:
