@@ -1,176 +1,87 @@
-<section class="registration-template section" id="registration">
+@php
+    $registrationTypes = $conference?->registrationTypes ?? collect();
 
-    @php
-        $registrationTypes = $conference?->registrationTypes ?? collect();
+    $formatFee = function ($fee, $currency) {
+        if (is_null($fee)) {
+            return 'Contact us';
+        }
 
-        $formatFee = function ($fee, $currency) {
-            if (is_null($fee)) {
-                return 'Contact us';
-            }
+        return strtoupper(trim($currency ?: 'IDR')) . ' ' . number_format((float) $fee, 0, ',', '.');
+    };
 
-            $currency = strtoupper(trim($currency ?: 'IDR'));
-            return $currency . ' ' . number_format((float) $fee, 0, ',', '.');
-        };
+    $formatText = fn($value) => ucfirst(str_replace('_', ' ', $value));
+@endphp
 
-        $formatText = function ($value) {
-            return ucfirst(str_replace('_', ' ', $value));
-        };
-    @endphp
-
+<section id="registration" class="section registration-section">
     <div class="container">
-
         <div class="row">
             <div class="col-md-12">
-                <h3 class="registration-template-title">Registration &amp; Pricing</h3>
+                <h3 class="section-title">Registration &amp; Pricing</h3>
             </div>
         </div>
 
         @if ($registrationTypes->isNotEmpty())
-            <div class="row registration-template-content">
+            <div class="row g-4">
+                @foreach ($registrationTypes as $registration)
+                    @php
+                        $benefits = [];
+                        if ($registration->benefits) {
+                            $decodedBenefits = json_decode($registration->benefits, true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decodedBenefits)) {
+                                $benefits = collect($decodedBenefits)->filter()->values()->all();
+                            } else {
+                                $benefits = collect(preg_split('/\r\n|\r|\n/', $registration->benefits))
+                                    ->map(fn($item) => trim($item))
+                                    ->filter()
+                                    ->values()
+                                    ->all();
+                            }
+                        }
+                    @endphp
 
-                <div class="col-md-5">
-                    <div class="registration-template-intro">
+                    <div class="col-md-4">
+                        <article class="price-item h-100">
+                            @if ($registration->category)
+                                <span class="price-category">{{ $formatText($registration->category) }}</span>
+                            @endif
 
-                        <span class="registration-template-kicker">
-                            BHAMADA ICON {{ $conference?->year ?? 2026 }}
-                        </span>
+                            <h4>{{ $registration->name }}</h4>
+                            <div class="price-value">{{ $formatFee($registration->fee, $registration->currency) }}</div>
 
-                        <h4>
-                            Choose the participation category that matches your role.
-                        </h4>
+                            @if ($registration->payment_timing)
+                                <div class="price-timing">{{ $formatText($registration->payment_timing) }}</div>
+                            @endif
 
-                        <p>
-                            Registration categories are provided for presenters, general participants,
-                            students, academics, researchers, and practitioners.
-                        </p>
+                            @if ($registration->description)
+                                <p>{{ $registration->description }}</p>
+                            @endif
 
-                        @if ($conference?->registration_deadline)
-                            <div class="registration-template-meta">
-                                <i class="bi bi-calendar-event" aria-hidden="true"></i>
-                                <div>
-                                    <span>Registration closes</span>
-                                    <strong>{{ $conference->registration_deadline->format('d F Y') }}</strong>
-                                </div>
-                            </div>
-                        @endif
+                            @if (!is_null($registration->included_papers))
+                                <p class="price-detail"><strong>{{ $registration->included_papers }}</strong> included
+                                    paper{{ $registration->included_papers == 1 ? '' : 's' }}</p>
+                            @endif
 
-                        <a href="{{ route('register') }}" class="registration-template-submit">
-                            Register Now
-                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                        </a>
+                            @if (!is_null($registration->additional_paper_fee) && (float) $registration->additional_paper_fee > 0)
+                                <p class="price-detail">Additional paper:
+                                    <strong>{{ $formatFee($registration->additional_paper_fee, $registration->currency) }}</strong>
+                                </p>
+                            @endif
 
+                            @if (count($benefits))
+                                <ul class="price-benefits">
+                                    @foreach ($benefits as $benefit)
+                                        <li>{{ $benefit }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+
+                            <a href="{{ route('register') }}" class="btn btn-black rounded-0">Register</a>
+                        </article>
                     </div>
-                </div>
-
-                <div class="col-md-7">
-                    <div class="registration-template-list" aria-label="Registration categories">
-
-                        @foreach ($registrationTypes as $registration)
-                            @php
-                                $benefits = [];
-
-                                if ($registration->benefits) {
-                                    $decodedBenefits = json_decode($registration->benefits, true);
-
-                                    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedBenefits)) {
-                                        $benefits = collect($decodedBenefits)->filter()->values()->all();
-                                    } else {
-                                        $benefits = preg_split('/\r\n|\r|\n/', $registration->benefits);
-                                        $benefits = collect($benefits)
-                                            ->map(fn ($item) => trim($item))
-                                            ->filter()
-                                            ->values()
-                                            ->all();
-                                    }
-                                }
-
-                                $category = $registration->category
-                                    ? $formatText($registration->category)
-                                    : null;
-
-                                $paymentTiming = $registration->payment_timing
-                                    ? $formatText($registration->payment_timing)
-                                    : null;
-                            @endphp
-
-                            <article class="registration-template-item">
-
-                                <div class="registration-template-item-main">
-                                    <div class="registration-template-index">
-                                        {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
-                                    </div>
-
-                                    <div class="registration-template-item-copy">
-                                        @if ($category)
-                                            <span class="registration-template-category">
-                                                {{ $category }}
-                                            </span>
-                                        @endif
-
-                                        <h4>{{ $registration->name }}</h4>
-
-                                        @if ($registration->description)
-                                            <p>{{ $registration->description }}</p>
-                                        @endif
-
-                                        <div class="registration-template-details">
-                                            @if (!is_null($registration->included_papers))
-                                                <span>
-                                                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
-                                                    {{ $registration->included_papers }}
-                                                    {{ $registration->included_papers == 1 ? 'paper' : 'papers' }}
-                                                </span>
-                                            @endif
-
-                                            @if ($paymentTiming)
-                                                <span>
-                                                    <i class="bi bi-clock" aria-hidden="true"></i>
-                                                    {{ $paymentTiming }}
-                                                </span>
-                                            @endif
-
-                                            @if (count($benefits))
-                                                <span>
-                                                    <i class="bi bi-check2" aria-hidden="true"></i>
-                                                    {{ count($benefits) }} benefits
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="registration-template-item-side">
-                                    <strong>{{ $formatFee($registration->fee, $registration->currency) }}</strong>
-
-                                    @if (!is_null($registration->additional_paper_fee) && (float) $registration->additional_paper_fee > 0)
-                                        <small>
-                                            + {{ $formatFee($registration->additional_paper_fee, $registration->currency) }} / additional paper
-                                        </small>
-                                    @endif
-
-                                    <a href="{{ route('register') }}" class="registration-template-link">
-                                        Register
-                                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                                    </a>
-                                </div>
-
-                            </article>
-                        @endforeach
-
-                    </div>
-                </div>
-
+                @endforeach
             </div>
         @else
-            <div class="registration-template-empty">
-                <i class="bi bi-person-vcard" aria-hidden="true"></i>
-                <h4>Registration Information Coming Soon</h4>
-                <p>
-                    Registration categories, fees, and participation details will be announced here soon.
-                </p>
-            </div>
+            <p>Registration categories and fees will be announced soon.</p>
         @endif
-
     </div>
-
 </section>

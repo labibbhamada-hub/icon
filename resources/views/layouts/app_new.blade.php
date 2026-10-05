@@ -7,30 +7,22 @@
 
     <title>@yield('title')</title>
 
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- CSS -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-    {{-- <link href="{{ asset('assets/css/landing.css') }}" rel="stylesheet"> --}}
-    <link href="{{ asset('assets/css/landing-template.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/landing-template-topics.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/landing-template-speakers.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/landing-template-registration.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/landing_new.css') }}" rel="stylesheet">
 </head>
 
-<body>
+<body class="landing-page">
 
     @yield('content')
 
-    <!-- JS -->
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/app_new.js') }}"></script>
 </body>
 
 </html>

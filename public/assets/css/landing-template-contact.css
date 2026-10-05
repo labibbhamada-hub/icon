@@ -1,0 +1,152 @@
+/* =========================================================
+   BHAMADA ICON - CONTACT / ONLINE LOCATION
+   Adapted from the conference template's #location section.
+   ========================================================= */
+
+.contact-template {
+    position: relative;
+    padding: 70px 0;
+    background: #fff;
+}
+
+.contact-template-title {
+    margin: 0 0 24px;
+    color: #313131;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 1.35;
+    text-transform: uppercase;
+}
+
+.contact-template-details p {
+    margin: 0 0 10px;
+    color: #666;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.8;
+}
+
+.contact-template-details p:first-child {
+    color: #313131;
+    font-weight: 400;
+}
+
+.contact-template-panel {
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(rgba(0, 0, 0, .68), rgba(0, 0, 0, .68)),
+        url('../images/landing/bg-2.jpg') center center / cover no-repeat;
+    color: #fff;
+    text-align: center;
+}
+
+.contact-template-panel-inner {
+    width: min(760px, calc(100% - 60px));
+    padding: 55px 30px;
+}
+
+.contact-template-eyebrow {
+    display: block;
+    margin-bottom: 18px;
+    color: rgba(255, 255, 255, .78);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.contact-template-panel h2 {
+    margin: 0 0 20px;
+    color: #fff;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.contact-template-panel p {
+    max-width: 650px;
+    margin: 0 auto 26px;
+    color: rgba(255, 255, 255, .8);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.9;
+}
+
+.contact-template-meeting-id {
+    margin-bottom: 28px !important;
+    color: #fff !important;
+    font-weight: 300 !important;
+}
+
+.contact-template-meeting-id strong {
+    font-weight: 400;
+}
+
+.contact-template .btn-white {
+    display: inline-block;
+    padding: 12px 26px;
+    border: 0;
+    background: #fff;
+    color: #000;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: .3px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity .2s ease;
+}
+
+.contact-template .btn-white:hover,
+.contact-template .btn-white:focus {
+    background: #fff;
+    color: #000;
+    opacity: .82;
+}
+
+.contact-template-status {
+    display: inline-block;
+    padding: 12px 0;
+    color: rgba(255, 255, 255, .7);
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: .2px;
+}
+
+@media (min-width: 768px) {
+    .contact-template {
+        padding: 90px 0;
+    }
+
+    .contact-template-title {
+        margin-bottom: 30px;
+    }
+
+    .contact-template-panel {
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .contact-template-title {
+        margin-bottom: 22px;
+    }
+
+    .contact-template-details {
+        margin-bottom: 35px;
+    }
+
+    .contact-template-panel {
+        min-height: 340px;
+    }
+
+    .contact-template-panel-inner {
+        width: min(100%, calc(100% - 30px));
+        padding: 45px 15px;
+    }
+}

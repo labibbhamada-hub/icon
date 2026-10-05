@@ -84,7 +84,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="#paper" class="nav-link">
+                        <a href="#contribution" class="nav-link">
                             Call for Papers
                         </a>
                     </li>

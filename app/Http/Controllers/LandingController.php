@@ -69,7 +69,7 @@ class LandingController extends Controller
         }
 
         return view(
-            'landing.index',
+            'landing.index_new',
             compact('conference')
         );
     }

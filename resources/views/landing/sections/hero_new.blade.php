@@ -1,73 +1,30 @@
-<!--======================================
-    HOME
-======================================-->
-
 @php
-    $conferenceName = $conference?->name ?? 'BHAMADA ICON';
-    $conferenceShortName = $conference?->short_name ?? 'ICON';
+    $conferenceShortName = $conference?->short_name ?? 'BHAMADA ICON';
     $conferenceYear = $conference?->year ?? 2026;
-    $conferenceTheme = $conference?->theme ??
-        'Advancing Interdisciplinary Research and Innovation for Sustainable Development';
+    $conferenceTheme =
+        $conference?->theme ?? 'Advancing Interdisciplinary Research and Innovation for Sustainable Development.';
 
     $conferenceDate = null;
-
     if ($conference?->start_date) {
         $conferenceDate = $conference->start_date->translatedFormat('d F Y');
-
         if ($conference->end_date && $conference->end_date->ne($conference->start_date)) {
             $conferenceDate .= ' – ' . $conference->end_date->translatedFormat('d F Y');
         }
     }
-
-    $conferenceLocation = collect([
-        $conference?->venue,
-        $conference?->city,
-        $conference?->country,
-    ])
-        ->filter()
-        ->implode(' — ');
-
-    $conferenceDateLabel = $conferenceDate ?: $conferenceYear;
-    $conferenceLocationLabel = $conferenceLocation ?: 'Online Conference';
 @endphp
 
-<section class="hero site-header" id="home">
-    <div class="hero-overlay" aria-hidden="true"></div>
-
+<header id="site-header" class="site-header">
     <div class="intro">
-        <div class="container">
-            <div class="hero-content">
-                <h2>
-                    {{ $conferenceDateLabel }}
-                    @if ($conferenceLocationLabel)
-                        <span class="hero-separator">/</span>
-                        {{ $conferenceLocationLabel }}
-                    @endif
-                </h2>
+        @if ($conferenceDate)
+            <h2>{{ $conferenceDate }} / Online Conference</h2>
+        @else
+            <h2>Online Conference / Universitas Bhamada Slawi</h2>
+        @endif
 
-                <h1>
-                    {{ $conferenceName }} {{ $conferenceYear }}
-                </h1>
+        <h1>{{ $conferenceShortName }} {{ $conferenceYear }}</h1>
 
-                <p>
-                    {{ $conferenceTheme }}
-                </p>
+        <p>{{ $conferenceTheme }}</p>
 
-                <div class="hero-actions">
-                    <a class="btn btn-white rounded-0" href="{{ route('register') }}">
-                        Register Now
-                    </a>
-
-                    <a class="btn btn-outline-light rounded-0" href="{{ route('login') }}">
-                        Login
-                    </a>
-                </div>
-
-                <div class="hero-organizer">
-                    <span>Organized by</span>
-                    <strong>Universitas Bhamada Slawi</strong>
-                </div>
-            </div>
-        </div>
+        <a class="btn btn-white rounded-0" data-scroll href="#registration">Register Now</a>
     </div>
-</section>
+</header>
