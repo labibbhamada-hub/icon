@@ -24,6 +24,13 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
 
       CACHE_STORE: ${CACHE_STORE}
+      CACHE_DRIVER: ${CACHE_DRIVER}
+
+      SESSION_DRIVER: ${SESSION_DRIVER}
+      SESSION_LIFETIME: ${SESSION_LIFETIME}
+      SESSION_ENCRYPT: ${SESSION_ENCRYPT}
+      SESSION_PATH: ${SESSION_PATH}
+      SESSION_DOMAIN: ${SESSION_DOMAIN}
 
     volumes:
       - icon_storage:/var/www/storage
