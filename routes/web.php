@@ -2,17 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/debug/request', function () {
-    return response()->json([
-        'url' => request()->url(),
-        'scheme' => request()->getScheme(),
-        'is_secure' => request()->isSecure(),
-        'host' => request()->getHost(),
-        'forwarded_proto' => request()->header('X-Forwarded-Proto'),
-        'forwarded_host' => request()->header('X-Forwarded-Host'),
-    ]);
-});
-
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index']);
 
 Route::get('/certificate/verify', [App\Http\Controllers\CertificateVerificationController::class, 'index'])->name('certificates.verify');
@@ -21,20 +10,60 @@ Route::get('/loa/verify/{submissionCode}', [App\Http\Controllers\LoaVerification
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
 
 Route::middleware('guest')->group(function () {
-    Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.store');
-    Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register.store');
+    Route::post(
+        '/login',
+        [App\Http\Controllers\AuthController::class, 'login']
+    )->name('login.store');
+    Route::get(
+        '/register',
+        [App\Http\Controllers\AuthController::class, 'showRegister']
+    )->name('register');
+    Route::post(
+        '/register',
+        [App\Http\Controllers\AuthController::class, 'register']
+    )->name('register.store');
+
+    Route::get('/forgot-password', [
+        App\Http\Controllers\Auth\PasswordResetController::class,
+        'showForgotPassword',
+    ])->name('password.request');
+
+    Route::post('/forgot-password', [
+        App\Http\Controllers\Auth\PasswordResetController::class,
+        'sendResetLink',
+    ])->name('password.email');
+
+    Route::get('/reset-password/{token}', [
+        App\Http\Controllers\Auth\PasswordResetController::class,
+        'showResetPassword',
+    ])->name('password.reset');
+
+    Route::post('/reset-password', [
+        App\Http\Controllers\Auth\PasswordResetController::class,
+        'resetPassword',
+    ])->name('password.update');
 });
 
-Route::get('/verify-email/{id}/{hash}', [App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+Route::get(
+    '/verify-email/{id}/{hash}',
+    [App\Http\Controllers\Auth\EmailVerificationController::class, 'verify']
+)->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/verify-email', function () {
-        return view('auth.verify-email');
-    })->name('verification.notice');
-    Route::get('/verify-email/{id}/{hash}', [App\Http\Controllers\Auth\EmailVerificationController::class, 'verify',])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
-    Route::post('/email/verification-notification', [App\Http\Controllers\Auth\EmailVerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
-    Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+    Route::get('/verify-email', [
+        App\Http\Controllers\AuthController::class,
+        'verificationNotice',
+    ])->name('verification.notice');
+
+    Route::post(
+        '/email/verification-notification',
+        [App\Http\Controllers\Auth\EmailVerificationController::class, 'send']
+    )->middleware('throttle:6,1')->name('verification.send');
+
+    Route::post(
+        '/logout',
+        [App\Http\Controllers\AuthController::class, 'logout']
+    )->name('logout');
 });
 
 Route::middleware(['auth', 'role:admin'])

@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="register-box py-5">
+    <div class="register-box py-4">
         <div class="text-center mb-4">
             <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" alt="ICON 2026" width="80" class="rounded-0">
 
@@ -47,7 +47,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('register.store') }}" method="POST">
+                <form action="{{ route('register.store') }}" method="POST" id="form-submit">
                     @csrf
 
                     <label class="visually-hidden" for="registerName">
@@ -142,9 +142,16 @@
                     </div>
 
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-success rounded-0">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>
-                            Register
+                        <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                            <span id="btn-submit-text">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Register
+                            </span>
+                            <span id="btn-submit-load" class="d-none">
+                                <span class="spinner-border spinner-border-sm me-1" role="status"
+                                    aria-hidden="true"></span>
+                                Memproses...
+                            </span>
                         </button>
                     </div>
 
@@ -312,3 +319,21 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
+@endpush

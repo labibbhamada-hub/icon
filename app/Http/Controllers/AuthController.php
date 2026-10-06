@@ -149,6 +149,15 @@ class AuthController extends Controller
             ->route('verification.notice');
     }
 
+    public function verificationNotice()
+    {
+        if (Auth::user()->hasVerifiedEmail()) {
+            return $this->redirectByRole();
+        }
+
+        return view('auth.verify-email');
+    }
+
     private function redirectByRole()
     {
         $user = Auth::user();

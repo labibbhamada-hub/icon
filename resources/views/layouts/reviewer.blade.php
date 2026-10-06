@@ -8,10 +8,10 @@
     <title>
         @yield('title') | ICON 2026 Reviewer
     </title>
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+
+    <link rel="icon" href="{{ asset('assets/images/logo/vanda.jpeg') }}">
 
     <link rel="stylesheet" href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}">
-
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
 
     @stack('styles')
