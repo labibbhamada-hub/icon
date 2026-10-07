@@ -1,23 +1,41 @@
-@if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-2 rounded-0" role="alert"> <i
-            class="bi bi-check-circle-fill me-2"></i>
-        {{ session('success') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button> </div>
-@endif
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-@if (session('error'))
-    <div class="alert alert-danger alert-dismissible fade show mb-2 rounded-0" role="alert"> <i
-            class="bi bi-x-circle-fill me-2"></i>
-        {{ session('error') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button> </div>
-@endif
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                timeOut: 5000,
+                extendedTimeOut: 1000,
+                preventDuplicates: true,
+                newestOnTop: true,
+            };
 
-@if (session('warning'))
-    <div class="alert alert-warning alert-dismissible fade show mb-2 rounded-0" role="alert"> <i
-            class="bi bi-exclamation-triangle-fill me-2"></i>
-        {{ session('warning') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button> </div>
-@endif
+            @if (session('success'))
+                toastr.success(
+                    @json(session('success'))
+                );
+            @endif
 
-@if (session('info'))
-    <div class="alert alert-info alert-dismissible fade show mb-2 rounded-0" role="alert"> <i
-            class="bi bi-info-circle-fill me-2"></i>
-        {{ session('info') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button> </div>
-@endif
+            @if (session('error'))
+                toastr.error(
+                    @json(session('error'))
+                );
+            @endif
+
+            @if (session('warning'))
+                toastr.warning(
+                    @json(session('warning'))
+                );
+            @endif
+
+            @if (session('info'))
+                toastr.info(
+                    @json(session('info'))
+                );
+            @endif
+
+        });
+    </script>
+@endpush

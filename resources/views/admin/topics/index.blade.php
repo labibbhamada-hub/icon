@@ -2,10 +2,12 @@
 
 @section('title', 'Topics')
 
-@section('header') <div class="row">
+@section('header')
+    <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
-                Topics Management </h1>
+                Topics Management
+            </h1>
         </div>
 
         <div class="col-sm-6">

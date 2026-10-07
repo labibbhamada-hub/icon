@@ -31,6 +31,9 @@
     {{-- Custom Admin --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
 
+    {{-- Toastr --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+
     @stack('styles')
 
 </head>
@@ -61,6 +64,59 @@
 
         @include('admin.partials.footer')
 
+    </div>
+
+    @include('admin.partials.footer')
+
+    {{-- Delete Confirmation Modal --}}
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-0">
+
+                <div class="modal-header rounded-0">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">
+                        Confirm Delete
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="d-flex align-items-start gap-3">
+
+                        <div class="text-danger fs-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+
+                        <div>
+                            <div class="fw-semibold mb-1">
+                                Are you sure?
+                            </div>
+
+                            <div class="text-muted">
+                                This action cannot be undone.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer rounded-0">
+
+                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="button" class="btn btn-danger rounded-0" id="confirmDeleteButton">
+                        <i class="bi bi-trash me-1"></i>
+                        Yes, Delete
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
     </div>
 
     @include('admin.partials.scripts')

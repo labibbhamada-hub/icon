@@ -210,8 +210,7 @@
 
                                             <form
                                                 action="{{ route('admin.conferences.payment-methods.destroy', [$conference, $paymentMethod]) }}"
-                                                method="POST" onsubmit="return confirm('Delete this payment method?');">
-
+                                                method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
 
