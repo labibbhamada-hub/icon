@@ -9,6 +9,7 @@ use App\Models\Participant;
 use App\Models\Payment;
 use App\Models\Review;
 use App\Models\Submission;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -16,10 +17,25 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $conferenceId = $request->integer('conference_id');
+        $topicId = $request->integer('topic_id');
 
         $conferences = Conference::orderByDesc('year')
             ->orderBy('name')
             ->get();
+
+        $topicsQuery = Topic::query()
+            ->orderBy('conference_id')
+            ->orderBy('sort_order')
+            ->orderBy('name');
+
+        if ($conferenceId) {
+            $topicsQuery->where(
+                'conference_id',
+                $conferenceId
+            );
+        }
+
+        $topics = $topicsQuery->get();
 
         $participantQuery = Participant::query();
 
@@ -136,12 +152,73 @@ class ReportController extends Controller
             $certificateQuery->count(),
         ];
 
+        $presenterVideoQuery = Submission::query()
+            ->with([
+                'topic',
+                'participant.registrationType',
+            ])
+            ->where(
+                'submission_stage',
+                'full_paper'
+            )
+            ->where(
+                'status',
+                'accepted'
+            )
+            ->whereNotNull('video_url')
+            ->where(
+                'video_url',
+                '!=',
+                ''
+            )
+            ->whereNotNull('video_submitted_at')
+            ->whereHas(
+                'participant',
+                function ($query) {
+                    $query
+                        ->where(
+                            'registration_status',
+                            'confirmed'
+                        )
+                        ->whereHas(
+                            'registrationType',
+                            function ($query) {
+                                $query->where(
+                                    'category',
+                                    'presenter'
+                                );
+                            }
+                        );
+                }
+            );
+
+        if ($conferenceId) {
+            $presenterVideoQuery->where(
+                'conference_id',
+                $conferenceId
+            );
+        }
+
+        if ($topicId) {
+            $presenterVideoQuery->where(
+                'topic_id',
+                $topicId
+            );
+        }
+
+        $presenterVideoSubmissions = $presenterVideoQuery
+            ->orderByDesc('video_submitted_at')
+            ->get();
+
         return view(
             'admin.reports.index',
             compact(
                 'conferences',
                 'conferenceId',
-                'statistics'
+                'topics',
+                'topicId',
+                'statistics',
+                'presenterVideoSubmissions'
             )
         );
     }
