@@ -3,128 +3,73 @@
 @section('title', 'Reviewers Management')
 
 @section('header')
-
     <div class="row">
-
-        <div class="col-sm-6">
-
+        <div class="col-sm-8">
             <h1 class="mb-0 fs-3">
                 Reviewers Management
             </h1>
-
+            <p class="text-muted mb-0">
+                Manage conference reviewers and their information.
+            </p>
         </div>
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Reviewers
-                    </li>
-
-                </ol>
-
-            </nav>
-
+        <div class="col-sm-4">
+            <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success float-sm-end rounded-0">
+                <i class="bi bi-person-plus me-1"></i>
+                Add Reviewer
+            </a>
         </div>
-
     </div>
-
 @endsection
 
 @section('content')
-
     <div class="card rounded-0 overflow-hidden">
-
         <div class="card-header rounded-0">
-
             <h3 class="card-title">
                 <i class="bi bi-person-check me-2"></i>
                 Reviewers List
             </h3>
-
-            <div class="float-end">
-
-                <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success btn-sm rounded-0">
-                    <i class="bi bi-person-plus me-1"></i>
-                    Add Reviewer
-                </a>
-
-            </div>
-
         </div>
-
-
         <div class="card-body p-0">
-
             <div class="table-responsive rounded-0">
-
                 <table class="table table-hover align-middle mb-0">
-
                     <thead>
-
                         <tr>
-
                             <th width="50">
                                 No
                             </th>
-
                             <th>
                                 Reviewer
                             </th>
-
                             <th>
                                 Conference
                             </th>
-
                             <th>
                                 Institution
                             </th>
-
                             <th>
                                 Expertise
                             </th>
-
                             <th>
                                 Status
                             </th>
-
-                            <th width="120">
+                            <th width="170">
                                 Action
                             </th>
-
                         </tr>
-
                     </thead>
-
-
                     <tbody>
-
                         @forelse ($reviewers as $reviewer)
                             <tr>
-
                                 {{-- Number --}}
                                 <td class="align-top">
                                     {{ $reviewers->firstItem() + $loop->index }}
                                 </td>
-
-
                                 {{-- Reviewer --}}
                                 <td class="align-top">
-
                                     @if ($reviewer->user)
                                         <div class="fw-semibold">
                                             {{ $reviewer->user->name }}
                                         </div>
-
                                         <small class="text-muted d-block">
                                             {{ $reviewer->user->email }}
                                         </small>
@@ -133,18 +78,13 @@
                                             -
                                         </span>
                                     @endif
-
                                 </td>
-
-
                                 {{-- Conference --}}
                                 <td class="align-top">
-
                                     @if ($reviewer->conference)
                                         <strong>
                                             {{ $reviewer->conference->short_name }}
                                         </strong>
-
                                         <small class="text-muted d-block">
                                             {{ $reviewer->conference->year }}
                                         </small>
@@ -153,13 +93,9 @@
                                             -
                                         </span>
                                     @endif
-
                                 </td>
-
-
                                 {{-- Institution --}}
                                 <td class="align-top">
-
                                     @if ($reviewer->institution)
                                         {{ $reviewer->institution }}
                                     @else
@@ -167,13 +103,9 @@
                                             -
                                         </span>
                                     @endif
-
                                 </td>
-
-
                                 {{-- Expertise --}}
                                 <td class="align-top">
-
                                     @if ($reviewer->expertise)
                                         <span>
                                             {{ \Illuminate\Support\Str::limit($reviewer->expertise, 100) }}
@@ -183,13 +115,9 @@
                                             -
                                         </span>
                                     @endif
-
                                 </td>
-
-
                                 {{-- Status --}}
                                 <td class="align-top">
-
                                     @if ($reviewer->is_active)
                                         <span class="badge text-bg-success rounded-0">
                                             <i class="bi bi-check-circle me-1"></i>
@@ -201,138 +129,56 @@
                                             Inactive
                                         </span>
                                     @endif
-
                                 </td>
-
-
                                 {{-- Actions --}}
                                 <td class="align-top">
-
-                                    <div class="btn-group gap-1">
-
+                                    <form action="{{ route('admin.reviewers.destroy', $reviewer) }}" method="POST"
+                                        class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
                                         <a href="{{ route('admin.reviewers.show', $reviewer) }}"
-                                            class="btn btn-info btn-sm rounded-0" title="View Reviewer">
+                                            class="btn btn-info rounded-0" title="View Reviewer">
                                             <i class="bi bi-eye"></i>
                                         </a>
-
                                         <a href="{{ route('admin.reviewers.edit', $reviewer) }}"
-                                            class="btn btn-warning btn-sm rounded-0" title="Edit Reviewer">
+                                            class="btn btn-warning rounded-0" title="Edit Reviewer">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-
-                                        <form action="{{ route('admin.reviewers.destroy', $reviewer) }}" method="POST"
-                                            class="d-inline delete-form">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-0"
-                                                title="Delete Reviewer">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
+                                        <button type="submit" class="btn btn-danger rounded-0" title="Delete Reviewer">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
-
                             </tr>
-
                         @empty
-
                             <tr>
-
                                 <td colspan="7" class="text-center py-5">
-
                                     <div class="mb-2">
-
                                         <i class="bi bi-person-check display-5 text-muted"></i>
-
                                     </div>
-
                                     <h5 class="mb-1">
                                         No Reviewers Found
                                     </h5>
-
                                     <p class="text-muted mb-3">
                                         There are no reviewers registered yet.
                                     </p>
-
                                     <a href="{{ route('admin.reviewers.create') }}" class="btn btn-success rounded-0">
                                         <i class="bi bi-person-plus me-1"></i>
                                         Add Reviewer
                                     </a>
-
                                 </td>
-
                             </tr>
                         @endforelse
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
 
         @if ($reviewers->hasPages())
             <div class="card-footer rounded-0">
-
                 {{ $reviewers->links() }}
-
             </div>
         @endif
 
     </div>
-
 @endsection
-
-@push('scripts')
-    <script>
-        document
-            .querySelectorAll('.delete-form')
-            .forEach(function(form) {
-
-                form.addEventListener(
-                    'submit',
-                    function(event) {
-
-                        event.preventDefault();
-
-                        Swal.fire({
-
-                            title: 'Delete Reviewer?',
-
-                            text: 'This will remove the reviewer from this conference.',
-
-                            icon: 'warning',
-
-                            showCancelButton: true,
-
-                            confirmButtonText: 'Yes, delete it',
-
-                            cancelButtonText: 'Cancel',
-
-                            confirmButtonColor: '#dc3545',
-
-                            cancelButtonColor: '#6c757d',
-
-                        }).then(function(result) {
-
-                            if (result.isConfirmed) {
-
-                                form.submit();
-
-                            }
-
-                        });
-
-                    }
-                );
-
-            });
-    </script>
-@endpush

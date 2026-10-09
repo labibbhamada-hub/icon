@@ -22,10 +22,6 @@
 
 @section('content')
 
-    {{-- ============================================================
-        SUBMISSION INFORMATION
-    ============================================================= --}}
-
     <div class="card rounded-0 overflow-hidden mb-3">
 
         <div class="card-header rounded-0">
@@ -404,12 +400,6 @@
 
     </div>
 
-
-    {{-- ============================================================
-MANUSCRIPT INFORMATION
-
-============================================================= --}}
-
     <div class="card rounded-0 overflow-hidden mb-3">
 
         <div class="card-header rounded-0">
@@ -470,11 +460,6 @@ MANUSCRIPT INFORMATION
         </div>
 
     </div>
-
-
-    {{-- ============================================================
-    AUTHORS
-    ============================================================= --}}
 
     <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -642,11 +627,6 @@ MANUSCRIPT INFORMATION
         </div>
 
     </div>
-
-
-    {{-- ============================================================
-    REVIEWERS
-    ============================================================= --}}
 
     <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -857,12 +837,6 @@ MANUSCRIPT INFORMATION
 
     </div>
 
-
-    {{-- ============================================================
-SUBMISSION FILES 
-
-============================================================= --}}
-
     <div class="card rounded-0 overflow-hidden mb-3">
 
         <div class="card-header rounded-0">
@@ -997,10 +971,6 @@ SUBMISSION FILES
         </div>
 
     </div>
-
-    {{-- ============================================================
-    PUBLICATION RECOMMENDATION
-    ============================================================= --}}
 
     @if ($publicationEligibility && $submission->submission_stage === 'full_paper' && $submission->status === 'accepted')
         @php
@@ -1193,57 +1163,40 @@ SUBMISSION FILES
 
                 @endif
 
-                @if ($isPending)
-                    <div class="border-top mt-4 pt-3">
-
-                        <h6 class="fw-bold mb-3">
-                            Recommendation Decision
-                        </h6>
-
-                        <div class="d-flex flex-wrap gap-2">
-
-                            <form action="{{ route('admin.submissions.publication-recommendation', $submission) }}"
-                                method="POST">
-                                @csrf
-                                @method('PATCH')
-
-                                <input type="hidden" name="recommendation" value="recommended">
-
-                                <button type="submit" class="btn btn-success rounded-0" @disabled(!$isEligible)
-                                    @if (!$isEligible) title="All publication recommendation requirements must be satisfied." @endif>
-                                    <i class="bi bi-check-circle me-1"></i>
-                                    Recommend for Publication
-                                </button>
-
-                            </form>
-
-                            <form action="{{ route('admin.submissions.publication-recommendation', $submission) }}"
-                                method="POST">
-                                @csrf
-                                @method('PATCH')
-
-                                <input type="hidden" name="recommendation" value="not_recommended">
-
-                                <button type="submit" class="btn btn-outline-danger rounded-0">
-                                    <i class="bi bi-x-circle me-1"></i>
-                                    Not Recommended
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-                @endif
-
             </div>
 
+            @if ($isPending)
+                <div class="card-body border-top">
+                    <h6 class="fw-bold mb-2">
+                        Recommendation Decision
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <form action="{{ route('admin.submissions.publication-recommendation', $submission) }}"
+                            method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="recommendation" value="recommended">
+                            <button type="submit" class="btn btn-success rounded-0" @disabled(!$isEligible)
+                                @if (!$isEligible) title="All publication recommendation requirements must be satisfied." @endif>
+                                <i class="bi bi-check-circle me-1"></i>
+                                Recommend for Publication
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.submissions.publication-recommendation', $submission) }}"
+                            method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="recommendation" value="not_recommended">
+                            <button type="submit" class="btn btn-outline-danger rounded-0">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Not Recommended
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
         </div>
     @endif
-
-    {{-- ============================================================
-    CAMERA READY APPROVAL
-    ============================================================= --}}
 
     @if ($submission->status === 'camera_ready')
 
@@ -1354,12 +1307,6 @@ SUBMISSION FILES
 
     @endif
 
-
-    {{-- ============================================================
-CAMERA READY CORRECTION REASON
-
-============================================================= --}}
-
     @if ($submission->camera_ready_correction_reason && $submission->status === 'accepted')
         <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -1389,12 +1336,6 @@ CAMERA READY CORRECTION REASON
 
 @push('scripts')
     <script>
-        /*
-                                                    |--------------------------------------------------------------------------
-                                                    | Remove Reviewer
-                                                    |--------------------------------------------------------------------------
-                                                    */
-
         document
             .querySelectorAll('.delete-review-form')
             .forEach(function(form) {

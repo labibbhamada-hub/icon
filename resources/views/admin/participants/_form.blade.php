@@ -100,7 +100,7 @@
         </div>
 
         {{-- Participant Type --}}
-        <div class="col-md-4 mb-3">
+        <div class="col-md-6 mb-3">
 
             <label class="form-label">
                 Participant Type

@@ -10,14 +10,6 @@
             </h1>
             <p class="text-muted mb-0">View your conference registrations.</p>
         </div>
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Registration</li>
-            </ol>
-        </div>
     </div>
 @endsection
 

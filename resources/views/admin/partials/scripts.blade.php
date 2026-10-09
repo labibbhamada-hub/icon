@@ -70,8 +70,6 @@
                     Deleting...
                 `;
 
-                deleteModal.hide();
-
                 form.submit();
 
             }

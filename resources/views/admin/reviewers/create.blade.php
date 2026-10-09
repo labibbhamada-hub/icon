@@ -3,93 +3,69 @@
 @section('title', 'Create Reviewer')
 
 @section('header')
-
     <div class="row">
-
-        <div class="col-sm-6 d-flex align-items-center gap-2">
-
-            <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-
-            <h1 class="mb-0 fs-3">
-                Create Reviewer
-            </h1>
-
+        <div class="col-sm-8">
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="mb-0 fs-3">
+                    Create Reviewer
+                </h1>
+            </div>
+            <p class="text-muted mb-0">
+                Add a new conference reviewer and their information.
+            </p>
         </div>
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end mb-0">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.reviewers.index') }}">
-                            Reviewers
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Create
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
-
-    <form action="{{ route('admin.reviewers.store') }}" method="POST">
-
+    <form action="{{ route('admin.reviewers.store') }}" method="POST" id="form-submit">
         @csrf
 
-        <div class="card rounded-0 overflow-hidden">
-
-            <div class="card-header rounded-0">
-
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header">
                 <h3 class="card-title">
-
                     <i class="bi bi-person-plus me-2"></i>
-
                     Reviewer Information
-
                 </h3>
-
             </div>
-
 
             @include('admin.reviewers._form')
 
+        </div>
 
-            <div class="card-footer rounded-0 d-flex justify-content-end gap-2">
-
-                <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Cancel
-                </a>
-
-                <button type="submit" class="btn btn-success btn-sm rounded-0">
+        <div class="text-end">
+            <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                <span id="btn-submit-text">
                     <i class="bi bi-check-circle me-1"></i>
                     Save Reviewer
-                </button>
-
-            </div>
-
+                </span>
+                <span id="btn-submit-load" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Loading...
+                </span>
+            </button>
         </div>
 
     </form>
-
 @endsection
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
+@endpush

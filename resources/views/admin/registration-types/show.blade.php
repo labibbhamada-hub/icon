@@ -3,92 +3,43 @@
 @section('title', 'Registration Type Details')
 
 @section('header')
-
     <div class="row">
-
-        <div class="col-sm-6 d-flex align-items-center gap-2">
-
-            <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-
-            <h1 class="mb-0 fs-3">
-                Registration Type Details
-            </h1>
-
+        <div class="col-sm-8">
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary rounded-0">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="mb-0 fs-3">
+                    Registration Type Details
+                </h1>
+            </div>
+            <p class="text-muted mb-0">
+                View the details, fees, and benefits of this registration type.
+            </p>
         </div>
-
-        <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.registration-types.index') }}">
-                            Registration Types
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Details
-                    </li>
-
-                </ol>
-
-            </nav>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
-
     <div class="card rounded-0 overflow-hidden">
-
-        <div class="card-header rounded-0">
-
+        <div class="card-header">
             <h3 class="card-title">
                 <i class="bi bi-tags me-2"></i>
                 {{ $conferenceRegistrationType->name }}
             </h3>
-
-            <div class="float-end">
-
-                <a href="{{ route('admin.registration-types.edit', $conferenceRegistrationType) }}"
-                    class="btn btn-warning btn-sm rounded-0">
-                    <i class="bi bi-pencil me-1"></i>
-                    Edit Registration Type
-                </a>
-
-            </div>
-
         </div>
-
         <div class="card-body">
-
-            <div class="row">
-
-                {{-- Conference --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Conference
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     @if ($conferenceRegistrationType->conference)
                         <strong>
                             {{ $conferenceRegistrationType->conference->name }}
                         </strong>
-
                         <small class="text-muted d-block">
                             {{ $conferenceRegistrationType->conference->short_name }}
                             ({{ $conferenceRegistrationType->conference->year }})
@@ -98,29 +49,27 @@
                             -
                         </span>
                     @endif
-
                 </div>
-
-                {{-- Code --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Code
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     <strong>
                         {{ $conferenceRegistrationType->code }}
                     </strong>
-
                 </div>
-
-                {{-- Category --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Category
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     @if ($conferenceRegistrationType->category === 'presenter')
                         <span class="badge text-bg-primary rounded-0">
                             Presenter
@@ -130,30 +79,70 @@
                             Participant
                         </span>
                     @endif
-
                 </div>
-
-                {{-- Pricing --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
+                        Description
+                    </strong>
+                </div>
+                <div class="col-md-8">
+                    @if ($conferenceRegistrationType->description)
+                        <div>
+                            {!! nl2br(e($conferenceRegistrationType->description)) !!}
+                        </div>
+                    @else
+                        <p class="text-muted mb-0">
+                            No description available.
+                        </p>
+                    @endif
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
+                        Benefits
+                    </strong>
+                </div>
+                <div class="col-md-8">
+                    @if ($conferenceRegistrationType->benefits)
+                        <ul class="mb-0">
+                            @foreach (preg_split('/\r\n|\r|\n/', $conferenceRegistrationType->benefits) as $benefit)
+                                @if (trim($benefit))
+                                    <li>
+                                        {{ trim($benefit) }}
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-muted mb-0">
+                            No benefits specified.
+                        </p>
+                    @endif
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Registration Fee
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     <strong class="text-success">
                         {{ $conferenceRegistrationType->currency }}
                         {{ number_format($conferenceRegistrationType->fee, 0, ',', '.') }}
                     </strong>
-
                 </div>
-
-                {{-- Payment Timing --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Payment Timing
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     @if ($conferenceRegistrationType->payment_timing === 'after_acceptance')
                         <span>
                             After Paper Acceptance
@@ -163,56 +152,52 @@
                             During Registration
                         </span>
                     @endif
-
                 </div>
-
-                {{-- Included Papers --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Included Papers
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     <strong>
                         {{ $conferenceRegistrationType->included_papers }}
                     </strong>
-
                 </div>
-
-                {{-- Additional Paper Fee --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Additional Paper Fee
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     <strong class="text-success">
                         {{ $conferenceRegistrationType->currency }}
                         {{ number_format($conferenceRegistrationType->additional_paper_fee, 0, ',', '.') }}
                     </strong>
-
                 </div>
-
-                {{-- Currency --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Currency
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     <strong>
                         {{ $conferenceRegistrationType->currency }}
                     </strong>
-
                 </div>
-
-                {{-- Status --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
                         Status
-                    </small>
-
+                    </strong>
+                </div>
+                <div class="col-md-8">
                     @if ($conferenceRegistrationType->is_active)
                         <span class="badge text-bg-success rounded-0">
                             Active
@@ -222,83 +207,25 @@
                             Inactive
                         </span>
                     @endif
-
                 </div>
-
-                {{-- Sort Order --}}
-                <div class="col-md-6 mb-3">
-
-                    <small class="text-muted d-block">
-                        Sort Order
-                    </small>
-
-                    <span>
-                        {{ $conferenceRegistrationType->sort_order }}
-                    </span>
-
-                </div>
-
             </div>
-
-        </div>
-
-        {{-- Description --}}
-        <div class="card-body border-top">
-
-            <h5 class="fw-bold mb-2">
-                Description
-            </h5>
-
-            @if ($conferenceRegistrationType->description)
-                <div>
-                    {!! nl2br(e($conferenceRegistrationType->description)) !!}
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>
+                        Sort Order
+                    </strong>
                 </div>
-            @else
-                <p class="text-muted mb-0">
-                    No description available.
-                </p>
-            @endif
-
+                <div class="col-md-8">
+                    {{ $conferenceRegistrationType->sort_order }}
+                </div>
+            </div>
         </div>
-
-        {{-- Benefits --}}
-        <div class="card-body border-top">
-
-            <h5 class="fw-bold mb-2">
-                Benefits
-            </h5>
-
-            @if ($conferenceRegistrationType->benefits)
-
-                <ul class="mb-0">
-
-                    @foreach (preg_split('/\r\n|\r|\n/', $conferenceRegistrationType->benefits) as $benefit)
-                        @if (trim($benefit))
-                            <li>
-                                {{ trim($benefit) }}
-                            </li>
-                        @endif
-                    @endforeach
-
-                </ul>
-            @else
-                <p class="text-muted mb-0">
-                    No benefits specified.
-                </p>
-
-            @endif
-
-        </div>
-
         <div class="card-footer rounded-0">
-
-            <a href="{{ route('admin.registration-types.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                <i class="bi bi-arrow-left me-1"></i>
-                Back to Registration Types
+            <a href="{{ route('admin.registration-types.edit', $conferenceRegistrationType) }}"
+                class="btn btn-warning rounded-0">
+                <i class="bi bi-pencil me-1"></i>
+                Edit Registration Type
             </a>
-
         </div>
-
     </div>
-
 @endsection

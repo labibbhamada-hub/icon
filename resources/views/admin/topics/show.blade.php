@@ -3,223 +3,133 @@
 @section('title', 'Topic Detail')
 
 @section('header')
-
     <div class="row">
-
-        <div class="col-sm-6 d-flex align-items-center gap-2">
-
-            <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary btn-sm rounded-0" title="Back">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-
-            <h1 class="mb-0 fs-3">
-                Topic Detail
-            </h1>
-
-        </div>
-
         <div class="col-sm-6">
-
-            <nav aria-label="breadcrumb">
-
-                <ol class="breadcrumb float-sm-end">
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.topics.index') }}">
-                            Topics
-                        </a>
-                    </li>
-
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Detail
-                    </li>
-
-                </ol>
-
-            </nav>
-
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary rounded-0" title="Back">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="mb-0 fs-3">
+                    Topic Detail
+                </h1>
+            </div>
+            <p class="text-muted mb-0">
+                View the details and information of this conference topic.
+            </p>
         </div>
-
     </div>
-
 @endsection
 
 @section('content')
-
     <div class="card rounded-0 overflow-hidden">
-
         <div class="card-header rounded-0">
-
             <h3 class="card-title">
                 <i class="bi bi-info-circle me-2"></i>
                 Topic Information
             </h3>
-
-            <div class="float-end">
-
-                <a href="{{ route('admin.topics.edit', $topic) }}" class="btn btn-warning btn-sm rounded-0">
-                    <i class="bi bi-pencil me-1"></i>
-                    Edit Topic
-                </a>
-
-            </div>
-
         </div>
-
-        <div class="card-body p-0">
-
-            <div class="table-responsive rounded-0">
-
-                <table class="table table-bordered align-middle mb-0">
-
-                    <tbody>
-
-                        <tr>
-                            <th width="220">
-                                Conference
-                            </th>
-
-                            <td>
-
-                                <strong>
-                                    {{ $topic->conference->name }}
-                                </strong>
-
-                                <small class="text-muted d-block">
-                                    {{ $topic->conference->short_name }}
-                                    ({{ $topic->conference->year }})
-                                </small>
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Topic Name
-                            </th>
-
-                            <td>
-                                <strong>
-                                    {{ $topic->name }}
-                                </strong>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Description
-                            </th>
-
-                            <td>
-                                {!! nl2br(e($topic->description ?: '-')) !!}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Bootstrap Icon
-                            </th>
-
-                            <td>
-
-                                @if ($topic->icon)
-                                    <i class="bi {{ $topic->icon }} me-2"></i>
-
-                                    <code>
-                                        {{ $topic->icon }}
-                                    </code>
-                                @else
-                                    -
-                                @endif
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Color
-                            </th>
-
-                            <td>
-                                <span class="badge text-bg-{{ $topic->color }} rounded-0">
-                                    {{ ucfirst($topic->color) }}
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Sort Order
-                            </th>
-
-                            <td>
-                                {{ $topic->sort_order }}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Status
-                            </th>
-
-                            <td>
-
-                                @if ($topic->is_active)
-                                    <span class="badge text-bg-success rounded-0">
-                                        Active
-                                    </span>
-                                @else
-                                    <span class="badge text-bg-secondary rounded-0">
-                                        Inactive
-                                    </span>
-                                @endif
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Created At
-                            </th>
-
-                            <td>
-                                {{ $topic->created_at->format('d M Y H:i') }}
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                Last Updated
-                            </th>
-
-                            <td>
-                                {{ $topic->updated_at->format('d M Y H:i') }}
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Conference</strong>
+                </div>
+                <div class="col-md-8">
+                    <strong>
+                        {{ $topic->conference->name }}
+                    </strong>
+                    <small class="text-muted d-block">
+                        {{ $topic->conference->short_name }}
+                        ({{ $topic->conference->year }})
+                    </small>
+                </div>
             </div>
-
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Topic Name</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $topic->name }}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Description</strong>
+                </div>
+                <div class="col-md-8">
+                    {!! nl2br(e($topic->description ?: '-')) !!}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Bootstrap Icon</strong>
+                </div>
+                <div class="col-md-8">
+                    @if ($topic->icon)
+                        <i class="bi {{ $topic->icon }} me-2"></i>
+                        <code>
+                            {{ $topic->icon }}
+                        </code>
+                    @else
+                        -
+                    @endif
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Color</strong>
+                </div>
+                <div class="col-md-8">
+                    <span class="badge text-bg-{{ $topic->color }} rounded-0">
+                        {{ ucfirst($topic->color) }}
+                    </span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Sort Order</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $topic->sort_order }}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Status</strong>
+                </div>
+                <div class="col-md-8">
+                    @if ($topic->is_active)
+                        <span class="badge text-bg-success rounded-0">
+                            Active
+                        </span>
+                    @else
+                        <span class="badge text-bg-secondary rounded-0">
+                            Inactive
+                        </span>
+                    @endif
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Created At</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $topic->created_at->format('d M Y H:i') }}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Last Updated</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ $topic->updated_at->format('d M Y H:i') }}
+                </div>
+            </div>
         </div>
-
-        <div class="card-footer rounded-0">
-
-            <a href="{{ route('admin.topics.index') }}" class="btn btn-secondary btn-sm rounded-0">
-                <i class="bi bi-arrow-left me-1"></i>
-                Back to Topics
+        <div class="card-footer">
+            <a href="{{ route('admin.topics.edit', $topic) }}" class="btn btn-warning rounded-0">
+                <i class="bi bi-pencil me-1"></i>
+                Edit Topic
             </a>
-
         </div>
-
     </div>
-
 @endsection

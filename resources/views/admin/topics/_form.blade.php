@@ -1,7 +1,7 @@
 <div class="card-body">
     <div class="row">
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-6 mb-2">
             <label class="form-label">
                 Conference
             </label>
@@ -22,7 +22,7 @@
             @enderror
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-6 mb-2">
             <label class="form-label">
                 Topic Name
             </label>
@@ -37,7 +37,7 @@
             @enderror
         </div>
 
-        <div class="col-12 mb-3">
+        <div class="col-12 mb-2">
             <label class="form-label">
                 Description
             </label>
@@ -45,7 +45,7 @@
             <textarea rows="4" name="description" class="form-control rounded-0">{{ old('description', $topic->description ?? '') }}</textarea>
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="col-md-4 mb-2">
             <label class="form-label">
                 Bootstrap Icon
             </label>
@@ -54,7 +54,7 @@
                 class="form-control rounded-0">
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="col-md-4 mb-2">
             <label class="form-label">
                 Color
             </label>
@@ -68,7 +68,7 @@
             </select>
         </div>
 
-        <div class="col-md-2 mb-3">
+        <div class="col-md-2 mb-2">
             <label class="form-label">
                 Sort
             </label>
@@ -77,7 +77,7 @@
                 class="form-control rounded-0">
         </div>
 
-        <div class="col-md-2 mb-3">
+        <div class="col-md-2 mb-2">
             <label class="form-label d-block">
                 Status
             </label>

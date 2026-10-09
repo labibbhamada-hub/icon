@@ -689,7 +689,12 @@ class AttendanceTest extends TestCase
                 ]
             );
 
-        $response->assertForbidden();
+        $response
+            ->assertRedirect(route('admin.participants.show', $participant))
+            ->assertSessionHas(
+                'error',
+                'Attendance has already been verified and cannot be checked in again.'
+            );
 
         $attendance->refresh();
 
@@ -702,5 +707,53 @@ class AttendanceTest extends TestCase
             '2026-12-20 08:30:00',
             $attendance->checked_in_at->format('Y-m-d H:i:s')
         );
+    }
+
+
+    public function test_admin_cannot_manually_check_in_pending_participant(): void
+    {
+        $conference = $this->createOpenConference();
+        $registrationType = $this->createRegistrationType($conference);
+
+        $participantUser = User::factory()->create([
+            'role' => 'participant',
+            'status' => 'active',
+        ]);
+
+        $participant = $this->createParticipant(
+            $conference,
+            $registrationType,
+            $participantUser,
+            'pending'
+        );
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch(
+                route(
+                    'admin.attendance.manual-check-in',
+                    $participant
+                ),
+                [
+                    'checked_in_at' => '2026-12-20 08:30:00',
+                    'verification_notes' => 'QA pending registration.',
+                ]
+            );
+
+        $response
+            ->assertRedirect(route('admin.participants.show', $participant))
+            ->assertSessionHas(
+                'error',
+                'Manual check-in is unavailable because the participant registration status is pending.'
+            );
+
+        $this->assertDatabaseMissing('conference_attendances', [
+            'participant_id' => $participant->id,
+        ]);
     }
 }

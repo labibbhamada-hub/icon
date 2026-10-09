@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
+
     public function manualCheckIn(
         Request $request,
         Participant $participant
@@ -26,10 +27,31 @@ class AttendanceController extends Controller
             ],
         ]);
 
-        abort_unless(
-            $participant->registration_status === 'confirmed',
-            403
-        );
+        if ($participant->registration_status !== 'confirmed') {
+            return redirect()
+                ->route('admin.participants.show', $participant)
+                ->with(
+                    'error',
+                    'Manual check-in is unavailable because the participant registration status is ' .
+                        $participant->registration_status . '.'
+                );
+        }
+
+        $existingAttendance = ConferenceAttendance::where(
+            'conference_id',
+            $participant->conference_id
+        )
+            ->where('participant_id', $participant->id)
+            ->first();
+
+        if ($existingAttendance?->attendance_status === 'verified') {
+            return redirect()
+                ->route('admin.participants.show', $participant)
+                ->with(
+                    'error',
+                    'Attendance has already been verified and cannot be checked in again.'
+                );
+        }
 
         $attendance = DB::transaction(function () use (
             $participant,
@@ -45,6 +67,7 @@ class AttendanceController extends Controller
                 ]
             );
 
+            // Keep the backend guard as a final safeguard.
             abort_if(
                 $attendance->attendance_status === 'verified',
                 403

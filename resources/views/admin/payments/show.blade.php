@@ -3,11 +3,10 @@
 @section('title', 'Payment Detail')
 
 @section('header')
-    <div class="row align-items-top">
-
-        <div class="col-sm-6">
+    <div class="row">
+        <div class="col-sm-8">
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.payments.index') }}" class="btn btn-secondary rounded-0">
+                <a href="{{ route('admin.reviewers.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <h1 class="mb-0 fs-3">
@@ -18,7 +17,6 @@
                 Review and verify participant payment.
             </p>
         </div>
-
     </div>
 @endsection
 
