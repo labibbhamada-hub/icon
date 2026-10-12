@@ -3,7 +3,7 @@
 @section('title', 'Payment Methods')
 
 @section('header')
-    <div class="row align-items-top">
+    <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
                 Payment Methods

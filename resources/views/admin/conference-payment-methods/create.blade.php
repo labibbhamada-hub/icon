@@ -37,24 +37,21 @@
         </div>
     @endif
 
-    <div class="card rounded-0 overflow-hidden">
-        <div class="card-header rounded-0">
-            <h3 class="card-title">
-                <i class="bi bi-credit-card me-2"></i>
-                Payment Method
-            </h3>
-        </div>
+    <form action="{{ route('admin.conferences.payment-methods.store', $conference) }}" method="POST"
+        enctype="multipart/form-data" id="form-submit">
+        @csrf
 
-        <form action="{{ route('admin.conferences.payment-methods.store', $conference) }}" method="POST"
-            enctype="multipart/form-data">
-
-            @csrf
+        <div class="card rounded-0 overflow-hidden mb-3">
+            <div class="card-header rounded-0">
+                <h3 class="card-title">
+                    <i class="bi bi-credit-card me-2"></i>
+                    Payment Method
+                </h3>
+            </div>
 
             <div class="card-body">
-
                 <div class="alert alert-info rounded-0">
                     <i class="bi bi-info-circle me-2"></i>
-
                     This payment method will be available to participants
                     when they complete their conference payment.
                 </div>
@@ -62,29 +59,39 @@
                 @include('admin.conference-payment-methods._form', [
                     'paymentMethod' => null,
                 ])
-
             </div>
+        </div>
 
-            <div class="card-footer rounded-0 text-end">
-
-                <a href="{{ route('admin.conferences.payment-methods.index', $conference) }}"
-                    class="btn btn-secondary btn-sm rounded-0 me-1">
-
-                    Cancel
-
-                </a>
-
-                <button type="submit" class="btn btn-success btn-sm rounded-0">
-
+        <div class="text-end">
+            <button type="button" class="btn btn-success rounded-0" id="btn-submit" onclick="form_submit()">
+                <span id="btn-submit-text">
                     <i class="bi bi-check-circle me-1"></i>
                     Save Payment Method
+                </span>
+                <span id="btn-submit-load" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Loading...
+                </span>
+            </button>
+        </div>
 
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
+    </form>
 @endsection
+
+@push('scripts')
+    <script>
+        function form_submit() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+            const formSubmit = document.getElementById('form-submit');
+
+            btnSubmit.disabled = true;
+
+            btnSubmitText.classList.add('d-none');
+            btnSubmitLoad.classList.remove('d-none');
+
+            formSubmit.submit();
+        }
+    </script>
+@endpush
