@@ -21,7 +21,8 @@
 @endsection
 
 @section('content')
-    <form action="{{ route('admin.speakers.update', $speaker) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.speakers.update', $speaker) }}" method="POST" enctype="multipart/form-data"
+        id="form-submit">
         @csrf
         @method('PUT')
         <div class="card rounded-0 overflow-hidden mb-3">
