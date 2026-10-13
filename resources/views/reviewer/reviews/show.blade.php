@@ -3,8 +3,8 @@
 @section('title', 'Review Detail')
 
 @section('header')
-    <div class="row align-items-top">
-        <div class="col-sm-6">
+    <div class="row">
+        <div class="col-sm-8">
             <div class="d-flex gap-2">
                 <a href="{{ route('reviewer.reviews.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
@@ -25,13 +25,13 @@
         <div class="col-lg-8">
             <div class="card rounded-0 overflow-hidden">
                 <div class="card-header rounded-0">
-                    <h3 class="card-title"> <i class="bi bi-file-earmark-text me-2"></i>
-                        {{ $review->submission->submission_code }} </h3>
-
+                    <h3 class="card-title">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        {{ $review->submission->submission_code }}
+                    </h3>
                     <div class="float-end">
                         @if (!$review->reviewed_at)
-                            <a href="{{ route('reviewer.reviews.edit', $review) }}"
-                                class="btn btn-primary rounded-0">
+                            <a href="{{ route('reviewer.reviews.edit', $review) }}" class="btn btn-primary rounded-0">
                                 <i class="bi bi-pencil me-1"></i>
                                 Continue Review
                             </a>
@@ -48,23 +48,19 @@
                         <h4 class="fw-bold mb-2">
                             {{ $review->submission->title }}
                         </h4>
-
                         <span class="badge text-bg-primary rounded-0">
                             {{ $review->submission->topic?->name ?? 'No Topic' }}
                         </span>
                     </div>
-
                     <div class="row">
                         <div class="col-md-4 mb-2">
                             <div class="border rounded-0 p-3 text-center">
                                 <small class="text-muted d-block">
                                     Score
                                 </small>
-
                                 <div class="display-6 fw-bold">
                                     {{ $review->score ?? '—' }}
                                 </div>
-
                                 @if ($review->score !== null)
                                     <small class="text-muted">
                                         / 100
@@ -72,13 +68,11 @@
                                 @endif
                             </div>
                         </div>
-
                         <div class="col-md-8 mb-2">
                             <div class="border rounded-0 p-3 h-100">
                                 <small class="text-muted d-block mb-2">
                                     Recommendation
                                 </small>
-
                                 @if ($review->recommendation === 'accept')
                                     <span class="badge text-bg-success rounded-0 fs-6">
                                         Accept
@@ -104,12 +98,10 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card-body border-top">
                     <h5 class="fw-semibold mb-2">
                         Review Comment
                     </h5>
-
                     @if ($review->comment)
                         <div>
                             {!! nl2br(e($review->comment)) !!}
@@ -120,11 +112,9 @@
                         </p>
                     @endif
                 </div>
-
                 @if ($review->submission?->paper_file)
                     <div class="card-footer rounded-0">
-                        <a href="{{ route('reviewer.reviews.paper.download', $review) }}"
-                            class="btn btn-danger rounded-0">
+                        <a href="{{ route('reviewer.reviews.paper.download', $review) }}" class="btn btn-danger rounded-0">
                             <i class="bi bi-file-earmark-pdf me-1"></i>
                             Open Paper
                         </a>
@@ -132,7 +122,6 @@
                 @endif
             </div>
         </div>
-
         <div class="col-lg-4">
             <div class="card rounded-0 overflow-hidden">
                 <div class="card-header rounded-0">
@@ -141,7 +130,6 @@
                         Paper Information
                     </h3>
                 </div>
-
                 <div class="card-body">
                     <div class="row mb-2">
                         <div class="col-md-4">
@@ -149,31 +137,26 @@
                                 Conference
                             </strong>
                         </div>
-
                         <div class="col-md-8">
                             {{ $review->submission?->conference?->short_name ?? '—' }}
                         </div>
                     </div>
-
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <strong>
                                 Authors
                             </strong>
                         </div>
-
                         <div class="col-md-8">
                             {{ $review->submission?->authors?->count() ?? 0 }}
                         </div>
                     </div>
-
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <strong>
                                 Reviewed At
                             </strong>
                         </div>
-
                         <div class="col-md-8">
                             {{ $review->reviewed_at?->format('d M Y H:i') ?? '—' }}
                         </div>
@@ -182,5 +165,4 @@
             </div>
         </div>
     </div>
-
 @endsection

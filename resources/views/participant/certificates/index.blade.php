@@ -34,9 +34,15 @@
                             <th>
                                 Conference
                             </th>
-                            <th>Type</th>
-                            <th>Issued</th>
-                            <th>Action</th>
+                            <th>
+                                Type
+                            </th>
+                            <th>
+                                Issued
+                            </th>
+                            <th width="130">
+                                Action
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

@@ -4,7 +4,7 @@
 
 @section('header')
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-8">
             <div class="d-flex gap-2">
                 <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>

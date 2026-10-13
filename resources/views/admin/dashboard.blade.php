@@ -11,13 +11,6 @@
                 <strong>{{ Auth::user()->name ?? 'Administrator' }}</strong>
             </p>
         </div>
-        <div class="col-sm-6 text-end">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-                </ol>
-            </nav>
-        </div>
     </div>
 @endsection
 
@@ -244,8 +237,7 @@
                         Current Conference
                     </h3>
                     <div class="float-end">
-                        <a href="{{ route('admin.conferences.index') }}"
-                            class="btn btn-sm btn-outline-primary rounded-0">
+                        <a href="{{ route('admin.conferences.index') }}" class="btn btn-sm btn-outline-primary rounded-0">
                             View All
                         </a>
                     </div>

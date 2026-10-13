@@ -3,32 +3,16 @@
 @section('title', 'My Submissions')
 
 @section('header')
-
-    <div class="row align-items-top">
+    <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
-                My Submissions </h1>
-
+                My Submissions
+            </h1>
             <p class="text-muted mb-0">
                 Manage your conference paper submissions.
             </p>
         </div>
-
-        <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    My Submissions
-                </li>
-            </ol>
-        </div>
     </div>
-
 @endsection
 
 @section('content')

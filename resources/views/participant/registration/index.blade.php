@@ -3,12 +3,14 @@
 @section('title', 'Registration')
 
 @section('header')
-    <div class="row align-items-top">
+    <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3">
                 My Registration
             </h1>
-            <p class="text-muted mb-0">View your conference registrations.</p>
+            <p class="text-muted mb-0">
+                View your conference registrations.
+            </p>
         </div>
     </div>
 @endsection

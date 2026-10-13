@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
 
     @stack('styles')
-
+    
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">

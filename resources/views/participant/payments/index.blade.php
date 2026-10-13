@@ -3,11 +3,11 @@
 @section('title', 'Payments')
 
 @section('header')
-    <div class="row align-items-top">
+    <div class="row">
         <div class="col-sm-6">
-            <h3 class="mb-0 fs-3">
+            <h1 class="mb-0 fs-3">
                 My Payments
-            </h3>
+            </h1>
             <p class="text-muted mb-0">
                 View and manage your conference payments.
             </p>

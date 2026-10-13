@@ -3,10 +3,10 @@
 @section('title', 'Register for ICON 2026')
 
 @section('header')
-    <div class="row align-items-top">
-        <div class="col-sm-6">
+    <div class="row">
+        <div class="col-sm-8">
             <div class="d-flex gap-2">
-                <a href="{{ route('participant.registration.index') }}" class="btn btn-secondary rounded-0">
+                <a href="{{ route('admin.important-dates.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <h1 class="mb-0 fs-3">

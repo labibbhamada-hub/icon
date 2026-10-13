@@ -14,7 +14,7 @@
                 </h1>
             </div>
             <p class="text-muted mb-0">
-                -
+                View the details and information of this conference certificate.
             </p>
         </div>
     </div>
@@ -279,33 +279,99 @@
             @endif
         </div>
     </div>
+
+    {{-- Regenerate Certificate Confirmation Modal --}}
+    <div class="modal fade" id="regenerateCertificateModal" tabindex="-1"
+        aria-labelledby="regenerateCertificateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-0">
+                <div class="modal-header rounded-0">
+                    <h5 class="modal-title" id="regenerateCertificateModalLabel">
+                        <i class="bi bi-arrow-repeat me-2"></i>
+                        Regenerate Certificate PDF?
+                    </h5>
+                    <button type="button" class="btn-close rounded-0" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    A new certificate PDF will be generated. If a PDF already exists,
+                    it will be replaced with the new version.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-warning rounded-0" id="confirmRegenerateCertificate">
+                        <span id="confirmRegenerateCertificateText">
+                            <i class="bi bi-arrow-repeat me-1"></i>
+                            Yes, continue
+                        </span>
+                        <span id="confirmRegenerateCertificateLoading" class="d-none">
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Generating PDF...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script>
-        document
-            .querySelectorAll('.regenerate-certificate-form')
-            .forEach(function(form) {
-                form.addEventListener(
-                    'submit',
-                    function(event) {
-                        event.preventDefault();
-                        Swal.fire({
-                            title: 'Regenerate Certificate?',
-                            text: 'The existing PDF will be replaced with a new version.',
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, regenerate',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#f0ad4e',
-                            cancelButtonColor: '#6c757d',
-                        }).then(function(result) {
-                            if (result.isConfirmed) {
-                                form.submit();
-                            }
-                        });
-                    }
-                );
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalElement = document.getElementById('regenerateCertificateModal');
+            const confirmButton = document.getElementById('confirmRegenerateCertificate');
+            const confirmButtonText = document.getElementById('confirmRegenerateCertificateText');
+            const confirmButtonLoading = document.getElementById('confirmRegenerateCertificateLoading');
+
+            if (
+                !modalElement ||
+                !confirmButton ||
+                !confirmButtonText ||
+                !confirmButtonLoading ||
+                typeof bootstrap === 'undefined'
+            ) {
+                return;
+            }
+
+            const regenerateModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+            let pendingForm = null;
+
+            document.querySelectorAll('.regenerate-certificate-form').forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+
+                    pendingForm = form;
+                    regenerateModal.show();
+                });
             });
+
+            confirmButton.addEventListener('click', function() {
+                if (!pendingForm || confirmButton.disabled) {
+                    return;
+                }
+
+                const formToSubmit = pendingForm;
+                pendingForm = null;
+
+                // Tampilkan loading pada tombol konfirmasi.
+                confirmButton.disabled = true;
+                confirmButtonText.classList.add('d-none');
+                confirmButtonLoading.classList.remove('d-none');
+
+                // Jalankan proses regenerasi sertifikat.
+                formToSubmit.submit();
+            });
+
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                pendingForm = null;
+
+                // Pulihkan tombol ketika modal ditutup.
+                confirmButton.disabled = false;
+                confirmButtonText.classList.remove('d-none');
+                confirmButtonLoading.classList.add('d-none');
+            });
+        });
     </script>
 @endpush

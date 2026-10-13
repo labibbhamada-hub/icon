@@ -3,29 +3,24 @@
 @section('title', 'Dashboard')
 
 @section('header')
-
     <div class="row">
         <div class="col-sm-6">
             <h1 class="mb-0 fs-3 fw-bold">Dashboard</h1>
             <p class="text-muted mb-0">
-                Welcome back, <strong>{{ Auth::user()->name ?? 'Administrator' }}</strong> </p>
-        </div>
-        <div class="col-sm-6 text-end">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-                </ol>
-            </nav>
+                Welcome back,
+                <strong>{{ Auth::user()->name ?? 'Administrator' }}</strong>
+            </p>
         </div>
     </div>
-
 @endsection
 
 @section('content')
     @if (!$reviewer)
-        <div class="alert alert-warning rounded-0"> <i class="bi bi-exclamation-triangle me-2"></i>
+        <div class="alert alert-warning rounded-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>
             Your account has not been registered as an active
-            reviewer for any conference yet. </div>
+            reviewer for any conference yet.
+        </div>
     @else
         <div class="row mb-2">
             <div class="col-lg-4 col-md-6 mb-2">
@@ -34,7 +29,9 @@
                         <h3>{{ $reviewCount }}</h3>
                         <p>Total Assignments</p>
                     </div>
-                    <div class="small-box-icon"> <i class="bi bi-clipboard-check"></i> </div>
+                    <div class="small-box-icon">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
                 </div>
             </div>
 

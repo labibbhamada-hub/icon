@@ -3,8 +3,7 @@
 @section('title', 'Certificate Detail')
 
 @section('header')
-    <div class="row align-items-top">
-
+    <div class="row">
         <div class="col-sm-6">
             <div class="d-flex gap-2">
                 <a href="{{ route('participant.certificates.index') }}" class="btn btn-secondary rounded-0">

@@ -2,17 +2,15 @@
 
 @section('title', 'My Reviews')
 
-@section('header') <div class="row">
-        <div class="col-sm-6">
-            <h1 class="mb-0 fs-3">My Reviews</h1>
-        </div>
-        <div class="col-sm-6">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"> <a href="{{ route('reviewer.dashboard') }}">Dashboard</a> </li>
-                    <li class="breadcrumb-item active" aria-current="page">My Reviews</li>
-                </ol>
-            </nav>
+@section('header')
+    <div class="row">
+        <div class="col-sm-8">
+            <h1 class="mb-0 fs-3">
+                My Reviews
+            </h1>
+            <p class="text-muted mb-0">
+                View and manage your assigned conference submission reviews.
+            </p>
         </div>
     </div>
 @endsection

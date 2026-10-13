@@ -3,7 +3,7 @@
 @section('title', 'Important Dates')
 
 @section('header')
-    <div class="row align-items-top">
+    <div class="row">
         <div class="col-sm-8">
             <h1 class="mb-0 fs-3">
                 Important Dates Management

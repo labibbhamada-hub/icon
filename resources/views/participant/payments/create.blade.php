@@ -3,181 +3,105 @@
 @section('title', 'Complete Payment')
 
 @section('header')
-    <div class="row align-items-top">
-
-        <div class="col-sm-6">
-
+    <div class="row">
+        <div class="col-sm-8">
             <div class="d-flex gap-2">
-
-                <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary btn-sm rounded-0">
-
+                <a href="{{ route('participant.payments.index') }}" class="btn btn-secondary rounded-0">
                     <i class="bi bi-arrow-left"></i>
-
                 </a>
-
                 <h1 class="mb-0 fs-3">
                     Complete Payment
                 </h1>
-
             </div>
-
-            <p class="text-muted mb-0 mt-1">
+            <p class="text-muted mb-0">
                 Complete your payment and upload the payment proof.
             </p>
-
         </div>
-
-        <div class="col-sm-6">
-
-            <ol class="breadcrumb float-sm-end mb-0">
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.dashboard') }}">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item">
-                    <a href="{{ route('participant.payments.index') }}">
-                        Payments
-                    </a>
-                </li>
-
-                <li class="breadcrumb-item active">
-                    Submit
-                </li>
-
-            </ol>
-
-        </div>
-
     </div>
-
 @endsection
 
 @section('content')
-
     @if ($participants->isEmpty())
-
         <div class="alert alert-info rounded-0">
-
             <div class="d-flex align-items-start gap-2">
-
                 <i class="bi bi-info-circle fs-5"></i>
-
                 <div>
-
                     <strong>
                         No Payment Available
                     </strong>
-
                     <div class="small mt-1">
                         There is currently no registration that requires
                         payment or is eligible for payment.
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     @else
         @php
             $defaultParticipant = $participants->first();
-
             $oldParticipantId = old('participant_id', $defaultParticipant->id);
-
             $selectedParticipant = $participants->firstWhere('id', $oldParticipantId) ?? $defaultParticipant;
-
             $defaultCalculation = app(\App\Services\PaymentCalculationService::class)->calculate($selectedParticipant);
-
             $isPresenter = $selectedParticipant->registrationType?->category === 'presenter';
         @endphp
-
         <form action="{{ route('participant.payments.store') }}" method="POST" enctype="multipart/form-data"
             id="form-submit">
-
             @csrf
 
             {{-- =========================================================
-         REGISTRATION
-    ========================================================== --}}
+                REGISTRATION
+            ========================================================== --}}
             <div class="card rounded-0 overflow-hidden mb-3">
-
                 <div class="card-header rounded-0">
-
                     <h3 class="card-title">
                         <i class="bi bi-person-check me-2"></i>
                         Your Registration
                     </h3>
-
                 </div>
-
                 <div class="card-body">
-
                     @if ($participants->count() > 1)
-
                         <div class="mb-3">
-
                             <label for="participant_id" class="form-label">
-
                                 Select Registration
                                 <span class="text-danger">*</span>
-
                             </label>
-
                             <select name="participant_id" id="participant_id"
                                 class="form-select @error('participant_id') is-invalid @enderror rounded-0">
-
                                 @foreach ($participants as $participant)
                                     <option value="{{ $participant->id }}" @selected($oldParticipantId == $participant->id)>
-
                                         {{ $participant->conference?->name ?? 'Conference' }}
                                         —
                                         {{ $participant->registration_number }}
-
                                     </option>
                                 @endforeach
-
                             </select>
-
                             @error('participant_id')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
-
                             <div class="form-text">
                                 Select the registration you want to pay.
                             </div>
-
                         </div>
                     @else
                         <input type="hidden" name="participant_id" value="{{ $selectedParticipant->id }}">
-
                     @endif
-
                     <div class="row g-3">
-
                         <div class="col-md-6">
-
                             <div class="border rounded-0 p-3 h-100">
-
                                 <small class="text-muted d-block">
                                     Conference
                                 </small>
-
                                 <strong class="d-block mt-1">
                                     {{ $selectedParticipant->conference?->name ?? '—' }}
                                 </strong>
-
                                 <small class="text-muted">
                                     {{ $selectedParticipant->conference?->short_name }}
                                     @if ($selectedParticipant->conference?->year)
                                         ({{ $selectedParticipant->conference->year }})
                                     @endif
                                 </small>
-
                             </div>
 
                         </div>
