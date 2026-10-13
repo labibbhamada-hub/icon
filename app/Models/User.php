@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\Auth\VerifyEmailNotification;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -30,6 +31,14 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPasswordC
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Send the custom BHAMADA ICON email verification notification.
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailNotification());
+    }
 
     public function participants()
     {
