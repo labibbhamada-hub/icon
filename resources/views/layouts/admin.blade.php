@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -36,6 +36,8 @@
 
     @stack('styles')
 
+    <link rel="stylesheet" href="{{ asset('assets/css/sidebar-navy.css') }}">
+
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -62,8 +64,6 @@
 
         </main>
 
-        @include('admin.partials.footer')
-
     </div>
 
     @include('admin.partials.footer')
@@ -79,7 +79,8 @@
                         Confirm Delete
                     </h5>
 
-                    <button type="button" class="btn-close rounded-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close rounded-0" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">

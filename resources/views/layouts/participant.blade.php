@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
 
     @stack('styles')
+
+    <link rel="stylesheet" href="{{ asset('assets/css/sidebar-navy.css') }}">
 
 </head>
 

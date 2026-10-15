@@ -95,6 +95,8 @@
 {{-- AdminLTE --}}
 <script src="{{ asset('adminlte/dist/js/adminlte.js') }}"></script>
 
+@include('shared.force-light-theme')
+
 {{-- Toastr --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 

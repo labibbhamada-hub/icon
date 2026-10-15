@@ -1,0 +1,56 @@
+/*
+ * BHAMADA ICON - AdminLTE 4.1.0
+ * Navy sidebar only. Main page theme remains light.
+ */
+
+.app-sidebar.sidebar-navy[data-bs-theme="dark"] {
+    background-color: #0b1f3a;
+    color: #dbe5f1;
+
+    --lte-sidebar-hover-bg: rgba(255, 255, 255, 0.10);
+    --lte-sidebar-color: #dbe5f1;
+    --lte-sidebar-hover-color: #ffffff;
+    --lte-sidebar-active-color: #ffffff;
+    --lte-sidebar-menu-active-bg: rgba(59, 130, 246, 0.30);
+    --lte-sidebar-menu-active-color: #ffffff;
+    --lte-sidebar-submenu-bg: transparent;
+    --lte-sidebar-submenu-color: #cbd5e1;
+    --lte-sidebar-submenu-hover-color: #ffffff;
+}
+
+.app-sidebar.sidebar-navy .sidebar-brand {
+    background-color: transparent;
+}
+
+.app-sidebar.sidebar-navy .sidebar-brand,
+.app-sidebar.sidebar-navy .sidebar-brand .brand-link,
+.app-sidebar.sidebar-navy .sidebar-brand .brand-text {
+    color: #ffffff;
+}
+
+.app-sidebar.sidebar-navy .sidebar-brand .text-secondary {
+    color: #cbd5e1;
+}
+
+.app-sidebar.sidebar-navy .sidebar-menu .nav-header {
+    color: #93a9c4;
+}
+
+.app-sidebar.sidebar-navy .sidebar-menu .nav-link {
+    color: #dbe5f1;
+}
+
+.app-sidebar.sidebar-navy .sidebar-menu .nav-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+.app-sidebar.sidebar-navy .sidebar-menu .nav-link.active {
+    color: #ffffff;
+    background-color: #1e40af;
+}
+
+.app-sidebar.sidebar-navy .sidebar-menu .nav-link.active .nav-icon,
+.app-sidebar.sidebar-navy .sidebar-menu .nav-link:hover .nav-icon {
+    color: #ffffff;
+}

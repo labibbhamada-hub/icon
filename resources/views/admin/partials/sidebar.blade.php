@@ -3,7 +3,8 @@
     {{-- ============================================================
     BRAND
     ============================================================= --}}
-    <div class="sidebar-brand"> <a href="{{ route('admin.dashboard') }}" class="brand-link">
+    <div class="sidebar-brand">
+        <a href="{{ route('admin.dashboard') }}" class="brand-link">
             <img src="{{ asset('assets/images/logo/logo-bhamada.png') }}" class="brand-image opacity-75 shadow"
                 alt="Bhamada ICON">
             <span class="brand-text fw-bold">
