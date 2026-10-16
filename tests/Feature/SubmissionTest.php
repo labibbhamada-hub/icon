@@ -8,6 +8,7 @@ use App\Models\ConferenceAttendanceOption;
 use App\Models\ConferencePaymentMethod;
 use App\Models\ConferenceRegistrationType;
 use App\Models\ConferenceSetting;
+use App\Models\ImportantDate;
 use App\Models\Participant;
 use App\Models\Payment;
 use App\Models\Review;
@@ -163,6 +164,61 @@ class SubmissionTest extends TestCase
             'submitted_at' => now(),
         ], $attributes));
     }
+
+    private function createOpenAbstractSubmissionContext(): array
+    {
+        $conference = $this->createOpenConference();
+
+        $registrationType = $this->createPresenterRegistrationType(
+            $conference
+        );
+
+        $participant = $this->createParticipant($conference);
+
+        $participant->update([
+            'registration_type_id' => $registrationType->id,
+        ]);
+
+        $topic = $this->createTopic($conference);
+
+        ImportantDate::create([
+            'conference_id' => $conference->id,
+            'title' => 'Abstract Submission',
+            'type' => 'abstract_submission',
+            'description' => 'Test abstract submission period.',
+            'date' => now()->toDateString(),
+            'end_date' => now()->toDateString(),
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        return [$participant, $topic];
+    }
+
+    private function makeAbstractSubmissionPayload(
+        Participant $participant,
+        Topic $topic,
+        string $abstract
+    ): array {
+        return [
+            'participant_id' => $participant->id,
+            'topic_id' => $topic->id,
+            'title' => 'Abstract Word Limit Test',
+            'abstract' => $abstract,
+            'keywords' => 'artificial intelligence; smart campus; research',
+            'authors' => [
+                [
+                    'name' => $participant->full_name,
+                    'email' => $participant->email,
+                    'institution' => $participant->institution,
+                    'department' => $participant->department,
+                    'is_corresponding' => true,
+                    'sort_order' => 1,
+                ],
+            ],
+        ];
+    }
+
 
     private function createReviewer(
         Conference $conference
@@ -3108,5 +3164,321 @@ class SubmissionTest extends TestCase
             ->assertOk()
             ->assertSee($videoUrl)
             ->assertSee('Edit Video Link');
+    }
+
+    public function test_abstract_submission_form_shows_300_word_limit(): void
+    {
+        [$participant] = $this->createOpenAbstractSubmissionContext();
+
+        $user = User::findOrFail($participant->user_id);
+
+        $response = $this->actingAs($user)
+            ->get(route('participant.submissions.create'));
+
+        $response->assertOk()
+            ->assertSee('Maximum 300 words.')
+            ->assertSee('abstract-word-count');
+
+        // Normalize whitespace because Blade may render line breaks
+        // between "300" and "words".
+        $html = preg_replace('/\s+/', ' ', $response->getContent());
+
+        $this->assertStringContainsString(
+            '0 / 300 words',
+            $html
+        );
+    }
+
+    public function test_presenter_can_submit_abstract_with_300_words(): void
+    {
+        Mail::fake();
+
+        [$participant, $topic] = $this->createOpenAbstractSubmissionContext();
+
+        $abstract = implode(' ', array_fill(0, 300, 'word'));
+
+        $response = $this->actingAs(
+            User::findOrFail($participant->user_id)
+        )->post(
+            route('participant.submissions.store'),
+            $this->makeAbstractSubmissionPayload(
+                $participant,
+                $topic,
+                $abstract
+            )
+        );
+
+        $submission = Submission::where(
+            'participant_id',
+            $participant->id
+        )->firstOrFail();
+
+        $response->assertRedirect(
+            route('participant.submissions.show', $submission)
+        );
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('submissions', [
+            'id' => $submission->id,
+            'abstract' => $abstract,
+            'submission_stage' => 'abstract',
+        ]);
+    }
+
+    public function test_presenter_cannot_submit_abstract_with_301_words(): void
+    {
+        [$participant, $topic] = $this->createOpenAbstractSubmissionContext();
+
+        $abstract = implode(' ', array_fill(0, 301, 'word'));
+
+        $response = $this->actingAs(
+            User::findOrFail($participant->user_id)
+        )->post(
+            route('participant.submissions.store'),
+            $this->makeAbstractSubmissionPayload(
+                $participant,
+                $topic,
+                $abstract
+            )
+        );
+
+        $response->assertRedirect()
+            ->assertSessionHasErrors([
+                'abstract' => 'The abstract may not exceed 300 words.',
+            ]);
+
+        $this->assertDatabaseCount('submissions', 0);
+    }
+
+
+    private function createSubmissionRequestingAbstractRevision(): array
+    {
+        Mail::fake();
+
+        [$participant, $topic] =
+            $this->createOpenAbstractSubmissionContext();
+
+        $user = User::findOrFail($participant->user_id);
+
+        $this->actingAs($user)
+            ->post(
+                route('participant.submissions.store'),
+                $this->makeAbstractSubmissionPayload(
+                    $participant,
+                    $topic,
+                    'Original abstract for revision testing.'
+                )
+            )
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $submission = Submission::where(
+            'participant_id',
+            $participant->id
+        )->firstOrFail();
+
+        $author = $submission->authors()->firstOrFail();
+
+        $submission->update([
+            'status' => 'revision',
+            'presenter_author_id' => $author->id,
+        ]);
+
+        $reviewer = $this->createReviewer(
+            \App\Models\Conference::findOrFail(
+                $participant->conference_id
+            )
+        );
+
+        Review::create([
+            'submission_id' => $submission->id,
+            'reviewer_id' => $reviewer->id,
+            'review_stage' => 'abstract',
+            'review_round' => 1,
+            'score' => 4,
+            'comment' => 'Please clarify the sampling method and report the statistical test.',
+            'recommendation' => 'minor_revision',
+            'reviewed_at' => now(),
+        ]);
+
+        return [
+            $user,
+            $participant,
+            $submission->fresh(['authors']),
+            $author,
+            $reviewer,
+        ];
+    }
+
+    public function test_abstract_revision_form_shows_feedback_without_file_upload(): void
+    {
+        [
+            $user,
+            $participant,
+            $submission,
+            $author,
+        ] = $this->createSubmissionRequestingAbstractRevision();
+
+        $response = $this->actingAs($user)
+            ->get(
+                route(
+                    'participant.submissions.revision',
+                    $submission
+                )
+            );
+
+        $response->assertOk()
+            ->assertSee('Reviewer Feedback')
+            ->assertSee(
+                'Please clarify the sampling method and report the statistical test.'
+            )
+            ->assertSee('Revise Abstract')
+            ->assertSee('name="title"', false)
+            ->assertSee('name="abstract"', false)
+            ->assertSee('name="keywords"', false)
+            ->assertSee(
+                'name="authors[0][id]"',
+                false
+            )
+            ->assertDontSee('name="revised_file"', false)
+            ->assertSee(
+                'value="' . $author->id . '"',
+                false
+            );
+    }
+
+    public function test_presenter_can_submit_abstract_revision_and_start_next_review_round(): void
+    {
+        [
+            $user,
+            $participant,
+            $submission,
+            $author,
+            $reviewer,
+        ] = $this->createSubmissionRequestingAbstractRevision();
+
+        $revisedTitle = 'Revised Abstract: Digital Simulation in Nursing';
+        $revisedAbstract = implode(
+            ' ',
+            array_fill(0, 200, 'revised')
+        );
+
+        $response = $this->actingAs($user)->post(
+            route(
+                'participant.submissions.revision.upload',
+                $submission
+            ),
+            [
+                'title' => $revisedTitle,
+                'abstract' => $revisedAbstract,
+                'keywords' => 'simulation; nursing; clinical reasoning',
+                'authors' => [
+                    [
+                        'id' => $author->id,
+                        'name' => 'Updated Test Presenter',
+                        'email' => $author->email,
+                        'institution' => $author->institution,
+                        'department' => $author->department,
+                        'is_corresponding' => 1,
+                        'sort_order' => 1,
+                    ],
+                ],
+            ]
+        );
+
+        $response->assertRedirect(
+            route(
+                'participant.submissions.show',
+                $submission
+            )
+        )->assertSessionHasNoErrors();
+
+        $submission->refresh();
+
+        $this->assertSame($revisedTitle, $submission->title);
+        $this->assertSame($revisedAbstract, $submission->abstract);
+        $this->assertSame(
+            'simulation; nursing; clinical reasoning',
+            $submission->keywords
+        );
+        $this->assertSame('under_review', $submission->status);
+        $this->assertSame('abstract', $submission->submission_stage);
+        $this->assertSame($author->id, $submission->presenter_author_id);
+
+        $this->assertDatabaseHas('submission_authors', [
+            'id' => $author->id,
+            'submission_id' => $submission->id,
+            'name' => 'Updated Test Presenter',
+        ]);
+
+        $this->assertSame(
+            1,
+            $submission->authors()->count()
+        );
+
+        $this->assertDatabaseHas('reviews', [
+            'submission_id' => $submission->id,
+            'reviewer_id' => $reviewer->id,
+            'review_stage' => 'abstract',
+            'review_round' => 2,
+            'score' => null,
+            'comment' => null,
+            'recommendation' => null,
+            'reviewed_at' => null,
+        ]);
+    }
+
+    public function test_presenter_cannot_submit_abstract_revision_with_301_words(): void
+    {
+        [
+            $user,
+            $participant,
+            $submission,
+            $author,
+            $reviewer,
+        ] = $this->createSubmissionRequestingAbstractRevision();
+
+        $originalTitle = $submission->title;
+        $originalAbstract = $submission->abstract;
+
+        $response = $this->actingAs($user)->post(
+            route(
+                'participant.submissions.revision.upload',
+                $submission
+            ),
+            [
+                'title' => 'This revision must not be saved',
+                'abstract' => implode(
+                    ' ',
+                    array_fill(0, 301, 'word')
+                ),
+                'keywords' => 'simulation; nursing; clinical reasoning',
+                'authors' => [
+                    [
+                        'id' => $author->id,
+                        'name' => $author->name,
+                        'email' => $author->email,
+                        'institution' => $author->institution,
+                        'department' => $author->department,
+                        'is_corresponding' => 1,
+                        'sort_order' => 1,
+                    ],
+                ],
+            ]
+        );
+
+        $response->assertRedirect()
+            ->assertSessionHasErrors([
+                'abstract' => 'The abstract may not exceed 300 words.',
+            ]);
+
+        $submission->refresh();
+
+        $this->assertSame($originalTitle, $submission->title);
+        $this->assertSame($originalAbstract, $submission->abstract);
+        $this->assertSame('revision', $submission->status);
+
+        $this->assertDatabaseCount('reviews', 1);
     }
 }

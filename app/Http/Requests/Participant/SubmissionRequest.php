@@ -59,9 +59,37 @@ class SubmissionRequest extends FormRequest
                 'max:255',
             ],
 
+
             'abstract' => [
                 'required',
                 'string',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value)) {
+                        return;
+                    }
+
+                    $abstract = trim($value);
+
+                    if ($abstract === '') {
+                        return;
+                    }
+
+                    $words = preg_split(
+                        '/[\s\p{Z}]+/u',
+                        $abstract,
+                        -1,
+                        PREG_SPLIT_NO_EMPTY
+                    );
+
+                    if ($words === false) {
+                        $fail('The abstract could not be validated. Please check the text encoding.');
+                        return;
+                    }
+
+                    if (count($words) > 300) {
+                        $fail('The abstract may not exceed 300 words.');
+                    }
+                },
             ],
 
             'keywords' => [

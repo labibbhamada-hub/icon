@@ -754,6 +754,7 @@ class SubmissionController extends Controller
 
         $submission->load([
             'conference.setting',
+            'authors',
         ]);
 
         $revisionDeadline =
@@ -805,12 +806,28 @@ class SubmissionController extends Controller
                 );
         }
 
+        $currentRound = Review::query()
+            ->where('submission_id', $submission->id)
+            ->where('review_stage', $submission->submission_stage)
+            ->max('review_round');
+
+        $revisionReviews = $currentRound
+            ? Review::with('reviewer.user')
+            ->where('submission_id', $submission->id)
+            ->where('review_stage', $submission->submission_stage)
+            ->where('review_round', $currentRound)
+            ->whereNotNull('reviewed_at')
+            ->orderBy('reviewer_id')
+            ->get()
+            : collect();
+
         return view(
             'participant.submissions.revision',
             compact(
                 'submission',
                 'participant',
-                'revisionDeadline'
+                'revisionDeadline',
+                'revisionReviews'
             )
         );
     }
@@ -869,6 +886,13 @@ class SubmissionController extends Controller
                     'error',
                     'This submission is not currently requesting a revision.'
                 );
+        }
+
+        if ($submission->submission_stage === 'abstract') {
+            return $this->storeAbstractRevision(
+                $request,
+                $submission
+            );
         }
 
         $oldFile =
@@ -989,6 +1013,136 @@ class SubmissionController extends Controller
             ->with(
                 'success',
                 'Revised paper uploaded successfully and sent back for review.'
+            );
+    }
+
+    private function storeAbstractRevision(
+        RevisionRequest $request,
+        Submission $submission
+    ) {
+        $data = $request->validated();
+
+        $submission->load('authors');
+
+        $existingAuthors = $submission->authors
+            ->keyBy('id');
+
+        $currentRound = Review::query()
+            ->where('submission_id', $submission->id)
+            ->where(
+                'review_stage',
+                'abstract'
+            )
+            ->max('review_round');
+
+        $nextRound = $currentRound
+            ? $currentRound + 1
+            : 1;
+
+        DB::transaction(function () use (
+            $submission,
+            $data,
+            $existingAuthors,
+            $currentRound,
+            $nextRound
+        ) {
+            $submission->update([
+                'title' => $data['title'],
+                'abstract' => $data['abstract'],
+                'keywords' => $data['keywords'],
+                'status' => 'under_review',
+                'submitted_at' => now(),
+            ]);
+
+            $retainedAuthorIds = [];
+
+            foreach ($data['authors'] as $index => $author) {
+                $attributes = [
+                    'name' => $author['name'],
+                    'email' => $author['email'] ?? null,
+                    'institution' => $author['institution'] ?? null,
+                    'department' => $author['department'] ?? null,
+                    'is_corresponding' => !empty($author['is_corresponding']),
+                    'sort_order' => $author['sort_order']
+                        ?? $index + 1,
+                ];
+
+                if (!empty($author['id'])) {
+                    $authorModel = $existingAuthors->get(
+                        (int) $author['id']
+                    );
+
+                    abort_unless($authorModel, 422);
+
+                    $authorModel->update($attributes);
+                } else {
+                    $authorModel = $submission->authors()->create(
+                        $attributes + [
+                            'title_prefix' =>
+                            $author['title_prefix'] ?? null,
+                            'title_suffix' =>
+                            $author['title_suffix'] ?? null,
+                            'orcid' =>
+                            $author['orcid'] ?? null,
+                        ]
+                    );
+                }
+
+                $retainedAuthorIds[] = $authorModel->id;
+            }
+
+            $removedAuthorIds = $existingAuthors
+                ->keys()
+                ->diff($retainedAuthorIds)
+                ->values()
+                ->all();
+
+            if ($removedAuthorIds !== []) {
+                if (
+                    $submission->presenter_author_id
+                    && in_array(
+                        $submission->presenter_author_id,
+                        $removedAuthorIds
+                    )
+                ) {
+                    $submission->update([
+                        'presenter_author_id' => null,
+                    ]);
+                }
+
+                $submission->authors()
+                    ->whereIn('id', $removedAuthorIds)
+                    ->delete();
+            }
+
+            $oldReviews = Review::query()
+                ->where('submission_id', $submission->id)
+                ->where('review_stage', 'abstract')
+                ->where('review_round', $currentRound)
+                ->get();
+
+            foreach ($oldReviews as $oldReview) {
+                Review::create([
+                    'submission_id' => $submission->id,
+                    'reviewer_id' => $oldReview->reviewer_id,
+                    'review_stage' => 'abstract',
+                    'review_round' => $nextRound,
+                    'score' => null,
+                    'comment' => null,
+                    'recommendation' => null,
+                    'reviewed_at' => null,
+                ]);
+            }
+        });
+
+        return redirect()
+            ->route(
+                'participant.submissions.show',
+                $submission
+            )
+            ->with(
+                'success',
+                'Abstract revision submitted successfully and sent back for review.'
             );
     }
 

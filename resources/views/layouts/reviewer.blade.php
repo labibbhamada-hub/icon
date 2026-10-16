@@ -14,9 +14,10 @@
     <link rel="stylesheet" href="{{ asset('assets/bootstrap-icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
 
-    @stack('styles')
+    {{-- Toastr --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
 
-    <link rel="stylesheet" href="{{ asset('assets/css/sidebar-navy.css') }}">
+    @stack('styles')
 
 </head>
 

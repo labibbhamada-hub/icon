@@ -236,49 +236,143 @@
 
     </form>
 
+    {{-- Confirm Reviewer Assignment Modal --}}
+    <div class="modal fade" id="confirm-assign-reviewer-modal" tabindex="-1"
+        aria-labelledby="confirm-assign-reviewer-modal-label" aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content rounded-0">
+
+                <div class="modal-header rounded-0">
+                    <h5 class="modal-title" id="confirm-assign-reviewer-modal-label">
+                        <i class="bi bi-person-check me-2"></i>
+                        Confirm Reviewer Assignment
+                    </h5>
+
+                    <button type="button" class="btn-close rounded-0" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    The selected reviewer will be assigned to this submission
+                    for the current review round.
+                </div>
+
+                <div class="modal-footer rounded-0">
+                    <button type="button" class="btn btn-secondary rounded-0" id="cancel-assign-reviewer"
+                        data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="button" class="btn btn-success rounded-0" id="confirm-assign-reviewer">
+
+                        <span id="confirm-assign-reviewer-text">
+                            <i class="bi bi-person-plus me-1"></i>
+                            Confirm Assignment
+                        </span>
+
+                        <span id="confirm-assign-reviewer-loading" class="d-none">
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Assigning...
+                        </span>
+
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 @endsection
 
 @push('scripts')
     <script>
-        document
-            .getElementById('assign-reviewer-form')
-            ?.addEventListener(
-                'submit',
-                function(event) {
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('assign-reviewer-form');
 
-                    event.preventDefault();
-
-                    Swal.fire({
-
-                        title: 'Assign Reviewer?',
-
-                        text: 'The selected reviewer will be assigned to this submission for the current review round.',
-
-                        icon: 'question',
-
-                        showCancelButton: true,
-
-                        confirmButtonText: 'Yes, assign',
-
-                        cancelButtonText: 'Cancel',
-
-                        confirmButtonColor: '#198754',
-
-                        cancelButtonColor: '#6c757d',
-
-                    }).then(function(result) {
-
-                        if (result.isConfirmed) {
-
-                            document
-                                .getElementById('assign-reviewer-form')
-                                .submit();
-
-                        }
-
-                    });
-
-                }
+            const modalElement = document.getElementById(
+                'confirm-assign-reviewer-modal'
             );
+
+            const confirmButton = document.getElementById(
+                'confirm-assign-reviewer'
+            );
+
+            const confirmButtonText = document.getElementById(
+                'confirm-assign-reviewer-text'
+            );
+
+            const confirmButtonLoading = document.getElementById(
+                'confirm-assign-reviewer-loading'
+            );
+
+            const cancelButton = document.getElementById(
+                'cancel-assign-reviewer'
+            );
+
+            if (
+                !form ||
+                !modalElement ||
+                !confirmButton ||
+                !confirmButtonText ||
+                !confirmButtonLoading ||
+                !cancelButton
+            ) {
+                return;
+            }
+
+            if (
+                typeof bootstrap === 'undefined' ||
+                !bootstrap.Modal
+            ) {
+                console.error('Bootstrap Modal is not available.');
+                return;
+            }
+
+            const modal = bootstrap.Modal.getOrCreateInstance(
+                modalElement
+            );
+
+            let confirmationApproved = false;
+
+            form.addEventListener('submit', function(event) {
+                if (confirmationApproved) {
+                    confirmationApproved = false;
+                    return;
+                }
+
+                event.preventDefault();
+                modal.show();
+            });
+
+            confirmButton.addEventListener('click', function() {
+                if (confirmButton.disabled) {
+                    return;
+                }
+
+                if (!form.reportValidity()) {
+                    confirmationApproved = false;
+                    modal.hide();
+                    return;
+                }
+
+                confirmationApproved = true;
+
+                confirmButton.disabled = true;
+                cancelButton.disabled = true;
+
+                confirmButtonText.classList.add('d-none');
+                confirmButtonLoading.classList.remove('d-none');
+
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
+            });
+        });
     </script>
 @endpush

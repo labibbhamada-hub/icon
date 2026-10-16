@@ -223,24 +223,6 @@
                                 <div class="border rounded-0 p-3 h-100">
 
                                     <small class="text-muted d-block">
-                                        Accepted Papers
-                                    </small>
-
-                                    <strong id="accepted-papers" class="fs-5 d-block mt-1">
-
-                                        {{ $defaultCalculation['accepted_papers'] }}
-
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <div class="border rounded-0 p-3 h-100">
-
-                                    <small class="text-muted d-block">
                                         Included Papers
                                     </small>
 
@@ -254,50 +236,13 @@
 
                             </div>
 
-                            <div class="col-md-4">
-
-                                <div class="border rounded-0 p-3 h-100">
-
-                                    <small class="text-muted d-block">
-                                        Additional Papers
-                                    </small>
-
-                                    <strong id="additional-papers" class="fs-5 d-block mt-1">
-
-                                        {{ $defaultCalculation['additional_papers'] }}
-
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <div class="border rounded-0 p-3 h-100">
-
-                                    <small class="text-muted d-block">
-                                        Additional Fee
-                                    </small>
-
-                                    <strong id="additional-amount" class="fs-5 d-block mt-1">
-
-                                        {{ $defaultCalculation['currency'] }}
-                                        {{ number_format($defaultCalculation['additional_amount'], 0, ',', '.') }}
-
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
                         </div>
 
-                        <div class="border-top mt-4 pt-3">
+                        <div class="pt-3">
 
                             <div class="row g-3">
 
-                                <div class="col-md-6">
+                                <div class="col-12">
 
                                     <div class="border rounded-0 p-3 h-100">
 
@@ -314,29 +259,6 @@
 
                                         <small class="text-muted d-block mt-1">
                                             Total amount required for this registration.
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-6">
-
-                                    <div class="border rounded-0 p-3 h-100">
-
-                                        <small class="text-muted d-block">
-                                            Already Paid
-                                        </small>
-
-                                        <strong id="verified-payment-amount" class="fs-5 d-block mt-1">
-
-                                            {{ $defaultCalculation['currency'] }}
-                                            {{ number_format($defaultCalculation['verified_payment_amount'], 0, ',', '.') }}
-
-                                        </strong>
-
-                                        <small class="text-muted d-block mt-1">
-                                            Verified payments for this registration.
                                         </small>
 
                                     </div>

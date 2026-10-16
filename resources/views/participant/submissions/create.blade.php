@@ -191,42 +191,6 @@
             </div>
         @endif
 
-        <div class="card rounded-0 overflow-hidden mb-3">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
-
-                    <div class="d-flex align-items-start gap-3">
-
-                        <div class="text-primary fs-4">
-                            <i class="bi bi-file-earmark-word"></i>
-                        </div>
-
-                        <div>
-                            <strong>
-                                Abstract Template
-                            </strong>
-
-                            <div class="text-muted small mt-1">
-                                Download the official abstract template before preparing your submission.
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <a href="{{ asset('storage/conference-templates/' . $participant->conference_id . '/abstract-template.docx') }}"
-                        class="btn btn-outline-primary btn-sm rounded-0" target="_blank" rel="noopener">
-                        <i class="bi bi-download me-1"></i>
-                        Download Template
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
         {{-- Abstract Information --}}
         <div class="card rounded-0 overflow-hidden mb-3">
 
@@ -291,16 +255,23 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label class="form-label" for="abstract">
                         Abstract
                         <span class="text-danger">*</span>
                     </label>
 
-                    <textarea name="abstract" rows="8" class="form-control @error('abstract') is-invalid @enderror rounded-0"
-                        placeholder="Write your abstract (150–250 words)...">{{ old('abstract') }}</textarea>
+                    <textarea id="abstract" name="abstract" rows="8"
+                        class="form-control @error('abstract') is-invalid @enderror rounded-0"
+                        placeholder="Write your abstract (maximum 300 words)...">{{ old('abstract') }}</textarea>
 
-                    <div class="form-text">
-                        Write one paragraph containing 150–250 words.
+                    <div class="form-text d-flex justify-content-between align-items-start gap-2">
+                        <span>Maximum 300 words.</span>
+                        <span id="abstract-word-count" class="text-body-secondary text-nowrap" aria-live="polite">0 / 300
+                            words</span>
+                    </div>
+
+                    <div id="abstract-word-limit-error" class="small text-danger mt-1 d-none" role="alert">
+                        The abstract may not exceed 300 words.
                     </div>
 
                     @error('abstract')
@@ -541,12 +512,165 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const MAX_ABSTRACT_WORDS = 300;
 
-            const container =
-                document.getElementById('authors-container');
+            /*
+             * Abstract Word Counter
+             */
 
-            const addButton =
-                document.getElementById('add-author');
+            const abstractField = document.getElementById('abstract');
+            const abstractWordCount = document.getElementById('abstract-word-count');
+            const abstractWordLimitError = document.getElementById('abstract-word-limit-error');
+            const formSubmit = document.getElementById('form-submit');
+
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSubmitText = document.getElementById('btn-submit-text');
+            const btnSubmitLoad = document.getElementById('btn-submit-load');
+
+            function countAbstractWords(value) {
+                const text = value.trim();
+
+                if (text === '') {
+                    return 0;
+                }
+
+                return text.split(/[\s\p{Z}]+/u).length;
+            }
+
+            function updateAbstractWordCount() {
+                if (!abstractField) {
+                    return 0;
+                }
+
+                const wordCount = countAbstractWords(abstractField.value);
+                const exceedsLimit = wordCount > MAX_ABSTRACT_WORDS;
+
+                if (abstractWordCount) {
+                    abstractWordCount.textContent =
+                        `${wordCount} / ${MAX_ABSTRACT_WORDS} words`;
+
+                    abstractWordCount.classList.toggle(
+                        'text-danger',
+                        exceedsLimit
+                    );
+
+                    abstractWordCount.classList.toggle(
+                        'text-body-secondary',
+                        !exceedsLimit
+                    );
+                }
+
+                if (abstractWordLimitError) {
+                    abstractWordLimitError.classList.toggle(
+                        'd-none',
+                        !exceedsLimit
+                    );
+                }
+
+                abstractField.classList.toggle(
+                    'border-danger',
+                    exceedsLimit
+                );
+
+                return wordCount;
+            }
+
+            if (abstractField) {
+                abstractField.addEventListener(
+                    'input',
+                    updateAbstractWordCount
+                );
+
+                updateAbstractWordCount();
+            }
+
+            /*
+             * Abstract Submission
+             */
+
+            function setSubmittingState() {
+                if (btnSubmit) {
+                    btnSubmit.disabled = true;
+                }
+
+                if (btnSubmitText) {
+                    btnSubmitText.classList.add('d-none');
+                }
+
+                if (btnSubmitLoad) {
+                    btnSubmitLoad.classList.remove('d-none');
+                }
+            }
+
+            function restoreSubmitButton() {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                }
+
+                if (btnSubmitText) {
+                    btnSubmitText.classList.remove('d-none');
+                }
+
+                if (btnSubmitLoad) {
+                    btnSubmitLoad.classList.add('d-none');
+                }
+            }
+
+            if (formSubmit) {
+                formSubmit.addEventListener('submit', function(event) {
+                    const wordCount = updateAbstractWordCount();
+
+                    if (wordCount > MAX_ABSTRACT_WORDS) {
+                        event.preventDefault();
+
+                        if (abstractField) {
+                            abstractField.focus();
+                        }
+
+                        restoreSubmitButton();
+
+                        return;
+                    }
+
+                    setSubmittingState();
+                });
+            }
+
+            /*
+             * Called by the Submit Abstract button.
+             *
+             * requestSubmit() triggers normal form validation
+             * and the submit event handler above.
+             */
+
+            window.form_submit = function() {
+                const wordCount = updateAbstractWordCount();
+
+                if (wordCount > MAX_ABSTRACT_WORDS) {
+                    if (abstractField) {
+                        abstractField.focus();
+                    }
+
+                    return;
+                }
+
+                if (!formSubmit) {
+                    return;
+                }
+
+                if (typeof formSubmit.requestSubmit === 'function') {
+                    formSubmit.requestSubmit();
+                    return;
+                }
+
+                // Fallback for older browsers.
+                setSubmittingState();
+                formSubmit.submit();
+            };
+
+            /*
+             * Filter Participant and Topic by Conference
+             */
 
             const conferenceSelect =
                 document.getElementById('conference_id');
@@ -557,444 +681,298 @@
             const topicSelect =
                 document.getElementById('topic_id');
 
-
-            let authorIndex =
-                container.querySelectorAll('.author-item').length;
-
-
-            /* ------------------------------------------------------------
-             * Filter Participant & Topic by Conference
-             * ------------------------------------------------------------ */
-
             function filterRelatedOptions() {
-
-                const conferenceId =
-                    conferenceSelect.value;
-
-
-                if (participantSelect) {
-
-                    Array
-                        .from(participantSelect.options)
-                        .forEach(function(option) {
-
-                            if (!option.value) {
-                                return;
-                            }
-
-                            const belongsToConference =
-                                option.dataset.conference === conferenceId;
-
-                            option.hidden = !belongsToConference;
-
-
-                            if (
-                                option.value === participantSelect.value &&
-                                !belongsToConference
-                            ) {
-                                participantSelect.value = '';
-                            }
-
-                        });
-
+                if (!conferenceSelect) {
+                    return;
                 }
 
+                const conferenceId = conferenceSelect.value;
 
-                if (topicSelect) {
+                [participantSelect, topicSelect].forEach(function(select) {
+                    if (!select) {
+                        return;
+                    }
 
-                    Array
-                        .from(topicSelect.options)
-                        .forEach(function(option) {
+                    Array.from(select.options).forEach(function(option) {
+                        if (!option.value) {
+                            return;
+                        }
 
-                            if (!option.value) {
-                                return;
-                            }
+                        const belongsToConference =
+                            option.dataset.conference === conferenceId;
 
-                            const belongsToConference =
-                                option.dataset.conference === conferenceId;
+                        option.hidden = !belongsToConference;
 
-                            option.hidden = !belongsToConference;
-
-
-                            if (
-                                option.value === topicSelect.value &&
-                                !belongsToConference
-                            ) {
-                                topicSelect.value = '';
-                            }
-
-                        });
-
-                }
-
+                        if (
+                            option.value === select.value &&
+                            !belongsToConference
+                        ) {
+                            select.value = '';
+                        }
+                    });
+                });
             }
 
-
             if (conferenceSelect) {
-
                 conferenceSelect.addEventListener(
                     'change',
                     filterRelatedOptions
                 );
 
                 filterRelatedOptions();
-
             }
 
+            /*
+             * Author Management
+             */
 
-            /* ------------------------------------------------------------
-             * Refresh Author Labels
-             * ------------------------------------------------------------ */
+            const container =
+                document.getElementById('authors-container');
+
+            const addButton =
+                document.getElementById('add-author');
+
+            if (!container) {
+                return;
+            }
+
+            let authorIndex =
+                container.querySelectorAll('.author-item').length;
 
             function refreshAuthorLabels() {
-
                 const authorItems =
                     container.querySelectorAll('.author-item');
 
-
                 authorItems.forEach(function(item, index) {
-
                     const authorLabel =
-                        item.querySelector('.author-label');
-
+                        item.querySelector('.author-label') ||
+                        item.querySelector('strong');
 
                     if (authorLabel) {
-
-                        authorLabel.textContent =
-                            `Author ${index + 1}`;
-
+                        authorLabel.textContent = `Author ${index + 1}`;
                     }
 
-
-                    item.dataset.authorIndex =
-                        index;
-
+                    item.dataset.authorIndex = index;
                 });
-
             }
 
-
-            /* ------------------------------------------------------------
-             * Corresponding Author
-             * ------------------------------------------------------------ */
-
             function updateCorrespondingAuthors(activeCheckbox) {
-
                 if (activeCheckbox.checked) {
-
                     container
                         .querySelectorAll('.corresponding-author')
                         .forEach(function(otherCheckbox) {
-
                             if (otherCheckbox !== activeCheckbox) {
                                 otherCheckbox.checked = false;
                             }
-
                         });
 
                     return;
-
                 }
 
-
-                const checkedCount =
-                    container.querySelectorAll(
-                        '.corresponding-author:checked'
-                    ).length;
-
+                const checkedCount = container.querySelectorAll(
+                    '.corresponding-author:checked'
+                ).length;
 
                 if (checkedCount === 0) {
                     activeCheckbox.checked = true;
                 }
-
             }
 
-
-            container.addEventListener(
-                'change',
-                function(event) {
-
-                    const checkbox =
-                        event.target.closest(
-                            '.corresponding-author'
-                        );
-
-
-                    if (!checkbox) {
-                        return;
-                    }
-
-
-                    updateCorrespondingAuthors(
-                        checkbox
-                    );
-
+            container.addEventListener('change', function(event) {
+                if (!(event.target instanceof Element)) {
+                    return;
                 }
-            );
 
+                const checkbox =
+                    event.target.closest('.corresponding-author');
 
-            /* ------------------------------------------------------------
+                if (!checkbox) {
+                    return;
+                }
+
+                updateCorrespondingAuthors(checkbox);
+            });
+
+            /*
              * Add Author
-             * ------------------------------------------------------------ */
+             */
 
-            addButton.addEventListener(
-                'click',
-                function() {
-
-                    const authorItem =
-                        document.createElement('div');
-
+            if (addButton) {
+                addButton.addEventListener('click', function() {
+                    const authorItem = document.createElement('div');
 
                     authorItem.className =
                         'author-item border rounded-0 p-3 mb-2';
 
-
-                    authorItem.dataset.authorIndex =
-                        authorIndex;
-
+                    authorItem.dataset.authorIndex = authorIndex;
 
                     authorItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="author-label">
+                                Author ${authorIndex + 1}
+                            </strong>
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-
-                        <strong class="author-label">
-                            Author ${authorIndex + 1}
-                        </strong>
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-danger btn-sm rounded-0 remove-author"
-                        >
-                            <i class="bi bi-trash"></i>
-                            Remove
-                        </button>
-
-                    </div>
-
-
-                    <div class="row">
-
-                        <div class="col-md-6 mb-2">
-
-                            <label class="form-label">
-                                Name
-                                <span class="text-danger">*</span>
-                            </label>
-
-                            <input
-                                type="text"
-                                name="authors[${authorIndex}][name]"
-                                class="form-control rounded-0"
-                                placeholder="Author name"
+                            <button
+                                type="button"
+                                class="btn btn-outline-danger btn-sm rounded-0 remove-author"
                             >
-
+                                <i class="bi bi-trash"></i>
+                                Remove
+                            </button>
                         </div>
 
-
-                        <div class="col-md-6 mb-2">
-
-                            <label class="form-label">
-                                Email
-                            </label>
-
-                            <input
-                                type="email"
-                                name="authors[${authorIndex}][email]"
-                                class="form-control rounded-0"
-                                placeholder="author@example.com"
-                            >
-
-                        </div>
-
-
-                        <div class="col-md-6 mb-2">
-
-                            <label class="form-label">
-                                Institution
-                            </label>
-
-                            <input
-                                type="text"
-                                name="authors[${authorIndex}][institution]"
-                                class="form-control rounded-0"
-                            >
-
-                        </div>
-
-
-                        <div class="col-md-6 mb-2">
-
-                            <label class="form-label">
-                                Department
-                            </label>
-
-                            <input
-                                type="text"
-                                name="authors[${authorIndex}][department]"
-                                class="form-control rounded-0"
-                            >
-
-                        </div>
-
-
-                        <div class="col-md-4 mb-2">
-
-                            <input
-                                type="hidden"
-                                name="authors[${authorIndex}][is_corresponding]"
-                                value="0"
-                            >
-
-                            <div class="form-check form-switch mt-2">
-
-                                <input
-                                    type="checkbox"
-                                    name="authors[${authorIndex}][is_corresponding]"
-                                    value="1"
-                                    class="form-check-input corresponding-author rounded-0"
-                                >
-
-                                <label class="form-check-label">
-                                    Corresponding Author
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">
+                                    Name <span class="text-danger">*</span>
                                 </label>
 
+                                <input
+                                    type="text"
+                                    name="authors[${authorIndex}][name]"
+                                    class="form-control rounded-0"
+                                    placeholder="Author name"
+                                    required
+                                >
                             </div>
 
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Email</label>
+
+                                <input
+                                    type="email"
+                                    name="authors[${authorIndex}][email]"
+                                    class="form-control rounded-0"
+                                    placeholder="author@example.com"
+                                >
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Institution</label>
+
+                                <input
+                                    type="text"
+                                    name="authors[${authorIndex}][institution]"
+                                    class="form-control rounded-0"
+                                >
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Department</label>
+
+                                <input
+                                    type="text"
+                                    name="authors[${authorIndex}][department]"
+                                    class="form-control rounded-0"
+                                >
+                            </div>
+
+                            <div class="col-md-4 mb-2">
+                                <input
+                                    type="hidden"
+                                    name="authors[${authorIndex}][is_corresponding]"
+                                    value="0"
+                                >
+
+                                <div class="form-check form-switch mt-2">
+                                    <input
+                                        type="checkbox"
+                                        name="authors[${authorIndex}][is_corresponding]"
+                                        value="1"
+                                        class="form-check-input corresponding-author rounded-0"
+                                    >
+
+                                    <label class="form-check-label">
+                                        Corresponding Author
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Order</label>
+
+                                <input
+                                    type="number"
+                                    name="authors[${authorIndex}][sort_order]"
+                                    value="${authorIndex + 1}"
+                                    min="1"
+                                    class="form-control rounded-0"
+                                >
+                            </div>
                         </div>
+                    `;
 
-
-                        <div class="col-md-2 mb-2">
-
-                            <label class="form-label">
-                                Order
-                            </label>
-
-                            <input
-                                type="number"
-                                name="authors[${authorIndex}][sort_order]"
-                                value="${authorIndex + 1}"
-                                min="1"
-                                class="form-control rounded-0"
-                            >
-
-                        </div>
-
-                    </div>
-
-                `;
-
-
-                    container.appendChild(
-                        authorItem
-                    );
-
+                    container.appendChild(authorItem);
 
                     authorIndex++;
 
-
                     refreshAuthorLabels();
+                });
+            }
 
-                }
-            );
-
-
-            /* ------------------------------------------------------------
+            /*
              * Remove Author
-             * ------------------------------------------------------------ */
+             */
 
-            container.addEventListener(
-                'click',
-                function(event) {
-
-                    const removeButton =
-                        event.target.closest(
-                            '.remove-author'
-                        );
-
-
-                    if (!removeButton) {
-                        return;
-                    }
-
-
-                    const authorItems =
-                        container.querySelectorAll(
-                            '.author-item'
-                        );
-
-
-                    if (authorItems.length <= 1) {
-
-                        Swal.fire({
-                            title: 'Author Required',
-                            text: 'At least one author is required.',
-                            icon: 'warning',
-                            confirmButtonText: 'OK',
-                            confirmButtonColor: '#198754',
-                        });
-
-                        return;
-                    }
-
-
-                    const authorItem =
-                        removeButton.closest(
-                            '.author-item'
-                        );
-
-
-                    const wasCorresponding =
-                        authorItem.querySelector(
-                            '.corresponding-author'
-                        )?.checked;
-
-
-                    authorItem.remove();
-
-
-                    refreshAuthorLabels();
-
-
-                    if (
-                        wasCorresponding &&
-                        !container.querySelector(
-                            '.corresponding-author:checked'
-                        )
-                    ) {
-
-                        const firstCheckbox =
-                            container.querySelector(
-                                '.corresponding-author'
-                            );
-
-
-                        if (firstCheckbox) {
-                            firstCheckbox.checked = true;
-                        }
-
-                    }
-
+            container.addEventListener('click', function(event) {
+                if (!(event.target instanceof Element)) {
+                    return;
                 }
-            );
 
+                const removeButton =
+                    event.target.closest('.remove-author');
+
+                if (!removeButton) {
+                    return;
+                }
+
+                const authorItems =
+                    container.querySelectorAll('.author-item');
+
+                if (authorItems.length <= 1) {
+                    Swal.fire({
+                        title: 'Author Required',
+                        text: 'At least one author is required.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#198754',
+                    });
+
+                    return;
+                }
+
+                const authorItem =
+                    removeButton.closest('.author-item');
+
+                if (!authorItem) {
+                    return;
+                }
+
+                const wasCorresponding =
+                    authorItem.querySelector(
+                        '.corresponding-author'
+                    )?.checked;
+
+                authorItem.remove();
+
+                refreshAuthorLabels();
+
+                if (
+                    wasCorresponding &&
+                    !container.querySelector(
+                        '.corresponding-author:checked'
+                    )
+                ) {
+                    const firstCheckbox =
+                        container.querySelector('.corresponding-author');
+
+                    if (firstCheckbox) {
+                        firstCheckbox.checked = true;
+                    }
+                }
+            });
 
             refreshAuthorLabels();
-
         });
-    </script>
-    <script>
-        function form_submit() {
-            const btnSubmit = document.getElementById('btn-submit');
-            const btnSubmitText = document.getElementById('btn-submit-text');
-            const btnSubmitLoad = document.getElementById('btn-submit-load');
-            const formSubmit = document.getElementById('form-submit');
-
-            btnSubmit.disabled = true;
-
-            btnSubmitText.classList.add('d-none');
-            btnSubmitLoad.classList.remove('d-none');
-
-            formSubmit.submit();
-        }
     </script>
 @endpush
